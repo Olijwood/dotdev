@@ -2,6 +2,9 @@
   "name": "rnextfire-app",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.15.0 <21"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
