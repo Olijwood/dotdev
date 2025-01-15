@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, useCallback } from "react";
 import { signInWithPopup } from "firebase/auth";
 import { doc, writeBatch, getDoc } from "firebase/firestore";
 import debounce from "lodash.debounce";
-import { UserContext } from "../lib/context";
+import styles from "../styles/Enter.module.css";
 import { auth, firestore, googleAuthProvider } from "../lib/firebase";
 
 export default function Enter(props) {
