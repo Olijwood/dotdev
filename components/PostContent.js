@@ -7,16 +7,23 @@ export default function PostContent({ post }) {
     typeof post?.createdAt === "number"
       ? new Date(post.createdAt)
       : post.createdAt.toDate();
+  const dateStr = createdAt.toLocaleString("default", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
   return (
     <div className="card">
-      <h1>{post?.title}</h1>
-      <span className="text-sm">
+      <strong>
+        <h1>{post?.title}</h1>
+      </strong>
+      <span className="text-sm text-gray-500">
         Written by{" "}
         <Link href={`/${post.username}/`} className="text-info">
           @{post.username}
         </Link>{" "}
-        on {createdAt.toISOString()}
+        on {dateStr}
       </span>
       <ReactMarkdown>{post.content}</ReactMarkdown>
     </div>

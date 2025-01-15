@@ -2,7 +2,6 @@ import { useContext, useEffect, useState, useCallback } from "react";
 import { signInWithPopup } from "firebase/auth";
 import { doc, writeBatch, getDoc } from "firebase/firestore";
 import debounce from "lodash.debounce";
-
 import { UserContext } from "../lib/context";
 import { auth, firestore, googleAuthProvider } from "../lib/firebase";
 
@@ -33,7 +32,7 @@ function SignInButton() {
     }
   };
   return (
-    <button className="btn-google" onClick={signInWithGoogle}>
+    <button className={styles["btn-google"]} onClick={signInWithGoogle}>
       <img src={"/google.png"} alt="Google Logo" width="30px" />
       Sign in with Google
     </button>
@@ -121,7 +120,11 @@ function UsernameForm() {
             isValid={isValid}
             loading={loading}
           />
-          <button type="submit" disabled={!formValue} className="btn-green">
+          <button
+            type="submit"
+            disabled={!formValue}
+            className={styles["btn-green"]}
+          >
             Choose
           </button>
 
@@ -143,9 +146,9 @@ function UsernameMessage({ username, isValid, loading }) {
   if (loading) {
     return <p>Checking...</p>;
   } else if (isValid) {
-    return <p className="text-success">{username} is available!</p>;
+    return <p className={styles["text-success"]}>{username} is available!</p>;
   } else if (username && !isValid) {
-    return <p className="text-danger">That username is taken!</p>;
+    return <p className={styles["text-danger"]}>That username is taken!</p>;
   } else {
     return <p></p>;
   }

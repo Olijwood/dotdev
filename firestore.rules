@@ -1,0 +1,148 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // This rule allows anyone with your Firestore database reference to view, edit,
+    // and delete all data in your Firestore database. It is useful for getting
+    // started, but it is configured to expire after 30 days because it
+    // leaves your app open to attackers. At that time, all client
+    // requests to your Firestore database will be denied.
+    //
+    // Make sure to write security rules for your app before that time, or else
+    // all client requests to your Firestore database will be denied until you Update
+    // your rules
+    match /{document=**} {
+      
+      // Required for collection group queries
+      match /posts/{postId} {
+      	allow read;
+
+        // Ensure reactions are incremented correctly and securely
+        allow update: if canUpdateReactions();
+
+        // Subcollection: reactions
+        match /reactions/{uid} {
+          allow read; // Allow reading reactions
+          allow write: if request.auth.uid == uid; // Allow users to update their own reactions
+        }
+      }
+      
+      match /users/{userId} {
+      	allow read;
+        allow create: if isValidUser(userId);
+      }
+      
+      match /usernames/{username} {
+      	allow read;
+        allow create: if isValidUsername(username);
+      }
+      
+      match /users/{userId}/posts/{postId} {
+      	allow read;
+        allow create: if canCreatePost(userId);
+        allow update: if canUpdatePost(userId) || canIncrementHearts(userId, postId);
+        allow delete: if request.auth.uid == userId;
+      }
+      
+      match /users/{userId}/posts/{postId}/hearts/{heartId} {
+      	allow read;
+        allow write: if request.auth.uid == heartId
+    	}
+      
+      // Posts
+      
+      function canCreatePost(userId) {
+        let isOwner = request.auth.uid == userId;
+        let isNow = request.time == request.resource.data.createdAt;
+        let isValidContent = request.resource.data.content.size() < 20000 && request.resource.data.heartCount == 0;
+        let username = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
+        let usernameMatches = username == request.resource.data.username;
+
+      	return isOwner && isNow && isValidContent && usernameMatches;
+      }
+      
+      function canUpdatePost(userId) {
+        let isOwner = request.auth.uid == userId;
+      	let isNow = request.time == request.resource.data.updatedAt;
+        let isValidContent = request.resource.data.content.size() < 20000;
+        let doesNotUpdateForbidden = !request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'username', 'heartCount']);
+        
+        return isOwner && isNow && isValidContent && doesNotUpdateForbidden;
+      }
+      
+      // Hearts 
+      
+      function canIncrementHearts(userId, postId) {
+				let hasValidFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['heartCount']);
+        let currentUser = request.auth.uid;
+				let heartDocExistsAfter = existsAfter(/databases/$(database)/documents/users/$(userId)/posts/$(postId)/hearts/$(currentUser));
+        let heartDocExists = exists(/databases/$(database)/documents/users/$(userId)/posts/$(postId)/hearts/$(currentUser));
+				
+        let heartDocAdded= !heartDocExists && heartDocExistsAfter;
+        let heartDocRemoved = heartDocExists && !heartDocExistsAfter;
+
+        
+        let countChange = request.resource.data.heartCount - resource.data.heartCount;
+        let validChange = countChange == 1 || countChange == -1;
+
+        return hasValidFields && validChange && ( countChange == 1 ? heartDocAdded : heartDocRemoved );
+      }
+
+      // Reactions
+
+    function canUpdateReactions() {
+    let isAuth = request.auth != null;
+
+    let validFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'reactionsCount']);
+
+    // Validate that changes for each reaction type are either +1, -1, or 0
+    let heartChange = request.resource.data.reactions.heart - resource.data.reactions.heart;
+    let clapChange = request.resource.data.reactions.clap - resource.data.reactions.clap;
+    let fireChange = request.resource.data.reactions.fire - resource.data.reactions.fire;
+    let thumbsUpChange = request.resource.data.reactions["thumbs up"] - resource.data.reactions["thumbs up"];
+
+    let totalChange = heartChange + clapChange + fireChange + thumbsUpChange;
+    let reactionsCountChange = request.resource.data.reactionsCount - resource.data.reactionsCount;
+
+    // Ensure all changes are valid and the reactionsCount matches the sum of individual changes
+    return (
+        isAuth &&
+        validFields &&
+        (heartChange == 1 || heartChange == -1 || heartChange == 0) &&
+        (clapChange == 1 || clapChange == -1 || clapChange == 0) &&
+        (fireChange == 1 || fireChange == -1 || fireChange == 0) &&
+        (thumbsUpChange == 1 || thumbsUpChange == -1 || thumbsUpChange == 0) &&
+        reactionsCountChange == totalChange
+    );
+}
+
+   
+
+      
+      // Users
+
+       function isUser(uid) {
+        return request.auth != null && request.auth.uid == uid;
+      }
+
+      
+      function isValidUser(userId) {
+        let isOwner = request.auth.id == userId;
+        let username = request.resource.data.username;
+        let createdValidUsername = existsAfter(/databases/$(database)/documents/usernames/$(username));
+
+        return isOwner && createdValidUsername
+      }
+      
+       function isValidUsername(username) {
+        let isOwner = request.auth.id == request.resource.data.uid;
+        let isValidLength = username.size() >= 3 && username.size() <= 15;
+        let isValidUserDoc = getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username == username;
+
+        return isOwner && isValidLength && isValidUserDoc;
+      }
+     
+    }
+  }
+}

@@ -1,6 +1,4 @@
-import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import toast from "react-hot-toast";
 
 import Loader from "@/components/Loader";
 import PostFeed from "@/components/PostFeed";
@@ -17,7 +15,7 @@ import {
 import { useState } from "react";
 
 // Max post to query per page
-const LIMIT = 2;
+const LIMIT = 8;
 
 export async function getServerSideProps(context) {
   const postsQuery = query(

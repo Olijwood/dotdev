@@ -41,5 +41,10 @@ next-env.d.ts
 # vscode
 /.vscode
 
+#firebase
+.firebaserc
+firebase.json
+firestore.indexes.json 
+
 # config
 eslint.config.mjs

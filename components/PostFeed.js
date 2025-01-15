@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PostActions from "./PostActions";
 
 export default function PostFeed({ posts, admin }) {
   return posts
@@ -11,23 +12,26 @@ export default function PostFeed({ posts, admin }) {
 function PostItem({ post, admin = false }) {
   const wordCount = post?.content.trim().split(/\s+/g).length;
   const minutesToRead = (wordCount / 100 + 1).toFixed(0);
-
   return (
-    <div className="card">
-      <Link href={`/${post.username}`}>
-        <strong>By @{post.username}</strong>
-      </Link>
-
-      <Link href={`/${post.username}/${post.slug}`}>
-        <h2>{post.title}</h2>
-      </Link>
-
-      <footer>
-        <span>
-          {wordCount} words. {minutesToRead} min read
-        </span>
-        <span className="push-left">💗 {post.heartCount || 0} Hearts</span>
-      </footer>
+    <div className="max-w-3xl mx-auto p-3">
+      <div className="rounded-lg border bg-card">
+        <div className="p-4">
+          <Link href={`/${post.username}`}>
+            <h3>By @{post.username}</h3>
+          </Link>
+          <Link href={`/${post.username}/${post.slug}`}>
+            <strong>
+              <h1>{post.title}</h1>
+            </strong>
+          </Link>
+        </div>
+        <PostActions
+          postUid={post.uid}
+          slug={post.slug}
+          commentCount={0}
+          minutesToRead={minutesToRead}
+        />
+      </div>
     </div>
   );
 }

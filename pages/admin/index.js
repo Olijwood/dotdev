@@ -73,6 +73,12 @@ function CreateNewPost() {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       heartCount: 0,
+      reactions: {
+        heart: 0,
+        clap: 0,
+        fire: 0,
+        "thumbs up": 0,
+      },
     };
 
     await setDoc(ref, data);
