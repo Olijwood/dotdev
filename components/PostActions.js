@@ -1,4 +1,4 @@
-import ReactionsPopup from "./ReactionsPopup";
+import ReactionPopup from "./ReactionPopup";
 import { useState } from "react";
 import { BookmarkIcon, MessageCircle, Heart, PencilIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export default function PostActions({
   return (
     <TooltipProvider>
       <div className="flex items-center gap-2 p-2 border-t">
-        <ReactionsPopup postRef={postRef} />
+        <ReactionPopup postRef={postRef} />
 
         <Tooltip>
           <TooltipTrigger asChild>

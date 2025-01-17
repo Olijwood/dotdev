@@ -73,6 +73,10 @@ function CreateNewPost() {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       heartCount: 0,
+      reactionsCount: 0,
+      commentCount: 0,
+      saveCount: 0,
+
       reactions: {
         heart: 0,
         clap: 0,

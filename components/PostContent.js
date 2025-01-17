@@ -12,12 +12,17 @@ export default function PostContent({ post }) {
     month: "2-digit",
     year: "numeric",
   });
-
+  /* card {
+  padding: 2rem;
+  margin: 1rem 0;
+  background-color: white;
+  border: 1px solid var(--color-gray);
+  border-radius: 8px;
+} */
   return (
-    <div className="card">
-      <strong>
-        <h1>{post?.title}</h1>
-      </strong>
+    // <div className="card">
+
+    <div className="p-5 mx-1 border border-gray-300 bg-white rounded-[8px] ">
       <span className="text-sm text-gray-500">
         Written by{" "}
         <Link href={`/${post.username}/`} className="text-info">
@@ -25,7 +30,8 @@ export default function PostContent({ post }) {
         </Link>{" "}
         on {dateStr}
       </span>
-      <ReactMarkdown>{post.content}</ReactMarkdown>
+
+      <ReactMarkdown className="line-break">{post.content}</ReactMarkdown>
     </div>
   );
 }

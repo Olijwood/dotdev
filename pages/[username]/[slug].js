@@ -1,9 +1,15 @@
 import styles from "@/styles/Post.module.css";
 import PostContent from "@/components/PostContent";
-import { firestore, getUserWithUsername, postToJSON } from "@/lib/firebase";
+import {
+  auth,
+  firestore,
+  getUserWithUsername,
+  postToJSON,
+} from "@/lib/firebase";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { collectionGroup, doc, getDoc, getDocs } from "firebase/firestore";
-import PostActions from "@/components/PostActions";
+import PostToolbar from "@/components/PostToolbar";
+
 export async function getStaticProps({ params }) {
   const { username, slug } = params;
   const userDoc = await getUserWithUsername(username);
@@ -27,14 +33,11 @@ export default function Post(props) {
   const [realTimePost] = useDocumentData(postRef);
 
   const post = realTimePost || props.post;
-
+  const isAuthor = auth.currentUser?.uid === post.uid;
   return (
     <main className="styles.container">
-      <div className="mt-0">
-        <div className="rounded-lg border bg-card">
-          <PostActions postUid={post.uid} slug={post.slug} commentCount={0} />
-        </div>
-      </div>
+      {/* <PostDetailActions postUid={post.uid} slug={post.slug} commentCount={0} /> */}
+      <PostToolbar post={post} postRef={postRef} isAuthor={isAuthor} />
       <section>
         <PostContent post={post} />
       </section>
