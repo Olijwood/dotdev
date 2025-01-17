@@ -40,77 +40,93 @@ export default function ReactionPopup({
   const [userReactions, setUserReactions] = useState({});
   // Fetch reactions in real-time
   useEffect(() => {
-    if (!postRef) return;
+    if (!postRef) {
+      return;
+    }
     const unsubscribe = onSnapshot(postRef, async (document) => {
       const data = document.data();
       const reactionsData = data?.reactions || {};
       const reactionsCount = data?.reactionsCount || 0;
 
-      const user = auth.currentUser;
-      const reactionDocRef = doc(
-        firestore,
-        postRef.path,
-        "reactions",
-        user.uid
-      );
-
-      const reactionDocSnap = await getDoc(reactionDocRef);
-      if (reactionDocSnap.exists()) {
-        setHasHearted(reactionDocSnap.data().reactions?.heart || false);
-        setUserReactions(reactionDocSnap.data().reactions || {});
-      } // Set hasHearted based on the reaction document reactionDocSnap.data() : {});
       setReactions(reactionsData);
       setReactionCount(reactionsCount);
+
+      const user = auth.currentUser;
+
+      if (!user || !postRef.path) {
+        return;
+      }
+      try {
+        const reactionsDocRef = doc(
+          firestore,
+          postRef.path,
+          "reactions",
+          user?.uid
+        );
+
+        const reactionsDocSnap = await getDoc(reactionsDocRef);
+        if (reactionsDocSnap.exists()) {
+          setHasHearted(reactionsDocSnap.data().reactions?.heart || false);
+          setUserReactions(reactionsDocSnap.data().reactions || {});
+        }
+      } catch (error) {
+        console.error("Error fetching reactions:", error);
+      }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, [postRef]);
 
-  const toggleReaction = async (reactionType) => {
-    const user = auth.currentUser;
-    if (!user) {
-      return; // Redirect if user is not authenticated
-    }
-    const batch = writeBatch(firestore);
+  const toggleReaction = useCallback(
+    async (reactionType) => {
+      const user = auth.currentUser;
+      if (!user) {
+        return; // Redirect if user is not authenticated
+      }
+      const batch = writeBatch(firestore);
 
-    try {
-      const reactionDocRef = doc(
-        firestore,
-        postRef.path,
-        "reactions",
-        user.uid
-      );
+      try {
+        const reactionDocRef = doc(
+          firestore,
+          postRef.path,
+          "reactions",
+          user.uid
+        );
 
-      const reactionDocSnap = await getDoc(reactionDocRef);
-      const currentReactions = reactionDocSnap.exists()
-        ? reactionDocSnap.data().reactions || {}
-        : {};
+        const reactionDocSnap = await getDoc(reactionDocRef);
+        const currentReactions = reactionDocSnap.exists()
+          ? reactionDocSnap.data().reactions || {}
+          : {};
 
-      const isReacted = currentReactions[reactionType] === true;
+        const isReacted = currentReactions[reactionType] === true;
 
-      const updatedReactions = {
-        ...currentReactions,
-        [reactionType]: !isReacted,
-      };
-      batch.set(
-        reactionDocRef,
-        {
-          reactions: updatedReactions,
-        },
-        { merge: true }
-      );
+        const updatedReactions = {
+          ...currentReactions,
+          [reactionType]: !isReacted,
+        };
+        batch.set(
+          reactionDocRef,
+          {
+            reactions: updatedReactions,
+          },
+          { merge: true }
+        );
 
-      const reactionIncrement = isReacted ? -1 : 1;
-      batch.update(postRef, {
-        [`reactions.${reactionType}`]: increment(reactionIncrement),
-        reactionsCount: increment(reactionIncrement),
-      });
+        const reactionIncrement = isReacted ? -1 : 1;
+        batch.update(postRef, {
+          [`reactions.${reactionType}`]: increment(reactionIncrement),
+          reactionsCount: increment(reactionIncrement),
+        });
 
-      await batch.commit();
-    } catch (error) {
-      console.error("Error updating reactions:", error);
-    }
-  };
+        await batch.commit();
+      } catch (error) {
+        console.error("Error updating reactions:", error);
+      }
+    },
+    [postRef]
+  );
 
   return (
     <Popover open={isHovering} onOpenChange={setIsHovering}>
