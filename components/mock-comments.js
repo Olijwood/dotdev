@@ -1,12 +1,3 @@
-"use client";
-
-import { CommentsSection } from "./comments-section";
-
-const mockUser = {
-  name: "John Doe",
-  image: "/placeholder.svg",
-};
-
 /* 
 displayName
 "Hello World"
@@ -162,7 +153,3 @@ export const mockComments = [
     ],
   },
 ];
-
-export function Page() {
-  return <CommentsSection initialComments={mockComments} user={mockUser} />;
-}

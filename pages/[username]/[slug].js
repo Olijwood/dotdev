@@ -10,7 +10,7 @@ import { useDocumentData } from "react-firebase-hooks/firestore";
 import { collectionGroup, doc, getDoc, getDocs } from "firebase/firestore";
 import PostToolbar from "@/components/PostToolbar";
 import { CommentsSection } from "@/components/comments-section";
-import { mockComments } from "@/components/example-usage";
+import { mockComments } from "@/components/mock-comments";
 
 export async function getStaticProps({ params }) {
   const { username, slug } = params;
