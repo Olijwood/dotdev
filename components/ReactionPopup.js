@@ -38,92 +38,66 @@ export default function ReactionPopup({
   const [reactionCount, setReactionCount] = useState(0);
   const [hasHearted, setHasHearted] = useState(false);
   const [userReactions, setUserReactions] = useState({});
-  // Fetch reactions in real-time
-  useEffect(() => {
-    if (!postRef) {
-      return;
-    }
-    const unsubscribe = onSnapshot(postRef, async (document) => {
-      const data = document.data();
-      const reactionsData = data?.reactions || {};
-      const reactionsCount = data?.reactionsCount || 0;
 
-      setReactions(reactionsData);
-      setReactionCount(reactionsCount);
+  useEffect(() => {
+    if (!postRef) return;
+
+    const unsubscribe = onSnapshot(postRef, (document) => {
+      const data = document.data();
+      setReactions(data?.reactions || {});
+      setReactionCount(data?.reactionsCount || 0);
 
       const user = auth.currentUser;
+      if (!user || !postRef.path) return;
 
-      if (!user || !postRef.path) {
-        return;
-      }
-      try {
-        const reactionsDocRef = doc(
-          firestore,
-          postRef.path,
-          "reactions",
-          user?.uid
-        );
-
-        const reactionsDocSnap = await getDoc(reactionsDocRef);
-        if (reactionsDocSnap.exists()) {
-          setHasHearted(reactionsDocSnap.data().reactions?.heart || false);
-          setUserReactions(reactionsDocSnap.data().reactions || {});
-        }
-      } catch (error) {
-        console.error("Error fetching reactions:", error);
-      }
+      const reactionsDocRef = doc(
+        firestore,
+        postRef.path,
+        "reactions",
+        user.uid
+      );
+      getDoc(reactionsDocRef)
+        .then((reactionsDocSnap) => {
+          if (reactionsDocSnap.exists()) {
+            setHasHearted(reactionsDocSnap.data().reactions?.heart || false);
+            setUserReactions(reactionsDocSnap.data().reactions || {});
+          }
+        })
+        .catch(console.error);
     });
 
-    return () => {
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, [postRef]);
 
   const toggleReaction = useCallback(
     async (reactionType) => {
       const user = auth.currentUser;
-      if (!user) {
-        return; // Redirect if user is not authenticated
-      }
+      if (!user) return;
+
+      const reactionDocRef = doc(
+        firestore,
+        postRef.path,
+        "reactions",
+        user.uid
+      );
+      const reactionDocSnap = await getDoc(reactionDocRef);
+      const currentReactions = reactionDocSnap.exists()
+        ? reactionDocSnap.data().reactions || {}
+        : {};
+      const isReacted = currentReactions[reactionType] === true;
+
       const batch = writeBatch(firestore);
+      batch.set(
+        reactionDocRef,
+        { reactions: { ...currentReactions, [reactionType]: !isReacted } },
+        { merge: true }
+      );
+      batch.update(postRef, {
+        [`reactions.${reactionType}`]: increment(isReacted ? -1 : 1),
+        reactionsCount: increment(isReacted ? -1 : 1),
+      });
 
-      try {
-        const reactionDocRef = doc(
-          firestore,
-          postRef.path,
-          "reactions",
-          user.uid
-        );
-
-        const reactionDocSnap = await getDoc(reactionDocRef);
-        const currentReactions = reactionDocSnap.exists()
-          ? reactionDocSnap.data().reactions || {}
-          : {};
-
-        const isReacted = currentReactions[reactionType] === true;
-
-        const updatedReactions = {
-          ...currentReactions,
-          [reactionType]: !isReacted,
-        };
-        batch.set(
-          reactionDocRef,
-          {
-            reactions: updatedReactions,
-          },
-          { merge: true }
-        );
-
-        const reactionIncrement = isReacted ? -1 : 1;
-        batch.update(postRef, {
-          [`reactions.${reactionType}`]: increment(reactionIncrement),
-          reactionsCount: increment(reactionIncrement),
-        });
-
-        await batch.commit();
-      } catch (error) {
-        console.error("Error updating reactions:", error);
-      }
+      await batch.commit().catch(console.error);
     },
     [postRef]
   );
@@ -138,10 +112,10 @@ export default function ReactionPopup({
         >
           {reactionCount > 0 && isListView ? (
             <>
-              <div className="flex -space-x-1 ">
+              <div className="flex -space-x-1">
                 {Object.entries(reactions)
                   .filter(([_, count]) => count > 0)
-                  .map(([type, count]) => (
+                  .map(([type]) => (
                     <span key={type} className="text-sm">
                       {reactionsList.find((r) => r.type === type)?.emoji}{" "}
                     </span>
@@ -171,7 +145,7 @@ export default function ReactionPopup({
         className="w-full p-2"
         align={isSmallScreen ? "start" : "center"}
         side={isSmallScreen ? "bottom" : "right"}
-        sideOffset={isSmallScreen ? 8 : 8}
+        sideOffset={8}
         alignOffset={isSmallScreen ? 0 : 8}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
@@ -183,14 +157,14 @@ export default function ReactionPopup({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={
-                    userReactions?.[type]
-                      ? "flex flex-col items-center p-2 h-auto bg-neutral-100 border-b-gray-500 border-b-2"
-                      : "flex flex-col items-center p-2 h-auto"
-                  }
+                  className={`flex flex-col items-center p-2 h-auto ${
+                    userReactions[type]
+                      ? "bg-neutral-100 border-b-gray-500 border-b-2"
+                      : ""
+                  }`}
                   onClick={() => {
                     toggleReaction(type);
-                    // setIsHovering(false);
+                    setTimeout(() => setIsHovering(false), 1000);
                   }}
                 >
                   <span className="text-xl mb-1">{emoji}</span>

@@ -24,6 +24,7 @@ export default function PostActions({
   minutesToRead = 0,
 }) {
   const [saved, setSaved] = useState(false);
+  console.log("saved", saved);
   const postRef = doc(firestore, `users/${postUid}/posts/${slug}`);
   const isAuthor = auth.currentUser?.uid === postUid;
   return (
@@ -77,9 +78,10 @@ export default function PostActions({
                 variant="ghost"
                 size="sm"
                 onClick={() => setSaved(!saved)}
-                className={saved ? "text-primary" : ""}
               >
-                <BookmarkIcon className="h-4 w-4" />
+                <BookmarkIcon
+                  className={`h-4 w-4 ${saved ? "fill-black" : ""}`}
+                />
               </Button>
             </TooltipTrigger>
             <TooltipContent>

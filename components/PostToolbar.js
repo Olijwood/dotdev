@@ -46,7 +46,7 @@ export default function PostToolbar({ post, postRef, isAuthor }) {
         <Tooltip>
           <TooltipTrigger asChild>
             <button className="bar-b">
-              <MessageCircleIcon className=".bar-i" />
+              <MessageCircleIcon className="bar-i" />
               <span className="text-md ">{post.commentCount}</span>
             </button>
           </TooltipTrigger>
@@ -57,8 +57,8 @@ export default function PostToolbar({ post, postRef, isAuthor }) {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="bar-b">
-              <BookmarkIcon className=".bar-i" />
+            <button className="bar-b" onClick={() => setSaved(!saved)}>
+              <BookmarkIcon className={`bar-i ${saved ? "fill-black" : ""}`} />
               <span className="text-md ">{post.saveCount}</span>
             </button>
           </TooltipTrigger>
@@ -72,7 +72,7 @@ export default function PostToolbar({ post, postRef, isAuthor }) {
             <TooltipTrigger asChild>
               <Link href={`/admin/${post.slug}`}>
                 <button className="bar-b">
-                  <PencilIcon className=".bar-i" />
+                  <PencilIcon className="bar-i" />
                 </button>
               </Link>
             </TooltipTrigger>
