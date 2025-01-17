@@ -6,17 +6,38 @@ import { Heart, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { CommentForm } from "./comment-form";
 
-export function Comment({ comment, onReply, onLike, user }) {
+export function Comment({
+  comment,
+  onReply,
+  onLike,
+  user,
+  activeReplyFormId,
+  setActiveReplyFormId,
+}) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [liked, setLiked] = useState(false);
+  const isReplyFormActive = activeReplyFormId === comment.id;
 
   const handleLike = () => {
     setLiked(!liked);
     onLike?.(comment.id);
   };
 
+  const handleReplyClick = () => {
+    if (isReplyFormActive) {
+      setActiveReplyFormId(null);
+    } else {
+      setActiveReplyFormId(comment.id);
+    }
+  };
+
   const handleReply = (replyData) => {
     onReply?.(comment.id, replyData);
+    // setShowReplyForm(false);
+    setActiveReplyFormId(null);
+  };
+
+  const handleCloseReplies = () => {
     setShowReplyForm(false);
   };
 
@@ -54,7 +75,7 @@ export function Comment({ comment, onReply, onLike, user }) {
                 variant="ghost"
                 size="sm"
                 className="flex items-center gap-1"
-                onClick={() => setShowReplyForm(!showReplyForm)}
+                onClick={handleReplyClick}
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>{comment.replies?.length || 0}</span>
@@ -63,8 +84,8 @@ export function Comment({ comment, onReply, onLike, user }) {
           </div>
         </div>
       </div>
-      {showReplyForm && (
-        <div className="ml-14">
+      {isReplyFormActive && (
+        <div className="ml-6">
           <CommentForm
             onSubmit={handleReply}
             placeholder="Write a reply..."
@@ -82,6 +103,8 @@ export function Comment({ comment, onReply, onLike, user }) {
               onLike={onLike}
               user={user}
               onReply={null}
+              activeReplyFormId={activeReplyFormId}
+              setActiveReplyFormId={setActiveReplyFormId}
             />
           ))}
         </div>

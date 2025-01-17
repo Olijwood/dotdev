@@ -4,6 +4,7 @@ import { Comment } from "./comment";
 
 export function CommentsSection({ initialComments = [], user }) {
   const [comments, setComments] = useState(initialComments);
+  const [activeReplyFormId, setActiveReplyFormId] = useState(null);
 
   const handleNewComment = (commentData) => {
     const newComment = {
@@ -34,6 +35,7 @@ export function CommentsSection({ initialComments = [], user }) {
         return comment;
       })
     );
+    setActiveReplyFormId(null); // Close reply form after submitting
   };
 
   const handleLike = (commentId) => {
@@ -65,6 +67,8 @@ export function CommentsSection({ initialComments = [], user }) {
             onReply={handleReply}
             onLike={handleLike}
             user={user}
+            activeReplyFormId={activeReplyFormId}
+            setActiveReplyFormId={setActiveReplyFormId}
           />
         ))}
       </div>
