@@ -9,6 +9,8 @@ import {
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { collectionGroup, doc, getDoc, getDocs } from "firebase/firestore";
 import PostToolbar from "@/components/PostToolbar";
+import { CommentsSection } from "@/components/comments-section";
+import { mockComments } from "@/components/example-usage";
 
 export async function getStaticProps({ params }) {
   const { username, slug } = params;
@@ -34,12 +36,18 @@ export default function Post(props) {
 
   const post = realTimePost || props.post;
   const isAuthor = auth.currentUser?.uid === post.uid;
+  const user = auth.currentUser;
   return (
     <main className="styles.container">
       {/* <PostDetailActions postUid={post.uid} slug={post.slug} commentCount={0} /> */}
       <PostToolbar post={post} postRef={postRef} isAuthor={isAuthor} />
       <section>
         <PostContent post={post} />
+      </section>
+      <section className="mt-4">
+        <div className="card">
+          <CommentsSection initialComments={mockComments} user={user} />
+        </div>
       </section>
     </main>
   );
