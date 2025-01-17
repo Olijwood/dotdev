@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { firestore, auth } from "@/lib/firebase";
 import {
   increment,
@@ -19,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { set } from "react-hook-form";
 
 const reactionsList = [
   { type: "heart", emoji: "❤️" },
@@ -27,39 +28,42 @@ const reactionsList = [
   { type: "thumbs up", emoji: "👍" },
 ];
 
-export default function ReactionPopup({ postRef, isListView = true }) {
+export default function ReactionPopup({
+  postRef,
+  isListView = true,
+  isSmallScreen = true,
+}) {
   const [isHovering, setIsHovering] = useState(false);
   const [reactions, setReactions] = useState({});
   const [reactionCount, setReactionCount] = useState(0);
   const [hasHearted, setHasHearted] = useState(false);
-
+  const [userReactions, setUserReactions] = useState({});
   // Fetch reactions in real-time
   useEffect(() => {
-    const fetchData = async () => {
-      const unsubscribe = onSnapshot(postRef, async (document) => {
-        const data = document.data();
-        const reactionsData = data?.reactions || {};
-        const reactionsCount = data?.reactionsCount || 0;
+    if (!postRef) return;
+    const unsubscribe = onSnapshot(postRef, async (document) => {
+      const data = document.data();
+      const reactionsData = data?.reactions || {};
+      const reactionsCount = data?.reactionsCount || 0;
 
-        const user = auth.currentUser;
-        const reactionDocRef = doc(
-          firestore,
-          postRef.path,
-          "reactions",
-          user.uid
-        );
+      const user = auth.currentUser;
+      const reactionDocRef = doc(
+        firestore,
+        postRef.path,
+        "reactions",
+        user.uid
+      );
 
-        const reactionDocSnap = await getDoc(reactionDocRef);
-        if (reactionDocSnap.exists())
-          setHasHearted(reactionDocSnap.data().reactions?.heart || false); // Set hasHearted based on the reaction document reactionDocSnap.data() : {});
-        setReactions(reactionsData);
-        setReactionCount(reactionsCount);
-      });
+      const reactionDocSnap = await getDoc(reactionDocRef);
+      if (reactionDocSnap.exists()) {
+        setHasHearted(reactionDocSnap.data().reactions?.heart || false);
+        setUserReactions(reactionDocSnap.data().reactions || {});
+      } // Set hasHearted based on the reaction document reactionDocSnap.data() : {});
+      setReactions(reactionsData);
+      setReactionCount(reactionsCount);
+    });
 
-      return unsubscribe;
-    };
-
-    fetchData();
+    return unsubscribe;
   }, [postRef]);
 
   const toggleReaction = async (reactionType) => {
@@ -149,7 +153,10 @@ export default function ReactionPopup({ postRef, isListView = true }) {
       </PopoverTrigger>
       <PopoverContent
         className="w-full p-2"
-        align="start"
+        align={isSmallScreen ? "start" : "center"}
+        side={isSmallScreen ? "bottom" : "right"}
+        sideOffset={isSmallScreen ? 8 : 8}
+        alignOffset={isSmallScreen ? 0 : 8}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
@@ -160,7 +167,11 @@ export default function ReactionPopup({ postRef, isListView = true }) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex flex-col items-center p-2 h-auto"
+                  className={
+                    userReactions?.[type]
+                      ? "flex flex-col items-center p-2 h-auto bg-neutral-100 border-b-gray-500 border-b-2"
+                      : "flex flex-col items-center p-2 h-auto"
+                  }
                   onClick={() => {
                     toggleReaction(type);
                     // setIsHovering(false);

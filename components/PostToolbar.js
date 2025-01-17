@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BookmarkIcon,
   MessageCircleIcon,
@@ -20,20 +20,27 @@ export default function PostToolbar({ post, postRef, isAuthor }) {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth <= 900);
-    };
+    if (typeof window !== "undefined") {
+      const windowCurrent = window;
+      const checkScreenSize = () => {
+        setIsSmallScreen(windowCurrent.innerWidth <= 900);
+      };
 
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
+      checkScreenSize();
+      windowCurrent.addEventListener("resize", checkScreenSize);
+      return () => windowCurrent.removeEventListener("resize", checkScreenSize);
+    }
   }, []);
 
   return (
     <TooltipProvider>
       <div className={isSmallScreen ? "bbar-container" : "sidebar-container"}>
         <div className="relative">
-          <ReactionPopup postRef={postRef} isListView={false} />
+          <ReactionPopup
+            postRef={postRef}
+            isListView={false}
+            isSmallScreen={isSmallScreen}
+          />
         </div>
 
         <Tooltip>
