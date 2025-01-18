@@ -24,7 +24,6 @@ export default function PostActions({
   minutesToRead = 0,
 }) {
   const [saved, setSaved] = useState(false);
-  console.log("saved", saved);
   const postRef = doc(firestore, `users/${postUid}/posts/${slug}`);
   const isAuthor = auth.currentUser?.uid === postUid;
   return (

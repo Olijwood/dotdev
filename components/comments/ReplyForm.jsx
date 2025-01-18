@@ -1,48 +1,45 @@
+import { useState, useContext } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { UserContext } from "@/lib/context";
+import Image from "next/image";
 
-export function CommentForm({
-  onSubmit,
-  placeholder = "Add to the discussion",
-  user,
-}) {
+export default function ReplyForm({ onSubmit, onCancel }) {
   const [content, setContent] = useState("");
+  const { user } = useContext(UserContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim()) return;
 
-    onSubmit({
-      content,
-      createdAt: new Date().toISOString(),
-      user: {
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-      },
-      isReply: false,
-      likes: 0,
-      replies: [],
-    });
+    onSubmit({ content });
     setContent("");
   };
-  console.log(user);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex gap-4">
         <Avatar className="w-10 h-10">
-          <AvatarImage src={user?.photoURL || "/hacker.png"} />
+          <Image
+            src={user?.photoURL || "/hacker.png"}
+            width={100}
+            height={100}
+          />
           <AvatarFallback>{user?.displayName[0] || "U"}</AvatarFallback>
         </Avatar>
-        <Textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder={placeholder}
-          className="min-h-[100px]"
-        />
       </div>
+      <Textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="Write a reply..."
+        className="w-full min-h-[50px] p-2 border rounded"
+      />
+
       <div className="flex justify-end">
+        <Button class="mr-2" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button type="submit" disabled={!content.trim()}>
           Submit
         </Button>

@@ -28,7 +28,7 @@ function PostItem({ post, admin = false }) {
         <PostActions
           postUid={post.uid}
           slug={post.slug}
-          commentCount={0}
+          commentCount={post.commentCount}
           minutesToRead={minutesToRead}
         />
       </div>

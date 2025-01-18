@@ -6,7 +6,6 @@ import ProfileDropdown from "./ProfileDropdown";
 // Top navbar
 export default function Navbar() {
   const { user, username } = useContext(UserContext);
-
   return (
     <nav className="fixed top-0 w-full bg-white text-black font-bold border-b border-gray-300 z-50">
       <ul className="flex items-center justify-between h-[70px] px-[10vw]">

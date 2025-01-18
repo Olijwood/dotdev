@@ -9,8 +9,7 @@ import {
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { collectionGroup, doc, getDoc, getDocs } from "firebase/firestore";
 import PostToolbar from "@/components/PostToolbar";
-import { CommentsSection } from "@/components/comments-section";
-import { mockComments } from "@/components/mock-comments";
+import CommentsSection from "@/components/comments/CommentsSection";
 
 export async function getStaticProps({ params }) {
   const { username, slug } = params;
@@ -46,7 +45,7 @@ export default function Post(props) {
       </section>
       <section className="mt-4">
         <div className="card">
-          <CommentsSection initialComments={mockComments} user={user} />
+          <CommentsSection postPath={postRef.path} />
         </div>
       </section>
     </main>
