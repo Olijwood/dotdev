@@ -22,7 +22,7 @@
     }
 
     .sidebar-container button {
-        @apply flex-col;
+        @apply flex-col items-center;
     }
 
     .bar-i {

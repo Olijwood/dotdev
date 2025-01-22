@@ -94,14 +94,14 @@ export default function PostActions({
                         </TooltipContent>
                     </Tooltip>
 
-                    {minutesToRead && !isAdmin
-                        ? minutesToRead > 0 && (
-                              <span className="text-sm text-muted-foreground ml-auto ">
-                                  {minutesToRead} min read
-                              </span>
-                          )
-                        : ""}
                     <div className="flex items-center ml-auto ">
+                        {minutesToRead && !isAdmin
+                            ? minutesToRead > 0 && (
+                                  <span className="text-sm text-muted-foreground  ">
+                                      {minutesToRead} min read
+                                  </span>
+                              )
+                            : ""}
                         {isAdmin ? (
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -142,7 +142,7 @@ export default function PostActions({
                                     onClick={handleSaveToggle}
                                 >
                                     <BookmarkIcon
-                                        className={`h-4 w-4 ${
+                                        className={`h-4 w-4 fill-none hover:fill-gray-900 ${
                                             saved ? "fill-black" : ""
                                         }`}
                                     />
