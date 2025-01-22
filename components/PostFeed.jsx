@@ -1,13 +1,15 @@
 import Link from "next/link";
 import PostActions from "./PostActions";
 
-export default function PostFeed({ posts }) {
+export default function PostFeed({ posts, isAdmin = false }) {
     return posts
-        ? posts.map((post) => <PostItem post={post} key={post.slug} />)
+        ? posts.map((post) => (
+              <PostItem post={post} key={post.slug} isAdmin={isAdmin} />
+          ))
         : null;
 }
 
-function PostItem({ post }) {
+function PostItem({ post, isAdmin = false }) {
     const wordCount = post?.content.trim().split(/\s+/g).length;
     const minutesToRead = (wordCount / 100 + 1).toFixed(0);
     return (
@@ -28,6 +30,7 @@ function PostItem({ post }) {
                     slug={post.slug}
                     saveCount={post.saveCount}
                     minutesToRead={minutesToRead}
+                    isAdmin={isAdmin}
                 />
             </div>
         </div>

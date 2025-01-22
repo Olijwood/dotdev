@@ -1,6 +1,12 @@
 import ReactionPopup from "./ReactionPopup";
 import { useState, useEffect, useContext } from "react";
-import { BookmarkIcon, MessageCircle, Heart, PencilIcon } from "lucide-react";
+import {
+    BookmarkIcon,
+    MessageCircle,
+    Heart,
+    PencilIcon,
+    Trash2Icon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     getUserWithUsername,
@@ -16,7 +22,12 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { savePost, unsavePost, checkIfPostIsSaved } from "@/lib/firestoreUtils";
+import {
+    savePost,
+    unsavePost,
+    checkIfPostIsSaved,
+    useDeletePost,
+} from "@/lib/firestoreUtils";
 import { UserContext } from "@/lib/context";
 
 export default function PostActions({
@@ -24,12 +35,13 @@ export default function PostActions({
     slug,
     commentCount = 0,
     minutesToRead = 0,
+    isAdmin = false,
 }) {
     const [saved, setSaved] = useState(false);
     const postRef = doc(firestore, `posts/${slug}`);
     const { user } = useContext(UserContext);
     const isAuthor = auth.currentUser?.uid === postUid;
-
+    const { openModal, modal } = useDeletePost();
     useEffect(() => {
         const checkIfSaved = async () => {
             if (!user) {
@@ -59,71 +71,91 @@ export default function PostActions({
     };
 
     return (
-        <TooltipProvider>
-            <div className="flex items-center gap-2 p-2 border-t">
-                <ReactionPopup postRef={postRef} />
+        <>
+            <TooltipProvider>
+                <div className="flex items-center gap-2 p-2 border-t">
+                    <ReactionPopup postRef={postRef} />
 
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="flex items-center gap-2"
-                        >
-                            <MessageCircle className="h-4 w-4" />
-                            <span className="text-sm text-muted-foreground">
-                                {commentCount}
-                            </span>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Comments</p>
-                    </TooltipContent>
-                </Tooltip>
-
-                {minutesToRead
-                    ? minutesToRead > 0 && (
-                          <span className="text-sm text-muted-foreground ml-auto ">
-                              {minutesToRead} min read
-                          </span>
-                      )
-                    : ""}
-                <div className="flex items-center ">
-                    {isAuthor ? (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Link href={`/admin/${slug}`}>
-                                    <Button variant="ghost" size="sm">
-                                        <PencilIcon className="h-4 w-4" />
-                                    </Button>
-                                </Link>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Edit</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    ) : null}
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
                                 variant="ghost"
-                                className="flex items-center gap-1"
                                 size="sm"
-                                onClick={handleSaveToggle}
+                                className="flex items-center gap-2"
                             >
-                                <BookmarkIcon
-                                    className={`h-4 w-4 ${
-                                        saved ? "fill-black" : ""
-                                    }`}
-                                />
+                                <MessageCircle className="h-4 w-4" />
+                                <span className="text-sm text-muted-foreground">
+                                    {commentCount}
+                                </span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{saved ? "Saved" : "Save"}</p>
+                            <p>Comments</p>
                         </TooltipContent>
                     </Tooltip>
+
+                    {minutesToRead && !isAdmin
+                        ? minutesToRead > 0 && (
+                              <span className="text-sm text-muted-foreground ml-auto ">
+                                  {minutesToRead} min read
+                              </span>
+                          )
+                        : ""}
+                    <div className="flex items-center ml-auto ">
+                        {isAdmin ? (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => openModal(postRef)}
+                                    >
+                                        <Trash2Icon className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Delete</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : null}
+                        {isAuthor ? (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Link href={`/admin/${slug}`}>
+                                        <Button variant="ghost" size="sm">
+                                            <PencilIcon className="h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Edit</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : null}
+
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    className="flex items-center gap-1"
+                                    size="sm"
+                                    onClick={handleSaveToggle}
+                                >
+                                    <BookmarkIcon
+                                        className={`h-4 w-4 ${
+                                            saved ? "fill-black" : ""
+                                        }`}
+                                    />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{saved ? "Saved" : "Save"}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
                 </div>
-            </div>
-        </TooltipProvider>
+            </TooltipProvider>
+            {modal}
+        </>
     );
 }

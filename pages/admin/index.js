@@ -52,7 +52,7 @@ function PostList() {
             {loading ? (
                 <p>Loading posts...</p>
             ) : (
-                <PostFeed posts={posts || []} />
+                <PostFeed posts={posts || []} isAdmin={true} />
             )}
         </>
     );

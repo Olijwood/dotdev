@@ -29,6 +29,10 @@
         @apply w-6 h-6 flex items-center gap-4;
     }
 
+    .confirm-delete {
+        @apply bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 font-semibold;
+    }
+
     .card {
         @apply p-5 max-w-xl border border-gray-300 bg-white rounded-xl;
     }
@@ -42,6 +46,31 @@
     }
 }
 
+.confirm-delete {
+    background-color: rgb(239, 68, 68, 0.8);
+    color: white;
+
+    border-radius: 0.25rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+.confirm-delete:hover {
+    background-color: rgb(239, 68, 68, 1);
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+}
+
+.controls textarea {
+    height: 60vh;
+    border: none;
+    outline: none;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+}
 :root {
     --color-bg: #eef0f1;
     --color-text: #08090a;
