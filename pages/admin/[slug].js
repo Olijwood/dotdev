@@ -4,7 +4,15 @@ import styles from "@/styles/Admin.module.css";
 import { firestore, auth } from "@/lib/firebase";
 
 import { useState } from "react";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  serverTimestamp,
+  query,
+  collection,
+  where,
+  limit,
+} from "firebase/firestore";
 import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
@@ -27,7 +35,8 @@ function PostManager() {
   const router = useRouter();
   const { slug } = router.query;
 
-  const postRef = doc(firestore, `users/${auth.currentUser.uid}/posts/${slug}`);
+  const postRef = doc(firestore, "posts", slug);
+
   const [post] = useDocumentDataOnce(postRef);
 
   return (

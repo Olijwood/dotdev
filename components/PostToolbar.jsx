@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import {
   BookmarkIcon,
   MessageCircleIcon,
@@ -14,10 +14,29 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
+import { savePost, unsavePost, checkIfPostIsSaved } from "@/lib/firestoreUtils";
+import { auth } from "@/lib/firebase";
+import { UserContext } from "@/lib/context";
 
 export default function PostToolbar({ post, postRef, isAuthor }) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [saved, setSaved] = useState(false);
+  const { user } = useContext(UserContext);
+
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        const isSaved = await checkIfPostIsSaved(user.uid, post.slug);
+        setSaved(isSaved);
+      } catch (error) {
+        console.error("Error checking if post is saved:", error);
+      }
+    };
+    checkIfSaved();
+  }, [user, post]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -31,6 +50,19 @@ export default function PostToolbar({ post, postRef, isAuthor }) {
       return () => windowCurrent.removeEventListener("resize", checkScreenSize);
     }
   }, []);
+
+  const handleSaveToggle = async () => {
+    try {
+      if (saved) {
+        await unsavePost(auth.currentUser.uid, post.slug);
+      } else {
+        await savePost(auth.currentUser.uid, post.slug, postRef.path);
+      }
+      setSaved(!saved);
+    } catch (error) {
+      console.error("Error toggling save:", error);
+    }
+  };
 
   return (
     <TooltipProvider>
@@ -57,7 +89,7 @@ export default function PostToolbar({ post, postRef, isAuthor }) {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="bar-b" onClick={() => setSaved(!saved)}>
+            <button className="bar-b" onClick={handleSaveToggle}>
               <BookmarkIcon className={`bar-i ${saved ? "fill-black" : ""}`} />
               <span className="text-md ">{post.saveCount}</span>
             </button>

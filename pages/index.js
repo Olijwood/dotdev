@@ -4,7 +4,7 @@ import Loader from "@/components/Loader";
 import PostFeed from "@/components/PostFeed";
 import { firestore, postToJSON, fromMillis } from "@/lib/firebase";
 import {
-  collectionGroup,
+  collection,
   where,
   orderBy,
   query,
@@ -19,7 +19,7 @@ const LIMIT = 8;
 
 export async function getServerSideProps(context) {
   const postsQuery = query(
-    collectionGroup(firestore, "posts"),
+    collection(firestore, "posts"),
     where("published", "==", true),
     orderBy("createdAt", "desc"),
     limit(LIMIT)
@@ -46,7 +46,7 @@ export default function Home(props) {
         : last.createdAt;
 
     const postsQuery = query(
-      collectionGroup(firestore, "posts"),
+      collection(firestore, "posts"),
       where("published", "==", true),
       orderBy("createdAt", "desc"),
       startAfter(cursor),

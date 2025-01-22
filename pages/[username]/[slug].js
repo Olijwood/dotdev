@@ -7,9 +7,10 @@ import {
   postToJSON,
 } from "@/lib/firebase";
 import { useDocumentData } from "react-firebase-hooks/firestore";
-import { collectionGroup, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import PostToolbar from "@/components/PostToolbar";
 import CommentsSection from "@/components/comments/CommentsSection";
+import { CommentsProvider } from "@/lib/commentsContext";
 
 export async function getStaticProps({ params }) {
   const { username, slug } = params;
@@ -19,7 +20,7 @@ export async function getStaticProps({ params }) {
   let path;
 
   if (userDoc) {
-    const postRef = doc(firestore, `users/${userDoc.id}/posts/${slug}`);
+    const postRef = doc(firestore, "posts", slug);
     post = postToJSON(await getDoc(postRef));
     path = postRef.path;
   }
@@ -35,17 +36,17 @@ export default function Post(props) {
 
   const post = realTimePost || props.post;
   const isAuthor = auth.currentUser?.uid === post.uid;
-  const user = auth.currentUser;
   return (
     <main className="styles.container">
-      {/* <PostDetailActions postUid={post.uid} slug={post.slug} commentCount={0} /> */}
       <PostToolbar post={post} postRef={postRef} isAuthor={isAuthor} />
       <section>
         <PostContent post={post} />
       </section>
       <section className="mt-4">
         <div className="card">
-          <CommentsSection postPath={postRef.path} />
+          <CommentsProvider postPath={postRef.path}>
+            <CommentsSection postPath={postRef.path} />
+          </CommentsProvider>
         </div>
       </section>
     </main>
@@ -53,7 +54,7 @@ export default function Post(props) {
 }
 
 export async function getStaticPaths() {
-  const snapshot = await getDocs(collectionGroup(firestore, "posts"));
+  const snapshot = await getDocs(collection(firestore, "posts"));
   const paths = snapshot.docs.map((doc) => {
     const { slug, username } = doc.data();
     return {

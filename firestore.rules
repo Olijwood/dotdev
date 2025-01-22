@@ -3,110 +3,145 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
+    // Top-level posts collection
+    match /posts/{postId} {
+      allow read: if true; // Publicly readable
+
+      allow create: if canCreatePost();
+      allow update: if canUpdatePost() || canUpdateReactions() || canUpdateCommentCount() || canUpdateSaveCount();
+      allow delete: if canDeletePost();
+
+      // Subcollection: reactions
+      match /reactions/{uid} {
+        allow read; // Publicly readable
+        allow write: if request.auth.uid == uid; // Allow users to update their own reactions
+        allow update: if request.auth.uid == uid;
+      }
+
+      // Subcollection: comments
+      match /comments/{commentId} {
+        allow read; // Publicly readable
+        allow create: if request.auth != null && isValidComment();
+        allow update: if (request.auth != null && isCommentOwner()) || canToggleLike();
+        allow delete: if request.auth != null && isCommentOwner();
       
-      // Required for collection group queries
-      match /posts/{postId} {
-      	allow read;
-
-        // Ensure reactions are incremented correctly and securely
-        allow update: if canUpdateReactions();
-
-        // Subcollection: reactions
-        match /reactions/{uid} {
-          allow read; // Allow reading reactions
-          allow write: if request.auth.uid == uid; // Allow users to update their own reactions
+        // Subcollection: replies
+        match /replies/{replyId} {
+          allow read; // Publicly readable
+          allow create: if request.auth != null && isValidReply();
+          allow update: if (request.auth != null && isCommentOwner()) || canToggleLike();
+          allow delete: if request.auth != null && isCommentOwner();
         }
       }
-      
-      match /users/{userId} {
-      	allow read;
-        allow create: if isValidUser(userId);
-      }
-      
-      match /usernames/{username} {
-      	allow read;
-        allow create: if isValidUsername(username);
-      }
-      
-      match /users/{userId}/posts/{postId} {
-      	allow read;
-        allow create: if canCreatePost(userId);
-        allow update: if canUpdatePost(userId) || canIncrementHearts(userId, postId);
-        allow delete: if request.auth.uid == userId;
-      }
-      
-      match /users/{userId}/posts/{postId}/hearts/{heartId} {
-      	allow read;
-        allow write: if request.auth.uid == heartId
-    	}
-      
-      // Posts
-      
-      function canCreatePost(userId) {
-        let isOwner = request.auth.uid == userId;
-        let isNow = request.time == request.resource.data.createdAt;
-        let isValidContent = request.resource.data.content.size() < 20000 && request.resource.data.heartCount == 0;
-        let username = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
-        let usernameMatches = username == request.resource.data.username;
+    }
 
-      	return isOwner && isNow && isValidContent && usernameMatches;
-      }
-      
-      function canUpdatePost(userId) {
-        let isOwner = request.auth.uid == userId;
-      	let isNow = request.time == request.resource.data.updatedAt;
-        let isValidContent = request.resource.data.content.size() < 20000;
-        let doesNotUpdateForbidden = !request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'username', 'heartCount']);
-        
-        return isOwner && isNow && isValidContent && doesNotUpdateForbidden;
-      }
-      
-      // Hearts 
-      
-      function canIncrementHearts(userId, postId) {
-				let hasValidFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['heartCount']);
-        let currentUser = request.auth.uid;
-				let heartDocExistsAfter = existsAfter(/databases/$(database)/documents/users/$(userId)/posts/$(postId)/hearts/$(currentUser));
-        let heartDocExists = exists(/databases/$(database)/documents/users/$(userId)/posts/$(postId)/hearts/$(currentUser));
-				
-        let heartDocAdded= !heartDocExists && heartDocExistsAfter;
-        let heartDocRemoved = heartDocExists && !heartDocExistsAfter;
+    // Users collection
+    match /users/{userId} {
+      allow read; // Publicly readable (e.g., user profiles)
+      allow create: if isValidUser(userId);
 
-        
-        let countChange = request.resource.data.heartCount - resource.data.heartCount;
-        let validChange = countChange == 1 || countChange == -1;
-
-        return hasValidFields && validChange && ( countChange == 1 ? heartDocAdded : heartDocRemoved );
+      // Saved posts subcollection
+      match /saved/{docId} {
+        allow read: if request.auth != null && request.auth.uid == userId; 
+        allow create: if canSavePost(userId);
+        allow delete: if request.auth != null && request.auth.uid == userId;
       }
+    }
 
-      // Reactions
+    // Usernames collection
+    match /usernames/{username} {
+      allow read; // Publicly readable
+      allow create: if isValidUsername(username);
+    }
+
+    // Functions
+    function canCreatePost() {
+    	let username = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
+      return request.auth != null &&
+        request.resource.data.content is string &&
+        request.resource.data.content.size() > 0 &&
+        request.resource.data.content.size() <= 20000 &&
+        request.resource.data.createdAt >= request.time &&
+        username == request.resource.data.username &&
+        request.resource.data.commentCount == 0 &&
+        request.resource.data.reactionCount == 0 &&
+        request.auth.uid == request.resource.data.uid;
+    }
+
+    function canUpdatePost() {
+      return request.auth != null &&
+       
+        request.resource.data.content is string &&
+        request.resource.data.content.size() <= 20000 &&
+        request.resource.data.updatedAt <= request.time &&
+        request.auth.uid == resource.data.uid &&
+      	!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'username']);
+    }
+
+    function canDeletePost() {
+      return request.auth.uid == resource.data.uid; // Only the post owner can delete
+    }
+
+    function canSavePost(userId) {
+      return request.auth.uid == userId &&
+        request.time <= request.resource.data.savedAt;
+    }
+
+    function isValidComment() {
+      return request.resource.data.keys().hasOnly(['content', 'createdAt', 'user', 'likes', 'likedBy', 'repliesCount']) &&
+        request.resource.data.content is string &&
+        request.resource.data.content.size() > 0 &&
+        request.resource.data.content.size() <= 10000 &&
+        request.resource.data.createdAt <= request.time &&
+        request.resource.data.likes == 0 &&
+        request.resource.data.repliesCount == 0 &&
+        request.resource.data.user.keys().hasOnly(['userId', 'displayName', 'photoURL']) &&
+        request.resource.data.user.displayName is string;
+    }
+
+    function isValidReply() {
+      return request.resource.data.keys().hasOnly(['content', 'createdAt', 'user', 'likes', 'likedBy']) &&
+        request.resource.data.content is string &&
+        request.resource.data.content.size() > 0 &&
+        request.resource.data.content.size() <= 10000 &&
+        request.resource.data.createdAt <= request.time &&
+        request.resource.data.likes == 0;
+    }
+    
+    function canToggleLike() {
+      let isAuth = request.auth != null;
+      let validFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        'likedBy',
+        'likes'
+      ]);
+      let likedByChanges = request.resource.data.likedBy.diff(resource.data.likedBy);
+  		let onlyUserChange = likedByChanges.addedKeys().hasOnly([request.auth.uid]) ||
+                       likedByChanges.removedKeys().hasOnly([request.auth.uid]);
+                       
+      let likesChange = request.resource.data.likes - resource.data.likes;
+  		let validLikesChange = likesChange == 1 || likesChange == -1;
+      
+      return isAuth && validFields && onlyUserChange && validLikesChange;
+  	}
+
+    function isCommentOwner() {
+      return request.auth.uid == resource.data.user.userId;
+    }
 
     function canUpdateReactions() {
-    let isAuth = request.auth != null;
+      let isAuth = request.auth != null;
+      
+      let validFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'reactionCount']);
 
-    let validFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'reactionsCount']);
+      let heartChange = request.resource.data.reactions.heart - resource.data.reactions.heart;
+      let clapChange = request.resource.data.reactions.clap - resource.data.reactions.clap;
+      let fireChange = request.resource.data.reactions.fire - resource.data.reactions.fire;
+      let thumbsUpChange = request.resource.data.reactions["thumbs up"] - resource.data.reactions["thumbs up"];
+     
+      let totalChange = heartChange + clapChange + fireChange + thumbsUpChange;
+      let reactionsCountChange = request.resource.data.reactionCount - resource.data.reactionCount;
 
-    // Validate that changes for each reaction type are either +1, -1, or 0
-    let heartChange = request.resource.data.reactions.heart - resource.data.reactions.heart;
-    let clapChange = request.resource.data.reactions.clap - resource.data.reactions.clap;
-    let fireChange = request.resource.data.reactions.fire - resource.data.reactions.fire;
-    let thumbsUpChange = request.resource.data.reactions["thumbs up"] - resource.data.reactions["thumbs up"];
-
-    let totalChange = heartChange + clapChange + fireChange + thumbsUpChange;
-    let reactionsCountChange = request.resource.data.reactionsCount - resource.data.reactionsCount;
-
-    // Ensure all changes are valid and the reactionsCount matches the sum of individual changes
-    return (
+      return (
         isAuth &&
         validFields &&
         (heartChange == 1 || heartChange == -1 || heartChange == 0) &&
@@ -114,35 +149,36 @@ service cloud.firestore {
         (fireChange == 1 || fireChange == -1 || fireChange == 0) &&
         (thumbsUpChange == 1 || thumbsUpChange == -1 || thumbsUpChange == 0) &&
         reactionsCountChange == totalChange
-    );
-}
+      );
+    }
+    
+    function canUpdateCommentCount() {
+      	let validFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commentCount']);
+        let deltaCommentCount = request.resource.data.commentCount - resource.data.commentCount;
+      	
+        return validFields && (deltaCommentCount == 1 || deltaCommentCount == -1);
+    }
+    
+    function canUpdateSaveCount() {
+    	let validFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['saveCount']);
+      let deltaSaveCount = request.resource.data.saveCount - resource.data.saveCount;
+      	
+      return validFields && (deltaSaveCount == 1 || deltaSaveCount == -1);
+    }
 
-   
+    function isValidUser(userId) {
+      return request.auth.uid == userId &&
+        request.resource.data.keys().hasOnly(['username', 'photoURL', 'createdAt']) &&
+        request.resource.data.username is string &&
+        request.resource.data.username.size() > 0 &&
+        request.resource.data.createdAt <= request.time;
+    }
 
-      
-      // Users
-
-       function isUser(uid) {
-        return request.auth != null && request.auth.uid == uid;
-      }
-
-      
-      function isValidUser(userId) {
-        let isOwner = request.auth.id == userId;
-        let username = request.resource.data.username;
-        let createdValidUsername = existsAfter(/databases/$(database)/documents/usernames/$(username));
-
-        return isOwner && createdValidUsername
-      }
-      
-       function isValidUsername(username) {
-        let isOwner = request.auth.id == request.resource.data.uid;
-        let isValidLength = username.size() >= 3 && username.size() <= 15;
-        let isValidUserDoc = getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username == username;
-
-        return isOwner && isValidLength && isValidUserDoc;
-      }
-     
+    function isValidUsername(username) {
+      return request.auth.uid == request.resource.data.uid &&
+        username.size() >= 3 &&
+        username.size() <= 15 &&
+        getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username == username;
     }
   }
 }

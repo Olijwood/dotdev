@@ -25,6 +25,7 @@ export default function ReplyForm({ onSubmit, onCancel }) {
             src={user?.photoURL || "/hacker.png"}
             width={100}
             height={100}
+            alt={`${user?.displayName} Profile Pic`}
           />
           <AvatarFallback>{user?.displayName[0] || "U"}</AvatarFallback>
         </Avatar>
@@ -37,7 +38,7 @@ export default function ReplyForm({ onSubmit, onCancel }) {
       />
 
       <div className="flex justify-end">
-        <Button class="mr-2" onClick={onCancel}>
+        <Button className="mr-2" onClick={onCancel}>
           Cancel
         </Button>
         <Button type="submit" disabled={!content.trim()}>
