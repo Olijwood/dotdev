@@ -12,10 +12,11 @@ import CreatePost from "@/components/CreatePost";
 
 export default function AdminPostsPage({}) {
     return (
-        <main>
+        <main className="flex flex-col">
             <Metatags title="Admin Posts" description="Admin Posts" />
             <AuthCheck>
                 <CreatePost />
+
                 <PostList />
             </AuthCheck>
         </main>

@@ -76,7 +76,7 @@ export default function CreateNewPost() {
             <h1 className="text-3xl font-semibold text-center mb-4">
                 Create a New Post
             </h1>
-            <div className="rounded-lg card mx-auto p-5  mb-6">
+            <div className="rounded-lg card mx-auto p-5 w-full mb-6">
                 <form
                     onSubmit={handleSubmit(createPost)}
                     className="space-y-4 text-center"

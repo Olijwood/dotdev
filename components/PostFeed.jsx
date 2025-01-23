@@ -2,19 +2,23 @@ import Link from "next/link";
 import PostActions from "./PostActions";
 
 export default function PostFeed({ posts, isAdmin = false }) {
-    return posts
-        ? posts.map((post) => (
-              <PostItem post={post} key={post.slug} isAdmin={isAdmin} />
-          ))
-        : null;
+    return (
+        <div className="flex flex-col w-full items-stretch self-center max-w-4xl">
+            {posts
+                ? posts.map((post) => (
+                      <PostItem post={post} key={post.slug} isAdmin={isAdmin} />
+                  ))
+                : null}
+        </div>
+    );
 }
 
 function PostItem({ post, isAdmin = false }) {
     const wordCount = post?.content.trim().split(/\s+/g).length;
     const minutesToRead = (wordCount / 100 + 1).toFixed(0);
     return (
-        <div className="max-w-xl mx-auto py-3">
-            <div className="rounded-lg border border-gray-300 bg-card max-w-xl">
+        <div className="w-full flex flex-col align-center py-3">
+            <div className="rounded-lg border border-gray-300 bg-card ">
                 <div className="p-4">
                     <Link href={`/${post.username}`}>
                         <h3>By @{post.username}</h3>
