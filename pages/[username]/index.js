@@ -4,40 +4,40 @@ import { firestore, getUserWithUsername, postToJSON } from "@/lib/firebase";
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 
 export async function getServerSideProps({ query: queryParams }) {
-  const { username } = queryParams;
+    const { username } = queryParams;
 
-  const userDoc = await getUserWithUsername(username);
+    const userDoc = await getUserWithUsername(username);
 
-  if (!userDoc) {
+    if (!userDoc) {
+        return {
+            notFound: true,
+        };
+    }
+    let user = null;
+    let posts = [];
+
+    if (userDoc) {
+        user = userDoc.data();
+        const postsQuery = query(
+            collection(firestore, "posts"),
+            where("username", "==", username),
+            where("published", "==", true),
+            orderBy("createdAt", "desc")
+        );
+
+        const postsSnapshot = await getDocs(postsQuery);
+        posts = postsSnapshot.docs.map(postToJSON);
+    }
     return {
-      notFound: true,
+        props: { user, posts },
     };
-  }
-  let user = null;
-  let posts = [];
-
-  if (userDoc) {
-    user = userDoc.data();
-    const postsQuery = query(
-      collection(firestore, "posts"),
-      where("username", "==", username),
-      where("published", "==", true),
-      orderBy("createdAt", "desc")
-    );
-
-    const postsSnapshot = await getDocs(postsQuery);
-    posts = postsSnapshot.docs.map(postToJSON);
-  }
-  return {
-    props: { user, posts },
-  };
 }
 
 export default function UserProfilePage({ user, posts }) {
-  return (
-    <main>
-      <UserProfile user={user} />
-      <PostFeed posts={posts} />
-    </main>
-  );
+    return (
+        <main className="flex flex-col gap-2">
+            <UserProfile user={user} />
+            <PostFeed posts={posts} />
+        </main>
+    );
 }
