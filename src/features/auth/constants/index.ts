@@ -2,6 +2,7 @@ import { BsGithub, BsGoogle } from "react-icons/bs";
 import { OAuthProvider } from "@/types";
 import {
     LoginStatus,
+    NewPasswordStatus,
     RegisterStatus,
     ResetPasswordStatus,
     VerificationStatus,
@@ -50,4 +51,12 @@ export const VERIFICATION_STATUS: VerificationStatus = {
     TOKEN_ERR: "Invalid token",
     CRED_ERR: "Invalid Credentials",
     EMAIL_VER_SUCCESS: "Email verified!",
+} as const;
+
+export const NEW_PASSWORD_STATUS: NewPasswordStatus = {
+    TOKEN_ERR: "Invalid token",
+    INPUT_ERR: "Invalid input",
+    CRED_ERR: "Invalid Credentials",
+    PASSWORD_ERR: "Passwords do not match",
+    SUCCESS: "Password updated!",
 } as const;

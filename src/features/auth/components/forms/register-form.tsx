@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { FormError } from "@/components/ui/form/form-error";
 import { FormSuccess } from "@/components/ui/form/form-success";
-import { Input } from "@/components/ui/input";
+import { EmailInput, NameInput, PasswordInput } from "@/components/ui/input";
 import { Social } from "@/features/auth/components/social";
 import { register } from "@/features/auth/server/actions";
 import { RegisterSchema } from "@/schemas";
@@ -56,8 +56,8 @@ const RegisterForm = () => {
 
     return (
         <CardWrapper
-            headerLabel="Create an account"
-            title="Register"
+            title="Create an account"
+            headerLabel=" "
             backButtonHref="/login"
             backButtonLabel="Already have an account? Log in"
         >
@@ -74,11 +74,7 @@ const RegisterForm = () => {
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder="johndoe@email.com"
-                                            type="email"
-                                        />
+                                        <EmailInput {...field} required />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -91,10 +87,7 @@ const RegisterForm = () => {
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder="John Doe"
-                                        />
+                                        <NameInput {...field} required />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -107,10 +100,10 @@ const RegisterForm = () => {
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input
+                                        <PasswordInput
                                             {...field}
                                             placeholder="******"
-                                            type="password"
+                                            newPassword
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -124,10 +117,10 @@ const RegisterForm = () => {
                                 <FormItem>
                                     <FormLabel>Confirm Password</FormLabel>
                                     <FormControl>
-                                        <Input
+                                        <PasswordInput
                                             {...field}
                                             placeholder="******"
-                                            type="password"
+                                            newPassword
                                         />
                                     </FormControl>
                                     <FormMessage />

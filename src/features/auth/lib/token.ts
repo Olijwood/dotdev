@@ -8,7 +8,6 @@ import {
 export const generateVerificationToken = async (email: string) => {
     const token = uuidv4();
     const expires = new Date(new Date().getTime() + 3600 * 1000);
-
     const exisitingToken = await getVerificationTokenByEmail(email);
 
     if (exisitingToken) {
@@ -24,6 +23,7 @@ export const generateVerificationToken = async (email: string) => {
             expires,
         },
     });
+
     return verificationToken;
 };
 

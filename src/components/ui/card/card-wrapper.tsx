@@ -20,7 +20,7 @@ const CardWrapper = ({
     title,
 }: CardWrapperProps) => {
     return (
-        <Card className="w-2/3 shadow-md md:w-1/2 xl:w-1/3 2xl:w-1/4">
+        <Card className="w-4/5 shadow-md md:w-1/2 xl:w-1/3 2xl:w-1/4">
             <CardHeader>
                 <CardHeaderSection label={headerLabel} title={title} />
             </CardHeader>

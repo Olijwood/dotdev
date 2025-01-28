@@ -1,18 +1,20 @@
-export const PRIVATE_ROUTES = ["/dashboard"];
+export const PRIVATE_ROUTES = ["/dashboard"] as const;
 
-export const PUBLIC_ROUTES = ["/", "/new-verification"];
+export type PublicRoute = "/" | "/new-verification";
+export const PUBLIC_ROUTES = ["/", "/new-verification"] as const;
 
-export type authRoute =
+export type AuthRoute =
     | "/login"
     | "/register"
     | "/auth-error"
-    | "/password-reset";
-
-export const AUTH_ROUTES: authRoute[] = [
+    | "/password-reset"
+    | "/new-password";
+export const AUTH_ROUTES = [
     "/login",
     "/register",
     "/auth-error",
     "/password-reset",
+    "/new-password",
 ] as const;
 
 export const DEFAULT_LOGIN_REDIRECT = "/" as const;

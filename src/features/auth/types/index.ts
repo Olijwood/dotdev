@@ -6,6 +6,7 @@ export type EMAIL_IN_USE = "Please use a different email address";
 export type EMAIL_RESET = "Reset email sent!";
 export type PASSWORD_MATCH = "Passwords do not match";
 export type TOKEN_ERR = "Invalid token";
+export type NEW_PASSWORD_SUCCESS = "Password updated!";
 
 export type ResetPasswordStatus = {
     ERROR: EMAIL_RESET;
@@ -30,4 +31,12 @@ export type VerificationStatus = {
     TOKEN_ERR: TOKEN_ERR;
     CRED_ERR: CRED_ERR;
     EMAIL_VER_SUCCESS: EMAIL_VER_SUCCESS;
+};
+
+export type NewPasswordStatus = {
+    TOKEN_ERR: TOKEN_ERR;
+    INPUT_ERR: INPUT_ERR;
+    CRED_ERR: CRED_ERR;
+    PASSWORD_ERR: PASSWORD_MATCH;
+    SUCCESS: NEW_PASSWORD_SUCCESS;
 };

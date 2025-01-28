@@ -21,7 +21,7 @@ export const resetPassword = async (
     const existingUser = await getUserByEmail(email);
 
     if (!existingUser) {
-        return { error: RESET_PASSWORD_STATUS.ERROR };
+        return { success: RESET_PASSWORD_STATUS.ERROR };
     }
 
     // TODO: Generate token & send email

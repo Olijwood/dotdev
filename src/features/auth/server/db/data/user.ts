@@ -35,4 +35,18 @@ const getUserByEmail = async (email: string) => {
     }
 };
 
-export { getAccountByUserId, getUserById, getUserByEmail };
+const updateUserPassword = async (id: string, password: string) => {
+    try {
+        const user = await db.user.update({
+            where: { id },
+            data: {
+                password,
+            },
+        });
+        return user;
+    } catch (error) {
+        logError("updateUserPassword", error);
+    }
+};
+
+export { getAccountByUserId, getUserById, getUserByEmail, updateUserPassword };

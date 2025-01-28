@@ -10,7 +10,7 @@ import { signIn } from "@/lib/auth";
 import { LoginSchema } from "../../../../schemas";
 import { getUserByEmail } from "../db/data";
 
-export const login = async (data: z.infer<typeof LoginSchema>) => {
+const login = async (data: z.infer<typeof LoginSchema>) => {
     const validatedData = LoginSchema.safeParse(data);
 
     if (!validatedData.success) {
@@ -59,3 +59,5 @@ export const login = async (data: z.infer<typeof LoginSchema>) => {
     }
     return { success: LOGIN_STATUS.SUCCESS };
 };
+
+export { login };

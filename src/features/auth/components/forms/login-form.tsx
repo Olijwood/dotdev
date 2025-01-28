@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { FormError } from "@/components/ui/form/form-error";
 import { FormSuccess } from "@/components/ui/form/form-success";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/input";
 import { Social } from "@/features/auth/components/social";
 import { login } from "@/features/auth/server/actions";
 import { LoginSchema } from "@/schemas";
@@ -60,8 +60,8 @@ const LoginForm = () => {
 
     return (
         <CardWrapper
-            headerLabel="Login to your account"
             title="Login"
+            headerLabel=" "
             backButtonHref="/register"
             backButtonLabel="Don't have an account? Register here."
         >
@@ -78,10 +78,9 @@ const LoginForm = () => {
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input
+                                        <PasswordInput
                                             {...field}
-                                            placeholder="johndoe@email.com"
-                                            type="email"
+                                            placeholder="******"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -96,10 +95,9 @@ const LoginForm = () => {
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input
+                                        <PasswordInput
                                             {...field}
                                             placeholder="******"
-                                            type="password"
                                         />
                                     </FormControl>
                                     <Button

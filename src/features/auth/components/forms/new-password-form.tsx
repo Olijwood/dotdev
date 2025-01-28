@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,27 +17,29 @@ import {
     FormError,
     FormSuccess,
 } from "@/components/ui/form";
-import { EmailInput } from "@/components/ui/input";
-import { resetPassword } from "@/features/auth/server/actions";
-import { ResetPasswordSchema } from "@/schemas";
+import { PasswordInput } from "@/components/ui/input";
+import { newPassword } from "@/features/auth/server/actions";
+import { NewPasswordSchema } from "@/schemas";
 import type { FormStatus } from "@/types";
 
-const ResetForm = () => {
+const NewPasswordForm = () => {
     const [status, setStatus] = useState<FormStatus>({
         state: "idle",
     });
-
-    const form = useForm<z.infer<typeof ResetPasswordSchema>>({
-        resolver: zodResolver(ResetPasswordSchema),
+    const form = useForm<z.infer<typeof NewPasswordSchema>>({
+        resolver: zodResolver(NewPasswordSchema),
         mode: "onSubmit",
         defaultValues: {
-            email: "",
+            password: "",
+            passwordConfirmation: "",
         },
     });
+    const searchParams = useSearchParams();
+    const token = searchParams.get("token");
 
-    const onSubmit = async (data: z.infer<typeof ResetPasswordSchema>) => {
+    const onSubmit = async (data: z.infer<typeof NewPasswordSchema>) => {
         setStatus({ state: "loading" });
-        resetPassword(data)
+        newPassword(data, token)
             .then((res) => {
                 if (res.error) {
                     setStatus({ state: "error", message: res.error });
@@ -53,7 +56,7 @@ const ResetForm = () => {
     const isLoading = status.state === "loading";
     const error = status.state === "error" ? status.message : "";
     const success = status.state === "success" ? status.message : "";
-    const cTitle = success ? "" : "Forgot password?";
+    const cTitle = success ? "" : "Enter a new password";
     return (
         <CardWrapper
             title={cTitle}
@@ -71,12 +74,31 @@ const ResetForm = () => {
                         <div className="space-y-4">
                             <FormField
                                 control={form.control}
-                                name="email"
+                                name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <EmailInput {...field} required />
+                                            <PasswordInput
+                                                {...field}
+                                                newPassword
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="passwordConfirmation"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Confirm Password</FormLabel>
+                                        <FormControl>
+                                            <PasswordInput
+                                                {...field}
+                                                newPassword
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -89,7 +111,7 @@ const ResetForm = () => {
                             className="w-full"
                             disabled={isLoading}
                         >
-                            {isLoading ? "Loading..." : "Send reset email"}
+                            {isLoading ? "Loading..." : "Submit"}
                         </Button>
                     </form>
                 </Form>
@@ -98,4 +120,4 @@ const ResetForm = () => {
     );
 };
 
-export default ResetForm;
+export default NewPasswordForm;

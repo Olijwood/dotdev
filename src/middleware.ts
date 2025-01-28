@@ -1,6 +1,11 @@
 import NextAuth from "next-auth";
 import authConfig from "@/config/auth.config";
-import { AUTH_ROUTES, type authRoute, PUBLIC_ROUTES } from "@/routes";
+import {
+    AUTH_ROUTES,
+    type AuthRoute,
+    type PublicRoute,
+    PUBLIC_ROUTES,
+} from "@/routes";
 
 const { auth } = NextAuth(authConfig);
 
@@ -8,9 +13,11 @@ export default auth(async function middleware(req) {
     const isLoggedIn = !!req.auth;
     const { nextUrl } = req;
 
-    const isAuthRoute = AUTH_ROUTES.includes(nextUrl.pathname as authRoute);
+    const isAuthRoute = AUTH_ROUTES.includes(nextUrl.pathname as AuthRoute);
     const isApiRoute = nextUrl.pathname.startsWith("/api");
-    const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
+    const isPublicRoute = PUBLIC_ROUTES.includes(
+        nextUrl.pathname as PublicRoute,
+    );
 
     if (isApiRoute) return;
 

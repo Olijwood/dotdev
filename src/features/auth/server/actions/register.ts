@@ -8,7 +8,7 @@ import { REGISTER_STATUS } from "../../constants";
 import { sendVerificationEmail } from "../../lib/mail";
 import { generateVerificationToken } from "../../lib/token";
 
-export const register = async (data: z.infer<typeof RegisterSchema>) => {
+const register = async (data: z.infer<typeof RegisterSchema>) => {
     try {
         const validatedData = RegisterSchema.parse(data);
 
@@ -67,3 +67,5 @@ export const register = async (data: z.infer<typeof RegisterSchema>) => {
         }
     }
 };
+
+export { register };

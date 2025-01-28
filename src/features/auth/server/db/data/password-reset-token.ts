@@ -21,3 +21,9 @@ export const getPasswordResetTokenByEmail = async (email: string) => {
         return null;
     }
 };
+
+export const deletePasswordResetTokenById = async (id: string) => {
+    await db.passwordResetToken.delete({
+        where: { id },
+    });
+};

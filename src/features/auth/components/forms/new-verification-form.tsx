@@ -41,11 +41,13 @@ export default function NewVerificationForm() {
 
     const success = status.state === "success" ? status.message : "";
     const error = status.state === "error" ? status.message : "";
+    const cTitle = success ? "" : "Email Confirmation";
+    const cHeaderLabel = success || error ? "" : "Confirming your email";
 
     return (
         <CardWrapper
-            title="Email Confirmation"
-            headerLabel="Confirming your email"
+            title={cTitle}
+            headerLabel={cHeaderLabel}
             backButtonLabel="Back to login"
             backButtonHref="/login"
         >
