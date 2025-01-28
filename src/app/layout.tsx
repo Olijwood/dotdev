@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/header";
-import Main from "@/components/main";
+import React from "react";
+import { Header } from "@/components/ui/header";
+import { Main } from "@/components/ui/main";
 
 export const metadata: Metadata = {
     title: "Dotdev",

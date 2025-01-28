@@ -1,15 +1,19 @@
-import React from "react";
+import { ReactNode, Suspense } from "react";
+import { Loader } from "@/components/ui/loader";
 
-const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+const AuthLayout = ({ children }: { children: ReactNode }) => {
     return (
-        <section
-            className="relative flex size-full flex-col items-center justify-center"
-            // style={{
-            //     height: "calc(100vh - var(--navbar-height))",
-            // }}
+        <Suspense
+            fallback={
+                <div className="relative flex size-full flex-col items-center justify-center">
+                    <Loader size="xl" />
+                </div>
+            }
         >
-            {children}
-        </section>
+            <section className=" flex size-full flex-col items-center justify-center">
+                {children}
+            </section>
+        </Suspense>
     );
 };
 
