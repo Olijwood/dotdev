@@ -3,9 +3,11 @@ import { UserRole } from "@prisma/client";
 import NextAuth from "next-auth";
 import authConfig from "@/config/auth.config";
 import { getUserById } from "@/data/user";
-import db from "@/lib/db";
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
+import db from "@/lib/db";
+import { type ExtendedUser } from "../../next-auth";
+
+const { auth, handlers, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(db),
     session: { strategy: "jwt" },
     ...authConfig,
@@ -62,3 +64,25 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         },
     },
 });
+
+/**
+ * Gets the user from the session.
+ * @returns {Promise<ExtendedUser | undefined>}
+ */
+const getUser = async (): Promise<ExtendedUser | undefined> => {
+    const session = await auth();
+    const user = session?.user;
+    return user;
+};
+
+/**
+ * Gets the user ID from the session.
+ * @returns {Promise<string | undefined >}
+ */
+const getUserId = async (): Promise<string | undefined> => {
+    const session = await auth();
+    const userId = session?.user?.id;
+    return userId;
+};
+
+export { auth, handlers, signIn, signOut, getUser, getUserId };

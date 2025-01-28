@@ -14,7 +14,6 @@ const getAccountByUserId = async (userId: string) => {
     }
 };
 
-// const existingAccount = await getAccountByUserId(existingUser.id);
 const getUserById = async (id: string) => {
     try {
         const user = await db.user.findUnique({
