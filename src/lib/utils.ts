@@ -1,4 +1,3 @@
-import { randomInt } from "crypto";
 import { clsx, type ClassValue } from "clsx";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { twMerge } from "tailwind-merge";
@@ -41,7 +40,8 @@ const getUsernameFromEmail = (email: string | null | undefined): string => {
     }
     const subStr = email.substring(0, email.indexOf("@"));
     const username = subStr.replaceAll(".", "");
-    const randInt = randomInt(1000);
+    // const randInt = randomInt(1000);
+    const randInt = Math.floor(Math.random() * 1000);
     const uniqueUsername = `${username}-${randInt}`;
     return uniqueUsername;
 };

@@ -36,8 +36,8 @@ const Header = async () => {
 
                     {email && (
                         <>
-                            <Link href="/settings">
-                                <li className="ml-2">Settings</li>
+                            <Link href="/server">
+                                <li className="ml-2">Server</li>
                             </Link>
                             <li className="ml-auto">
                                 <Link href="/dashboard">

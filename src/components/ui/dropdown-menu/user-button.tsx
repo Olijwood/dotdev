@@ -8,7 +8,6 @@ import {
     LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,14 +17,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { LogoutButton } from "@/features/auth/components/logout-button";
 import { UserDetails } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
 
-export type ProfileDropdownProps = {
+export type UserButtonProps = {
     userDetails: UserDetails;
 };
 
-const ProfileDropdown = ({ userDetails }: ProfileDropdownProps) => {
+const UserButton = ({ userDetails }: UserButtonProps) => {
     const { username, name, image } = userDetails;
     console.log("userDetails", userDetails);
     return (
@@ -37,7 +37,7 @@ const ProfileDropdown = ({ userDetails }: ProfileDropdownProps) => {
                         src={image || "/hacker.png"}
                         alt={`@${username} profile picture`}
                     />
-                    <AvatarFallback>name[0]</AvatarFallback>
+                    <AvatarFallback>{name ? name[0] : ""}</AvatarFallback>
                 </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -81,13 +81,15 @@ const ProfileDropdown = ({ userDetails }: ProfileDropdownProps) => {
                     <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
-                    <LogOut className="mr-1 size-4" />
-                    <span>Logout</span>
-                </DropdownMenuItem>
+                <LogoutButton>
+                    <DropdownMenuItem>
+                        <LogOut className="mr-1 size-4" />
+                        <span>Logout</span>
+                    </DropdownMenuItem>
+                </LogoutButton>
             </DropdownMenuContent>
         </DropdownMenu>
     );
 };
 
-export { ProfileDropdown };
+export { UserButton };

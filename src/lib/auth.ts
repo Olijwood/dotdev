@@ -4,12 +4,13 @@ import NextAuth from "next-auth";
 import authConfig from "@/config/auth.config";
 import {
     deleteTwoFactorConfirmationById,
+    getAccountByUserId,
     getTwoFactorConfirmationByUserId,
     getUserById,
 } from "@/data/user";
 
 import db from "@/lib/db";
-import { type ExtendedUser } from "../../next-auth";
+import { type ExtendedUser } from "../next-auth";
 
 const { auth, handlers, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(db),
@@ -53,10 +54,15 @@ const { auth, handlers, signIn, signOut } = NextAuth({
             const existingUser = await getUserById(token.sub);
             if (!existingUser) return token;
 
+            const existingAccount = await getAccountByUserId(existingUser.id);
+
+            token.isOAuth = !!existingAccount;
             token.name = existingUser.name;
-            token.email = existingUser.email;
+            token.email = existingUser.email as string;
             token.image = existingUser.image;
             token.role = existingUser.role;
+            token.isTwoFactorEnabled =
+                existingUser.isTwoFactorEnabled as boolean;
 
             return token;
         },
@@ -67,14 +73,14 @@ const { auth, handlers, signIn, signOut } = NextAuth({
             if (token.role && session.user) {
                 session.user.role = token.role as UserRole;
             }
-            return {
-                ...session,
-                user: {
-                    ...session.user,
-                    id: token.sub,
-                    name: token.name,
-                },
-            };
+            if (session.user) {
+                session.user.isTwoFactorEnabled =
+                    token.isTwoFactorEnabled as boolean;
+                session.user.name = token.name;
+                session.user.isOAuth = token.isOAuth as boolean;
+            }
+
+            return session;
         },
     },
 });
@@ -83,7 +89,7 @@ const { auth, handlers, signIn, signOut } = NextAuth({
  * Gets the user from the session.
  * @returns {Promise<ExtendedUser | undefined>}
  */
-const getUser = async (): Promise<ExtendedUser | undefined> => {
+const currentUser = async (): Promise<ExtendedUser | undefined> => {
     const session = await auth();
     const user = session?.user;
     return user;
@@ -93,10 +99,28 @@ const getUser = async (): Promise<ExtendedUser | undefined> => {
  * Gets the user ID from the session.
  * @returns {Promise<string | undefined >}
  */
-const getUserId = async (): Promise<string | undefined> => {
+const currentUserId = async (): Promise<string | undefined> => {
     const session = await auth();
     const userId = session?.user?.id;
     return userId;
 };
 
-export { auth, handlers, signIn, signOut, getUser, getUserId };
+/**
+ * Retrieves the user role from the session.
+ * @returns {Promise<UserRole | undefined>} A promise that resolves to the user's role, or undefined if not available.
+ */
+const currentUserRole = async (): Promise<UserRole | undefined> => {
+    const session = await auth();
+    const role = session?.user?.role;
+    return role;
+};
+
+export {
+    auth,
+    handlers,
+    signIn,
+    signOut,
+    currentUser,
+    currentUserId,
+    currentUserRole,
+};
