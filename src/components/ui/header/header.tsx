@@ -1,27 +1,38 @@
 import Link from "next/link";
 import type { Session } from "next-auth";
-import { AuthButton } from "@/components/ui/button";
+import { AuthButton, Button } from "@/components/ui/button";
+import { ProfileDropdown } from "@/components/ui/dropdown-menu";
 import { auth } from "@/lib/auth";
+import { getUsernameFromEmail } from "@/lib/utils";
+import type { UserDetails } from "@/types";
 
 const Header = async () => {
     const session = (await auth()) as Session;
     console.log(session);
 
-    const email = session?.user?.email;
-
+    const { user } = session || {};
+    const { name, email, image } = user || {};
+    const username = getUsernameFromEmail(email);
+    const userDetails = {
+        username,
+        name,
+        image,
+    } as UserDetails;
     return (
         <header>
             <nav>
-                <ul className="flex h-[--navbar-height] items-center justify-between px-[2vw]">
+                <ul className="flex h-[--navbar-height] items-center justify-between px-[1.5vw]">
                     <li>
                         <Link href="/">
-                            <button className="rounded bg-black px-4 py-2 text-lg font-bold uppercase text-white">
-                                DotDev
-                            </button>
+                            <Button
+                                size="lg"
+                                className="rounded-lg bg-black px-2.5 py-1 font-mono text-2xl font-bold uppercase text-white"
+                            >
+                                DOTDEV
+                            </Button>
                         </Link>
                     </li>
 
-                    {/* user is signed in and has email */}
                     {email && (
                         <>
                             <Link href="/settings">
@@ -29,18 +40,22 @@ const Header = async () => {
                             </Link>
                             <li className="ml-auto">
                                 <Link href="/dashboard">
-                                    <button className="rounded bg-blue-500 px-4 py-2 text-white hover:brightness-90">
+                                    <Button
+                                        variant="outline"
+                                        size="lg"
+                                        className="rounded-lg border-2 border-blue-700 px-2.5 font-sans  text-base font-bold text-blue-700 hover:bg-blue-700 hover:text-white"
+                                    >
                                         Create Post
-                                    </button>
+                                    </Button>
                                 </Link>
                             </li>
+
                             <li className="ml-2">
-                                <AuthButton logout>Logout</AuthButton>
+                                <ProfileDropdown userDetails={userDetails} />
                             </li>
                         </>
                     )}
 
-                    {/* user is not signed OR has not created email */}
                     {!email && (
                         <>
                             <li className="ml-auto">

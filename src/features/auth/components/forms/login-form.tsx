@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { FormError } from "@/components/ui/form/form-error";
 import { FormSuccess } from "@/components/ui/form/form-success";
-import { PasswordInput } from "@/components/ui/input";
+import { EmailInput, PasswordInput } from "@/components/ui/input";
 import { Social } from "@/features/auth/components/social";
 import { login } from "@/features/auth/server/actions";
 import { LoginSchema } from "@/schemas";
@@ -78,10 +78,7 @@ const LoginForm = () => {
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <PasswordInput
-                                            {...field}
-                                            placeholder="******"
-                                        />
+                                        <EmailInput {...field} required />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -97,7 +94,7 @@ const LoginForm = () => {
                                     <FormControl>
                                         <PasswordInput
                                             {...field}
-                                            placeholder="******"
+                                            placeholder="********"
                                         />
                                     </FormControl>
                                     <Button

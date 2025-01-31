@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Button, ButtonProps } from "./button";
+import { Button, ButtonProps } from "@/components/ui/button";
 
 export type AuthButtonProps = ButtonProps & {
     href?: string;

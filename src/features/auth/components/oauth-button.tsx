@@ -2,8 +2,8 @@
 
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { OAuthProviderUIConfig } from "@/features/auth/constants";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { OAuthProviderUIConfig } from "../constants";
 
 type OAuthButtonProps = {
     provider: OAuthProviderUIConfig;
