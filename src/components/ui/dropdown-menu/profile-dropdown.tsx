@@ -7,7 +7,6 @@ import {
     Settings,
     LogOut,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { UserDetails } from "@/types";
+import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
 
 export type ProfileDropdownProps = {
     userDetails: UserDetails;
@@ -31,19 +31,16 @@ const ProfileDropdown = ({ userDetails }: ProfileDropdownProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <div className="ml-2 size-10">
-                    <Image
+                <Avatar className="ml-2 size-11 border">
+                    <AvatarImage
                         src={image || "/hacker.png"}
-                        alt="User Profile Pic"
-                        width={150}
-                        height={150}
-                        className="rounded-full object-cover"
-                        referrerPolicy="no-referrer"
+                        alt={`@${username} profile picture`}
                     />
-                </div>
+                    <AvatarFallback>name[0]</AvatarFallback>
+                </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className="w-52  p-2 text-neutral-800"
+                className="w-52 px-2 py-1 text-neutral-800"
                 align="end"
                 forceMount
             >
@@ -53,7 +50,7 @@ const ProfileDropdown = ({ userDetails }: ProfileDropdownProps) => {
                             <p className="text-sm font-medium leading-none">
                                 {name}
                             </p>
-                            <p className="text-xs font-semibold leading-none text-muted-foreground [word-spacing:-0.1rem]">
+                            <p className="text-xs font-semibold leading-none text-muted-foreground [word-spacing:-0.125rem]">
                                 @ {username}
                             </p>
                         </div>
@@ -85,7 +82,7 @@ const ProfileDropdown = ({ userDetails }: ProfileDropdownProps) => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut className="mr-1 size-4" />
-                    <span>Sign Out</span>
+                    <span>Logout</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

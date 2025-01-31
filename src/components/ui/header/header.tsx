@@ -13,20 +13,21 @@ const Header = async () => {
     const { user } = session || {};
     const { name, email, image } = user || {};
     const username = getUsernameFromEmail(email);
+    // const username = "olijwood";
     const userDetails = {
         username,
         name,
         image,
     } as UserDetails;
     return (
-        <header>
+        <header className="border-b border-gray-200">
             <nav>
-                <ul className="flex h-[--navbar-height] items-center justify-between px-[1.5vw]">
+                <ul className="flex h-[--navbar-height] items-center justify-between px-2.5">
                     <li>
                         <Link href="/">
                             <Button
                                 size="lg"
-                                className="rounded-lg bg-black p-2 font-mono text-[1.6rem] font-bold uppercase text-white"
+                                className="rounded bg-black p-2.5 font-mono text-[1.6rem] font-bold uppercase text-white"
                             >
                                 DOTDEV
                             </Button>

@@ -38,6 +38,8 @@ export const LOGIN_STATUS: LoginStatus = {
     CRED_ERR: "Invalid Credentials",
     INPUT_ERR: "Invalid input",
     EMAIL_CHECK_SUCCESS: "Check your email to verify your account",
+    TOKEN_ERR: "Invalid code!",
+    CODE_EXP_ERR: "Code expired!",
 } as const;
 
 export const REGISTER_STATUS: RegisterStatus = {

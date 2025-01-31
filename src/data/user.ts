@@ -35,4 +35,27 @@ const getUserByEmail = async (email: string) => {
     }
 };
 
-export { getAccountByUserId, getUserById, getUserByEmail };
+const getTwoFactorConfirmationByUserId = async (userId: string) => {
+    try {
+        const twoFactorConfirmation = await db.twoFactorConfirmation.findUnique(
+            { where: { userId } },
+        );
+        return twoFactorConfirmation;
+    } catch {
+        return null;
+    }
+};
+
+const deleteTwoFactorConfirmationById = async (id: string) => {
+    await db.twoFactorConfirmation.delete({
+        where: { id },
+    });
+};
+
+export {
+    getAccountByUserId,
+    getUserById,
+    getUserByEmail,
+    getTwoFactorConfirmationByUserId,
+    deleteTwoFactorConfirmationById,
+};

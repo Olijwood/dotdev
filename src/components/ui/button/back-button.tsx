@@ -11,7 +11,9 @@ type BackButtonProps = {
 export const BackButton = ({ label, href }: BackButtonProps) => {
     return (
         <Button variant="link" className="w-full font-normal" size="sm" asChild>
-            <Link href={href}>{label}</Link>
+            <Link href={href} className=" underline hover:opacity-80">
+                {label}
+            </Link>
         </Button>
     );
 };

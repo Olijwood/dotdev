@@ -22,6 +22,7 @@ const LoginSchema = z.object({
     password: z.string().min(1, {
         message: "Please enter a valid password",
     }),
+    code: z.optional(z.string()),
 });
 
 const ResetPasswordSchema = z.object({

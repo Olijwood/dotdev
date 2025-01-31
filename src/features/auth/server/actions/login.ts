@@ -3,12 +3,27 @@
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import * as z from "zod";
+import {
+    deleteTwoFactorConfirmationById,
+    getTwoFactorConfirmationByUserId,
+} from "@/data/user";
 import { LOGIN_STATUS } from "@/features/auth/constants";
-import { sendVerificationEmail } from "@/features/auth/lib/mail";
-import { generateVerificationToken } from "@/features/auth/lib/token";
+import {
+    sendTwoFactorTokenEmail,
+    sendVerificationEmail,
+} from "@/features/auth/lib/mail";
+import {
+    generateTwoFactorToken,
+    generateVerificationToken,
+} from "@/features/auth/lib/token";
 import { signIn } from "@/lib/auth";
 import { LoginSchema } from "../../../../schemas";
-import { getUserByEmail } from "../db/data";
+import {
+    createTwoFactorConfirmation,
+    deleteTwoFactorTokenById,
+    getTwoFactorTokenByEmail,
+    getUserByEmail,
+} from "../db/data";
 
 const login = async (data: z.infer<typeof LoginSchema>) => {
     const validatedData = LoginSchema.safeParse(data);
@@ -17,7 +32,7 @@ const login = async (data: z.infer<typeof LoginSchema>) => {
         return { error: LOGIN_STATUS.INPUT_ERR };
     }
 
-    const { email, password } = validatedData.data;
+    const { email, password, code } = validatedData.data;
 
     const existingUser = await getUserByEmail(email);
     if (!existingUser || !existingUser.password)
@@ -40,6 +55,45 @@ const login = async (data: z.infer<typeof LoginSchema>) => {
         return { success: LOGIN_STATUS.EMAIL_CHECK_SUCCESS };
     }
 
+    if (existingUser.isTwoFactorEnabled && existingUser.email) {
+        if (code) {
+            // TODO: Verify code
+            const twoFactorToken = await getTwoFactorTokenByEmail(
+                existingUser.email,
+            );
+            if (!twoFactorToken) {
+                return { error: LOGIN_STATUS.TOKEN_ERR };
+            }
+            if (twoFactorToken.token !== code) {
+                return { error: LOGIN_STATUS.TOKEN_ERR };
+            }
+
+            const hasExpired = new Date(twoFactorToken.expiresAt) < new Date();
+
+            if (hasExpired) {
+                return { error: LOGIN_STATUS.CODE_EXP_ERR };
+            }
+            await deleteTwoFactorTokenById(twoFactorToken.id);
+
+            const existingConfirmation = await getTwoFactorConfirmationByUserId(
+                existingUser.id,
+            );
+            if (existingConfirmation) {
+                await deleteTwoFactorConfirmationById(existingConfirmation.id);
+            }
+            await createTwoFactorConfirmation(existingUser.id);
+        } else {
+            const twoFactorToken = await generateTwoFactorToken(
+                existingUser.email,
+            );
+            await sendTwoFactorTokenEmail(
+                twoFactorToken.email,
+                twoFactorToken.token,
+            );
+
+            return { twoFactor: true };
+        }
+    }
     try {
         await signIn("credentials", {
             email: existingUser.email,
