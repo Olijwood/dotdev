@@ -26,7 +26,7 @@ const Header = async () => {
                         <Link href="/">
                             <Button
                                 size="lg"
-                                className="rounded-lg bg-black px-2.5 py-1 font-mono text-2xl font-bold uppercase text-white"
+                                className="rounded-lg bg-black p-2 font-mono text-[1.6rem] font-bold uppercase text-white"
                             >
                                 DOTDEV
                             </Button>
