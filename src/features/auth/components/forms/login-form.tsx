@@ -29,7 +29,6 @@ const LoginForm = () => {
         state: "idle",
     });
     const [showTwoFactor, setShowTwoFactor] = useState(false);
-
     const searchParams = useSearchParams();
 
     const form = useForm<z.infer<typeof LoginSchema>>({
@@ -43,7 +42,7 @@ const LoginForm = () => {
 
     const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
         setStatus({ state: "loading" });
-        login(data).then((res) => {
+        login(data).then(async (res) => {
             if (res.error) {
                 form.reset();
                 setStatus({ state: "error", message: res.error });

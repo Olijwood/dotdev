@@ -3,21 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthButton, Button } from "@/components/ui/button";
-import { UserButton } from "@/components/ui/dropdown-menu";
+import { ProfileDropdown } from "@/components/ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/auth";
 import { getUsernameFromEmail } from "@/lib/utils";
 import type { UserDetails } from "@/types";
 
 const Navbar = () => {
-    const pathname = usePathname();
     const user = useCurrentUser();
-    const { email, name, image } = user || {};
+    console.log(user);
+    const pathname = usePathname();
+    const { name, email, image } = user || {};
     const username = getUsernameFromEmail(email);
     const userDetails = {
         username,
         name,
         image,
     } as UserDetails;
+
     return (
         <nav className="border-b border-gray-200">
             <ul className="flex h-[--navbar-height] items-center justify-between px-2.5">
@@ -55,32 +57,21 @@ const Navbar = () => {
                             >
                                 <Link href="/client">Client</Link>
                             </Button>
-
-                            <Button
-                                asChild
-                                variant={
-                                    pathname === "/settings"
-                                        ? "default"
-                                        : "outline"
-                                }
-                            >
-                                <Link href="/settings">Settings</Link>
-                            </Button>
                         </div>
                         <li className="ml-auto">
-                            <Link href="/admin">
+                            <Link href="/dashboard">
                                 <Button
                                     variant="outline"
                                     size="lg"
                                     className="rounded-lg border-2 border-blue-700 px-2.5 font-sans  text-base font-bold text-blue-700 hover:bg-blue-700 hover:text-white"
                                 >
-                                    Admin
+                                    Create Post
                                 </Button>
                             </Link>
                         </li>
 
                         <li className="ml-2">
-                            <UserButton userDetails={userDetails} />
+                            <ProfileDropdown userDetails={userDetails} />
                         </li>
                     </>
                 )}

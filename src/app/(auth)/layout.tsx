@@ -10,9 +10,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
                 </div>
             }
         >
-            <section className=" flex size-full flex-col items-center justify-center">
-                {children}
-            </section>
+            {children}
         </Suspense>
     );
 };

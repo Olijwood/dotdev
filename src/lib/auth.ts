@@ -63,7 +63,6 @@ const { auth, handlers, signIn, signOut } = NextAuth({
             token.role = existingUser.role;
             token.isTwoFactorEnabled =
                 existingUser.isTwoFactorEnabled as boolean;
-
             return token;
         },
         async session({ session, token }) {
@@ -76,8 +75,11 @@ const { auth, handlers, signIn, signOut } = NextAuth({
             if (session.user) {
                 session.user.isTwoFactorEnabled =
                     token.isTwoFactorEnabled as boolean;
+                session.user.email = token.email as string;
                 session.user.name = token.name;
                 session.user.isOAuth = token.isOAuth as boolean;
+            } else {
+                console.error("session.user is undefined");
             }
 
             return session;

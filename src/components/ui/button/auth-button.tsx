@@ -22,7 +22,6 @@ const AuthButton = ({ href, logout = false, ...props }: AuthButtonProps) => {
         );
     }
 
-    // If no href, render a button with action
     return <Button onClick={handleClick} {...props} />;
 };
 

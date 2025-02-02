@@ -1,22 +1,16 @@
-import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
-import { auth } from "@/lib/auth";
-import { Navbar } from "./_components/navbar";
+import Provider from "../provider";
 
 type ProtectedLayoutProps = {
     children: React.ReactNode;
 };
 
-const ProtectedLayout = async ({ children }: ProtectedLayoutProps) => {
-    const session = await auth();
+const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
     return (
-        <SessionProvider session={session}>
+        <Provider>
             <Toaster position={"bottom-center"} />
-            <Navbar />
-            <section className="flex size-full flex-col items-center justify-center bg-blue-300">
-                {children}
-            </section>
-        </SessionProvider>
+            {children}
+        </Provider>
     );
 };
 

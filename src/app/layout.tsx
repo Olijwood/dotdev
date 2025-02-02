@@ -3,6 +3,7 @@ import "./globals.css";
 import React from "react";
 import { Header } from "@/components/ui/header";
 import { Main } from "@/components/ui/main";
+import Provider from "./provider";
 
 export const metadata: Metadata = {
     title: "Dotdev",
@@ -17,11 +18,11 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <Header />
-                <Main>{children}</Main>
+                <Provider>
+                    <Header />
+                    <Main>{children}</Main>
+                </Provider>
             </body>
         </html>
     );
 }
-
-export const dynamic = "force-dynamic";

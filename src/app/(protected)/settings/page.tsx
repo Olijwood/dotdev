@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRole } from "@prisma/client";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { settings } from "@/features/auth/server/actions";
+import { clearPasswordFields } from "@/features/auth/utils/form";
 import { useCurrentUser } from "@/hooks/auth";
 import { SettingsSchema } from "@/schemas";
 import { FormStatus } from "@/types";
@@ -36,17 +37,20 @@ import { FormStatus } from "@/types";
 const SettingsPage = () => {
     const user = useCurrentUser();
     const [status, setStatus] = useState<FormStatus>({ state: "idle" });
-    const { update } = useSession();
+    // const { data: session, update } = useSession();
+    // const user = session?.user;
 
     const form = useForm<z.infer<typeof SettingsSchema>>({
         resolver: zodResolver(SettingsSchema),
         defaultValues: {
-            password: undefined,
-            newPassword: undefined,
-            name: user?.name || undefined,
-            email: user?.email || undefined,
-            role: user?.role || undefined,
+            password: "",
+            newPassword: "",
+            name: user?.name || "",
+            email: user?.email || "",
+            role: user?.role || UserRole.USER,
+            isTwoFactorEnabled: user?.isTwoFactorEnabled || false,
         },
+        mode: "onSubmit",
     });
 
     const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
@@ -58,11 +62,12 @@ const SettingsPage = () => {
                 }
                 if (data.success) {
                     setStatus({ state: "success", message: data.success });
-                    update(values);
+                    clearPasswordFields(form);
                 }
             })
             .catch(() => {
                 setStatus({ state: "error", message: "Something went wrong" });
+                clearPasswordFields(form);
             });
     };
 
@@ -131,7 +136,7 @@ const SettingsPage = () => {
                                                     <Input
                                                         {...field}
                                                         type="password"
-                                                        autoComplete="current-password"
+                                                        // autoComplete="current-password"
                                                         placeholder="**********"
                                                         disabled={isLoading}
                                                     />

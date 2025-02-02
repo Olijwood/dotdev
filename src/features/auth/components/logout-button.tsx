@@ -1,6 +1,6 @@
 "use client";
 
-import { logout } from "../server/actions/logout";
+import { signOut } from "next-auth/react";
 
 type LogoutButtonProps = {
     children?: React.ReactNode;
@@ -8,7 +8,7 @@ type LogoutButtonProps = {
 
 export const LogoutButton = ({ children }: LogoutButtonProps) => {
     const onClick = () => {
-        logout();
+        signOut();
     };
 
     return (

@@ -53,15 +53,20 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
 
         const hashedPw = await bcrypt.hash(values.newPassword, 10);
         values.password = hashedPw;
-        values.newPassword = undefined;
     }
+
+    delete values.newPassword;
+
+    const filteredValues = Object.fromEntries(
+        Object.entries(values).filter(
+            ([_key, v]) => v !== undefined && v !== null && v !== "",
+        ),
+    );
 
     await db.user.update({
         where: { id: user.id },
-        data: {
-            ...values,
-        },
+        data: filteredValues,
     });
 
-    return { success: "Updated" };
+    return { success: "Profile updated successfully" };
 };

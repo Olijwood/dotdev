@@ -1,3 +1,5 @@
+"use client";
+
 import ResetForm from "@/features/auth/components/forms/reset-form";
 
 const ResetPage = () => {

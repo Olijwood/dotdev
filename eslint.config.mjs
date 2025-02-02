@@ -57,7 +57,10 @@ const eslintConfig = [
         rules: {
             "@next/next/no-img-element": "off", // Use if you need raw <img> tags
             "react/react-in-jsx-scope": "off", // Not needed in Next.js
-            "@typescript-eslint/no-unused-vars": ["error"],
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                { argsIgnorePattern: "^_" },
+            ],
             "import/order": [
                 "error",
                 {
