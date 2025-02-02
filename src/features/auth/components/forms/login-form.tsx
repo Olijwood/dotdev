@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -39,7 +40,7 @@ const LoginForm = () => {
             code: "",
         },
     });
-
+    const { update } = useSession();
     const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
         setStatus({ state: "loading" });
         login(data).then(async (res) => {
@@ -48,8 +49,8 @@ const LoginForm = () => {
                 setStatus({ state: "error", message: res.error });
             }
             if (res.success) {
-                form.reset();
-                setStatus({ state: "success", message: res.success });
+                await update();
+                redirect("/");
             }
             if (res.twoFactor) {
                 setStatus({ state: "idle" });

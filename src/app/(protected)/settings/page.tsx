@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRole } from "@prisma/client";
 // import { useSession } from "next-auth/react";
+// import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -36,16 +38,15 @@ import { FormStatus } from "@/types";
 
 const SettingsPage = () => {
     const user = useCurrentUser();
+    const { update } = useSession();
     const [status, setStatus] = useState<FormStatus>({ state: "idle" });
-    // const { data: session, update } = useSession();
-    // const user = session?.user;
-
     const form = useForm<z.infer<typeof SettingsSchema>>({
         resolver: zodResolver(SettingsSchema),
         defaultValues: {
             password: "",
             newPassword: "",
             name: user?.name || "",
+            username: user?.username || "",
             email: user?.email || "",
             role: user?.role || UserRole.USER,
             isTwoFactorEnabled: user?.isTwoFactorEnabled || false,
@@ -56,12 +57,13 @@ const SettingsPage = () => {
     const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
         setStatus({ state: "loading" });
         settings(values)
-            .then((data) => {
+            .then(async (data) => {
                 if (data.error) {
                     setStatus({ state: "error", message: data.error });
                 }
                 if (data.success) {
                     setStatus({ state: "success", message: data.success });
+                    await update();
                     clearPasswordFields(form);
                 }
             })
@@ -89,6 +91,24 @@ const SettingsPage = () => {
                         <div className="space-y-4">
                             <FormField
                                 control={form.control}
+                                name="username"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Username</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                placeholder="janesmith123"
+                                                autoComplete="username"
+                                                disabled={isLoading}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
@@ -105,6 +125,7 @@ const SettingsPage = () => {
                                     </FormItem>
                                 )}
                             />
+
                             {user?.isOAuth === false && (
                                 <>
                                     <FormField

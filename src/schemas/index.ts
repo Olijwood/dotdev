@@ -41,34 +41,10 @@ const NewPasswordSchema = z.object({
     }),
 });
 
-// const oldSettingsSchema = z
-//     .object({
-//         name: z.optional(z.string()),
-//         isTwoFactorEnabled: z.optional(z.boolean()),
-//         role: z.enum([UserRole.ADMIN, UserRole.USER]),
-//         email: z.optional(z.string().email()),
-//         password: z.optional(
-//             z.string().min(6, { message: "Password too short" }),
-//         ),
-
-//         newPassword: z.optional(
-//             z.string().min(6, { message: "Password too short" }),
-//             // .optional()
-//             // .or(z.literal(""))
-//         ),
-//     })
-//     .refine((data) => !data.password || data.newPassword, {
-//         message: "New password is required if changing password.",
-//         path: ["newPassword"],
-//     })
-//     .refine((data) => !data.newPassword || data.password, {
-//         message: "Current password is required if setting a new password.",
-//         path: ["password"],
-//     });
-
 const SettingsSchema = z
     .object({
         name: z.optional(z.string()),
+        username: z.optional(z.string()),
         isTwoFactorEnabled: z.optional(z.boolean()),
         role: z.enum([UserRole.ADMIN, UserRole.USER]),
         email: z.optional(z.string().email()),

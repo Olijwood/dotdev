@@ -2,23 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { AuthButton, Button } from "@/components/ui/button";
 import { ProfileDropdown } from "@/components/ui/dropdown-menu";
-import { useCurrentUser } from "@/hooks/auth";
-import { getUsernameFromEmail } from "@/lib/utils";
-import type { UserDetails } from "@/types";
 
 const Navbar = () => {
-    const user = useCurrentUser();
-    console.log(user);
+    const { data: session } = useSession();
+    const user = session?.user;
     const pathname = usePathname();
-    const { name, email, image } = user || {};
-    const username = getUsernameFromEmail(email);
-    const userDetails = {
-        username,
-        name,
-        image,
-    } as UserDetails;
+    const { username } = user || {};
 
     return (
         <nav className="border-b border-gray-200">
@@ -34,7 +26,7 @@ const Navbar = () => {
                     </Link>
                 </li>
 
-                {email && (
+                {username && (
                     <>
                         <div className="ml-2 flex gap-x-2">
                             <Button
@@ -71,12 +63,12 @@ const Navbar = () => {
                         </li>
 
                         <li className="ml-2">
-                            <ProfileDropdown userDetails={userDetails} />
+                            <ProfileDropdown />
                         </li>
                     </>
                 )}
 
-                {!email && (
+                {!username && (
                     <>
                         <li className="ml-auto">
                             <AuthButton href="/register">Register</AuthButton>

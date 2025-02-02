@@ -34,7 +34,7 @@ const { auth, handlers, signIn, signOut } = NextAuth({
 
             if (!user.id) return false;
             const existingUser = await getUserById(user.id);
-            if (!existingUser?.emailVerified) return false;
+            if (!existingUser?.emailVerified) return true;
 
             if (existingUser.isTwoFactorEnabled) {
                 const twoFactorConfirmation =
@@ -55,29 +55,37 @@ const { auth, handlers, signIn, signOut } = NextAuth({
             if (!existingUser) return token;
 
             const existingAccount = await getAccountByUserId(existingUser.id);
-
             token.isOAuth = !!existingAccount;
+
             token.name = existingUser.name;
+            token.username = existingUser.username as string;
             token.email = existingUser.email as string;
             token.image = existingUser.image;
             token.role = existingUser.role;
             token.isTwoFactorEnabled =
                 existingUser.isTwoFactorEnabled as boolean;
+
             return token;
         },
         async session({ session, token }) {
             if (token.sub && session.user) {
                 session.user.id = token.sub;
             }
+
             if (token.role && session.user) {
                 session.user.role = token.role as UserRole;
             }
+
             if (session.user) {
                 session.user.isTwoFactorEnabled =
                     token.isTwoFactorEnabled as boolean;
                 session.user.email = token.email as string;
                 session.user.name = token.name;
                 session.user.isOAuth = token.isOAuth as boolean;
+                session.user.username = token.username as
+                    | string
+                    | null
+                    | undefined;
             } else {
                 console.error("session.user is undefined");
             }
@@ -117,6 +125,30 @@ const currentUserRole = async (): Promise<UserRole | undefined> => {
     return role;
 };
 
+// ✅ Function to update session with latest user data
+async function updateSession(userId: string) {
+    const user = await db.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            username: true,
+            image: true,
+        },
+    });
+
+    if (!user) return;
+
+    const session = await auth();
+    if (session) {
+        session.user = {
+            ...session.user,
+            ...user,
+        };
+    }
+}
+
 export {
     auth,
     handlers,
@@ -125,4 +157,5 @@ export {
     currentUser,
     currentUserId,
     currentUserRole,
+    updateSession,
 };

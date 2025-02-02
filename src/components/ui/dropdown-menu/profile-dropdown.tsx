@@ -8,6 +8,7 @@ import {
     LogOut,
 } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { LogoutButton } from "@/features/auth/components/logout-button";
+// import { useCurrentUser } from "@/hooks/auth";
 import { UserDetails } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
 
@@ -25,8 +27,11 @@ export type ProfileDropdownProps = {
     userDetails: UserDetails;
 };
 
-const ProfileDropdown = ({ userDetails }: ProfileDropdownProps) => {
-    const { username, name, image } = userDetails;
+const ProfileDropdown = () => {
+    const { data: session } = useSession();
+    const user = session?.user;
+    console.log(user);
+    const { username, name, image } = user || {};
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

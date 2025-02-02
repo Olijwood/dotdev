@@ -98,7 +98,7 @@ const login = async (data: z.infer<typeof LoginSchema>) => {
         await signIn("credentials", {
             email: existingUser.email,
             password,
-            redirectTo: "/",
+            redirect: false,
         });
     } catch (error) {
         if (error instanceof AuthError) {

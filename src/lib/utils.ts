@@ -40,10 +40,7 @@ const getUsernameFromEmail = (email: string | null | undefined): string => {
     }
     const subStr = email.substring(0, email.indexOf("@"));
     const username = subStr.replaceAll(".", "");
-    // const randInt = randomInt(1000);
-    const randInt = Math.floor(Math.random() * 1000);
-    const uniqueUsername = `${username}-${randInt}`;
-    return uniqueUsername;
+    return username;
 };
 
 export { executeAction, getUsernameFromEmail };

@@ -1,5 +1,4 @@
 import { Toaster } from "@/components/ui/sonner";
-import Provider from "../provider";
 
 type ProtectedLayoutProps = {
     children: React.ReactNode;
@@ -7,10 +6,10 @@ type ProtectedLayoutProps = {
 
 const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
     return (
-        <Provider>
+        <>
             <Toaster position={"bottom-center"} />
             {children}
-        </Provider>
+        </>
     );
 };
 

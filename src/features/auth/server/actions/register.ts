@@ -2,11 +2,11 @@
 
 import bcrypt from "bcryptjs";
 import * as z from "zod";
-import db from "@/lib/db";
 import { RegisterSchema } from "../../../../schemas";
 import { REGISTER_STATUS } from "../../constants";
 import { sendVerificationEmail } from "../../lib/mail";
 import { generateVerificationToken } from "../../lib/token";
+import { createUser, generateUniqueUsername, getUserByEmail } from "../db/data";
 
 const register = async (data: z.infer<typeof RegisterSchema>) => {
     try {
@@ -24,11 +24,7 @@ const register = async (data: z.infer<typeof RegisterSchema>) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const userExists = await db.user.findFirst({
-            where: {
-                email,
-            },
-        });
+        const userExists = await getUserByEmail(email);
 
         if (userExists) {
             return {
@@ -36,13 +32,14 @@ const register = async (data: z.infer<typeof RegisterSchema>) => {
             };
         }
 
-        await db.user.create({
-            data: {
-                email,
-                name,
-                password: hashedPassword,
-            },
-        });
+        const username = await generateUniqueUsername(email);
+        if (!username) {
+            return {
+                error: "Something went wrong. Please try again later.",
+            };
+        }
+
+        await createUser(name, email, username, hashedPassword);
 
         const verificationToken = await generateVerificationToken(email);
         await sendVerificationEmail(

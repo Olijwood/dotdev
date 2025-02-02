@@ -49,4 +49,54 @@ const updateUserPassword = async (id: string, password: string) => {
     }
 };
 
-export { getAccountByUserId, getUserById, getUserByEmail, updateUserPassword };
+const generateUniqueUsername = async (email: string): Promise<string> => {
+    const baseUsername = email.split("@")[0].toLowerCase().replaceAll(".", "");
+    let username = baseUsername;
+    let counter = 1;
+
+    while (await db.user.findUnique({ where: { username } })) {
+        username = `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`; // Random 4-digit number
+        counter++;
+        if (counter > 10) {
+            throw new Error("Could not generate a unique username");
+        }
+    }
+
+    return username;
+};
+const getUserByUsername = async (username: string) => {
+    try {
+        const user = await db.user.findUnique({
+            where: { username },
+        });
+        return user;
+    } catch (error) {
+        logError("getUserByUsername", error);
+    }
+};
+
+const createUser = async (
+    name: string,
+    email: string,
+    username: string,
+    password: string,
+) => {
+    await db.user.create({
+        data: {
+            name,
+            email,
+            username,
+            password,
+        },
+    });
+};
+
+export {
+    getAccountByUserId,
+    getUserById,
+    getUserByEmail,
+    updateUserPassword,
+    createUser,
+    generateUniqueUsername,
+    getUserByUsername,
+};

@@ -4,11 +4,12 @@ import bcrypt from "bcryptjs";
 import * as z from "zod";
 
 import { getUserByEmail, getUserById } from "@/data/user";
-import { currentUser } from "@/lib/auth";
+import { currentUser, updateSession } from "@/lib/auth";
 import db from "@/lib/db";
 import { SettingsSchema } from "@/schemas";
 import { sendVerificationEmail } from "../../lib/mail";
 import { generateVerificationToken } from "../../lib/token";
+import { getUserByUsername } from "../db/data";
 
 export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     const user = await currentUser();
@@ -24,6 +25,13 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
         values.password = undefined;
         values.newPassword = undefined;
         values.isTwoFactorEnabled = undefined;
+    }
+
+    if (values.username && values.username !== user.username) {
+        const existingUser = await getUserByUsername(values.username);
+        if (existingUser && existingUser.id !== user.id) {
+            return { error: "Username already in use" };
+        }
     }
 
     if (values.email && values.email !== user.email) {
@@ -67,6 +75,8 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
         where: { id: user.id },
         data: filteredValues,
     });
+
+    await updateSession(user.id);
 
     return { success: "Profile updated successfully" };
 };
