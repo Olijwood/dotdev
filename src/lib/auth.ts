@@ -34,7 +34,7 @@ const { auth, handlers, signIn, signOut } = NextAuth({
 
             if (!user.id) return false;
             const existingUser = await getUserById(user.id);
-            if (!existingUser?.emailVerified) return true;
+            if (!existingUser?.emailVerified) return false;
 
             if (existingUser.isTwoFactorEnabled) {
                 const twoFactorConfirmation =

@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { LogoutButton } from "@/features/auth/components/logout-button";
-// import { useCurrentUser } from "@/hooks/auth";
 import { UserDetails } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
 
@@ -30,7 +29,6 @@ export type ProfileDropdownProps = {
 const ProfileDropdown = () => {
     const { data: session } = useSession();
     const user = session?.user;
-    console.log(user);
     const { username, name, image } = user || {};
     return (
         <DropdownMenu>

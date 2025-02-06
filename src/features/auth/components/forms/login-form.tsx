@@ -16,6 +16,7 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
+    FormWarning,
 } from "@/components/ui/form";
 import { FormError } from "@/components/ui/form/form-error";
 import { FormSuccess } from "@/components/ui/form/form-success";
@@ -24,6 +25,7 @@ import { Social } from "@/features/auth/components/social";
 import { login } from "@/features/auth/server/actions";
 import { LoginSchema } from "@/schemas";
 import type { FormStatus } from "@/types";
+import { REACT_PLEASE_LOGIN_WARN } from "../../constants";
 
 const LoginForm = () => {
     const [status, setStatus] = useState<FormStatus>({
@@ -67,7 +69,10 @@ const LoginForm = () => {
         searchParams.get("error") === "OAuthAccountNotLinked"
             ? "Email already in use with another provider!"
             : "";
-
+    const urlWarning =
+        searchParams.get("warning") === REACT_PLEASE_LOGIN_WARN.URL_QUERY_PARAM
+            ? REACT_PLEASE_LOGIN_WARN.WARNING
+            : "";
     return (
         <CardWrapper
             title="Login"
@@ -151,6 +156,7 @@ const LoginForm = () => {
                     </div>
                     <FormSuccess message={success} />
                     <FormError message={urlError ? urlError : error} />
+                    {urlWarning && <FormWarning message={urlWarning} />}
                     <Button
                         type="submit"
                         className="w-full"

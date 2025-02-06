@@ -62,3 +62,8 @@ export const NEW_PASSWORD_STATUS: NewPasswordStatus = {
     PASSWORD_ERR: "Passwords do not match",
     SUCCESS: "Password updated!",
 } as const;
+
+export const REACT_PLEASE_LOGIN_WARN = {
+    URL_QUERY_PARAM: "NotLoggedIn",
+    WARNING: "Please login to react",
+} as const;
