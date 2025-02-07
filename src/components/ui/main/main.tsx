@@ -1,8 +1,19 @@
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
-function Main({ children }: { children: ReactNode }) {
+type MainProps = {
+    children: ReactNode;
+    className?: string;
+};
+
+function Main({ className, children }: MainProps) {
     return (
-        <main className="flex h-[--main-height] flex-col items-center justify-center bg-[hsl(0,0,92.5%)]">
+        <main
+            className={cn(
+                "flex h-[--main-height] flex-col items-center justify-center bg-[hsl(0,0,93%)]",
+                className,
+            )}
+        >
             {children}
         </main>
     );

@@ -22,8 +22,8 @@ const PostItem = ({ post, isAdmin = false }: PostItemProps) => {
     const wordCount = getWordCount(post?.content);
     const minutesToRead = getMinutesToRead(wordCount);
     return (
-        <div className="flex w-full flex-col py-3 align-middle">
-            <div className="rounded-lg border border-gray-300 bg-white  ">
+        <div className="flex w-full flex-col py-3 align-middle  md:w-2/3 lg:w-full">
+            <div className="rounded-lg border border-gray-300 bg-card  ">
                 <div className="p-4">
                     <Link href={`/${post.username}/${post.slug}`}>
                         <strong>

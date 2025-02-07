@@ -1,5 +1,6 @@
 import { ReactNode, Suspense } from "react";
 import { Loader } from "@/components/ui/loader";
+import { Main } from "@/components/ui/main";
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
     return (
@@ -10,7 +11,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
                 </div>
             }
         >
-            {children}
+            <Main>{children}</Main>
         </Suspense>
     );
 };

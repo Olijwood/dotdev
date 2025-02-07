@@ -36,8 +36,8 @@ body {
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
-        --navbar-height: 3.5rem;
-        --main-height: calc(100vh - calc(var(--navbar-height) + 1px));
+        --navbar-height: 3.6rem;
+        --main-height: calc(100vh - calc(var(--navbar-height) + 2px));
     }
     .dark {
         --background: 0 0% 3.9%;
@@ -101,7 +101,7 @@ body {
     }
 
     .bg-card:hover {
-        @apply bg-gray-100;
+        @apply bg-gray-50;
     }
 
     .text-semi-muted-foreground {
@@ -114,5 +114,16 @@ body {
         font-size: 2.5rem;
         width: 100%;
         padding: 5px 10px;
+    }
+
+    .scrollbar-y {
+        @apply scroll-m-0 scroll-p-0 overflow-y-scroll;
+        scrollbar-width: thin;
+    }
+}
+
+@media only screen and (width <= 768px) {
+    main {
+        padding: 0 1rem;
     }
 }

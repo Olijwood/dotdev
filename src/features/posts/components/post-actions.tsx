@@ -61,10 +61,10 @@ const PostActions = ({
                     </TooltipContent>
                 </Tooltip>
 
-                <div className="ml-auto flex items-center">
+                <div className="ml-auto flex  items-center">
                     {minutesToRead && !isAdmin
                         ? minutesToRead > 0 && (
-                              <span className="text-sm text-muted-foreground">
+                              <span className="pt-0.5 text-xs text-muted-foreground">
                                   {minutesToRead} min read
                               </span>
                           )

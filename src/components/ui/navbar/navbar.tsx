@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthButton, Button } from "@/components/ui/button";
 import { ProfileDropdown } from "@/components/ui/dropdown-menu";
@@ -9,11 +9,11 @@ import { ProfileDropdown } from "@/components/ui/dropdown-menu";
 const Navbar = () => {
     const { data: session } = useSession();
     const user = session?.user;
-    const pathname = usePathname();
+    // const pathname = usePathname();
     const { username } = user || {};
 
     return (
-        <nav className="border-b border-gray-200">
+        <nav className="border-b-2 border-gray-300">
             <ul className="flex h-[--navbar-height] items-center justify-between px-2.5">
                 <li>
                     <Link href="/">
@@ -28,7 +28,7 @@ const Navbar = () => {
 
                 {username && (
                     <>
-                        <div className="ml-2 flex gap-x-2">
+                        {/* <div className="ml-2 flex gap-x-2">
                             <Button
                                 asChild
                                 variant={
@@ -49,7 +49,7 @@ const Navbar = () => {
                             >
                                 <Link href="/client">Client</Link>
                             </Button>
-                        </div>
+                        </div> */}
                         <li className="ml-auto">
                             <Link href="/dashboard">
                                 <Button

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
-import { Main } from "@/components/ui/main";
 import { Navbar } from "@/components/ui/navbar";
 import Provider from "./provider";
 
@@ -20,7 +19,7 @@ export default function RootLayout({
             <body>
                 <Provider>
                     <Navbar />
-                    <Main>{children}</Main>
+                    {children}
                 </Provider>
             </body>
         </html>
