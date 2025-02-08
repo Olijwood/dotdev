@@ -21,14 +21,14 @@ import { useReactions } from "../hooks";
 
 type ReactionPopupProps = {
     postId: string;
-    isListView?: boolean;
-    isSmallScreen?: boolean;
+    isMobile?: boolean;
+    isDetailView?: boolean;
 };
 
 const ReactionPopup = ({
     postId,
-    isListView = true,
-    isSmallScreen = true,
+    isMobile = true,
+    isDetailView = false,
 }: ReactionPopupProps) => {
     const userId = useCurrentUserId();
     const [isHovering, setIsHovering] = useState(false);
@@ -64,18 +64,27 @@ const ReactionPopup = ({
         >
             <PopoverTrigger asChild>
                 <button
-                    className="bar-b"
+                    className={cn(
+                        " flex items-center gap-2",
+                        !isMobile && "flex-col",
+                    )}
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
+                    onClick={() => setIsHovering(true)}
                 >
-                    {reactions.length > 0 && isListView ? (
+                    {reactions.length > 0 ? (
                         <>
-                            <div className="flex -space-x-1">
+                            <div
+                                className={cn(
+                                    "flex text-sm ",
+                                    isDetailView && " text-lg grid grid-cols-2",
+                                    isDetailView &&
+                                        isMobile &&
+                                        "text-xs grid-cols-2",
+                                )}
+                            >
                                 {uniqueReactionTypes.map((type) => (
-                                    <span
-                                        key={`emoji-${type}`}
-                                        className="text-sm"
-                                    >
+                                    <span key={`emoji-${type}`}>
                                         {
                                             reactionsList.find(
                                                 (r) => r.type === type,
@@ -84,7 +93,14 @@ const ReactionPopup = ({
                                     </span>
                                 ))}
                             </div>
-                            <span className="text-sm">{reactions.length}</span>
+                            <span
+                                className={cn(
+                                    "text-sm",
+                                    isDetailView && "text-lg",
+                                )}
+                            >
+                                {reactions.length}
+                            </span>
                         </>
                     ) : (
                         <>
@@ -95,12 +111,12 @@ const ReactionPopup = ({
                 </button>
             </PopoverTrigger>
             <PopoverContent
-                className="w-full p-2"
+                className="z-[1005] w-full p-2"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
-                align={isSmallScreen ? "start" : "center"}
-                side={isSmallScreen ? "bottom" : "right"}
-                sideOffset={-1}
+                align={isMobile ? "start" : "center"}
+                side={isMobile ? "bottom" : "right"}
+                sideOffset={isMobile ? 2 : -1}
             >
                 <div className="grid grid-cols-4 gap-2">
                     {reactionsList.map(({ type, emoji }) => {

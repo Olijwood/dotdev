@@ -40,7 +40,7 @@ export function PostContent({ post }: PostContentProps) {
                         src={postBanner}
                         alt="RESTful API Banner"
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        sizes="(max-width:V 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                         className="object-cover"
                         priority
                     />
