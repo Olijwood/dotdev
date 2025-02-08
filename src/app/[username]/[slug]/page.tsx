@@ -1,7 +1,7 @@
 import { ReactionType } from "@prisma/client";
 import { notFound } from "next/navigation";
+import { AuthorSidebar } from "@/features/posts/components/author-sidebar";
 import { PostContent } from "@/features/posts/components/post-content";
-import { PostSidebar } from "@/features/posts/components/post-sidebar";
 import { PostToolbar } from "@/features/posts/components/post-toolbar";
 import { getPostBySlug } from "@/features/posts/server/db";
 
@@ -37,7 +37,6 @@ const PostPage = async ({ params }: { params: { slug: string } }) => {
             <div className="flex w-full max-w-6xl flex-col justify-stretch sm:flex-row sm:gap-3">
                 {/* Actions sidebar - hidden on mobile */}
                 <div className="hidden w-16 sm:flex">
-                    {/* <PostToolbar className="sticky top-12" /> */}
                     <PostToolbar postId={id} />
                 </div>
                 {/* Main content */}{" "}
@@ -46,7 +45,7 @@ const PostPage = async ({ params }: { params: { slug: string } }) => {
                 </div>
                 {/* Author sidebar - hidden on mobile */}
                 <div className="mr-2 hidden w-48 sm:block lg:w-64">
-                    <PostSidebar
+                    <AuthorSidebar
                         author={author}
                         className="sticky space-y-4 "
                     />
@@ -54,15 +53,7 @@ const PostPage = async ({ params }: { params: { slug: string } }) => {
             </div>
 
             {/* Mobile actions - fixed to bottom */}
-            {/* <PostToolbar
-                className="fixed inset-x-0 bottom-0 border-t bg-white md:hidden"
-                isMobile
-            /> */}
-            <PostToolbar
-                postId={id}
-                isMobile
-                // className="fixed inset-x-0 bottom-0 border-t bg-white sm:hidden"
-            />
+            <PostToolbar postId={id} isMobile />
         </>
     );
 };
