@@ -6,14 +6,15 @@ async function main() {
     console.log("🌱 Seeding database...");
 
     // Create Users
+    // TODO: Remove my personal info
     const user1 = await prisma.user.upsert({
-        where: { email: "user1@example.com" },
+        where: { email: "user1@gmail.com" },
         update: {},
         create: {
             name: "User One",
-            email: "user1@example.com",
-            username: "userone",
-            password: "hashedpassword1",
+            email: "user1@gmail.com",
+            username: "user1",
+            password: "password",
             role: "USER",
         },
     });
@@ -66,12 +67,29 @@ async function main() {
         },
     });
 
+    const post1content =
+        'RESTful API (Representational State Transfer API) is a network interface design style used for interactions between network applications. REST is a set of architectural principles and constraints rather than a standard or protocol. When a web service is "RESTful," it follows REST principles and provides an efficient, reliable, and scalable network service.\n\n' +
+        "In a RESTful service, each request should contain all the necessary information to process the request. The server should not retain any state information about client requests.\n\n" +
+        "A RESTful architecture may consist of multiple layers, each performing a specific function. This structure allows for the development of more complex and powerful applications.\n\n" +
+        "# **URI Design**\n\n" +
+        "In RESTful API design, URLs (Uniform Resource Locators) typically represent resources (objects), while HTTP methods (such as GET, POST, PUT, DELETE, etc.) represent operations on these resources (verbs). This design style emphasizes the state and representation of resources rather than actions.\n\n" +
+        "## **Verb + Object**\n\n" +
+        "Verbs in RESTful APIs are usually the five HTTP methods, corresponding to CRUD operations:\n\n" +
+        "- **GET**: Read  \n" +
+        "- **POST**: Create  \n" +
+        "- **PUT**: Update  \n" +
+        "- **PATCH**: Partial Update  \n" +
+        "- **DELETE**: Delete  \n\n" +
+        "According to the HTTP specification, verbs should always be in uppercase.\n\n" +
+        '> "A well-designed RESTful API —SHOULD be intuitive and predictable, making it easier for developers to integrate seamlessly."\n>\n' +
+        "> — REST API Best Practices";
+
     // Create Posts
     const post1 = await prisma.post.create({
         data: {
-            title: "First Post",
-            slug: "first-post",
-            content: "This is the first post content.",
+            title: "Mastering Restful API Design",
+            slug: "restful-api-design",
+            content: post1content,
             published: true,
             userId: user1.id,
         },

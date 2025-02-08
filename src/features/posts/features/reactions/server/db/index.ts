@@ -2,6 +2,7 @@
 
 import { ReactionType } from "@prisma/client";
 import { getUserById } from "@/data/user";
+import { togglePostCount } from "@/features/posts/server/db";
 import db from "@/lib/db";
 
 export async function getReactionsByPost(postId: string) {
@@ -41,12 +42,15 @@ export async function toggleReaction(
                 },
             });
 
+            await togglePostCount(postId, false, "reactionCount");
+
             return { removed: true };
         } else {
             await db.reaction.create({
                 data: { userId, postId, type },
             });
 
+            await togglePostCount(postId, true, "reactionCount");
             return { added: true };
         }
     } catch (error) {

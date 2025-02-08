@@ -11,7 +11,7 @@ type Options<T> = {
     successMessage?: string;
 };
 
-const executeAction = async <T>({
+export const executeAction = async <T>({
     actionFn,
     successMessage = "The actions was successful",
 }: Options<T>): Promise<{ success: boolean; message: string }> => {
@@ -34,7 +34,9 @@ const executeAction = async <T>({
     }
 };
 
-const getUsernameFromEmail = (email: string | null | undefined): string => {
+export const getUsernameFromEmail = (
+    email: string | null | undefined,
+): string => {
     if (!email) {
         return "";
     }
@@ -43,4 +45,14 @@ const getUsernameFromEmail = (email: string | null | undefined): string => {
     return username;
 };
 
-export { executeAction, getUsernameFromEmail };
+export const getDateString = (date: Date, full = false) => {
+    const now = new Date();
+    const postedYear = date.getFullYear();
+    const postedMonth = date.toLocaleString("default", { month: "short" });
+    const postedDay = date.getDate();
+    const postedDate =
+        postedYear === now.getFullYear() && !full
+            ? `${postedMonth} ${postedDay}`
+            : `${postedMonth} ${postedDay}, ${postedYear.toString().slice(-2)}`;
+    return postedDate;
+};

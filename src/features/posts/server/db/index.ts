@@ -25,9 +25,39 @@ export async function getPostBySlug(slug: string) {
     return await db.post.findUnique({
         where: { slug },
         include: {
-            user: { select: { username: true, image: true } },
+            user: { select: { username: true, image: true, createdAt: true } },
             comments: true,
             reactions: true,
+        },
+    });
+}
+
+export async function getPostById(id: string) {
+    return await db.post.findUnique({
+        where: { id },
+        include: {
+            user: { select: { username: true, image: true, createdAt: true } },
+            comments: true,
+            reactions: true,
+        },
+    });
+}
+
+export async function getJustPostById(id: string) {
+    return await db.post.findUnique({
+        where: { id },
+    });
+}
+
+export async function togglePostCount(
+    id: string,
+    increment: boolean,
+    field: "reactionCount" | "commentCount" | "saveCount",
+) {
+    return await db.post.update({
+        where: { id },
+        data: {
+            [field]: increment ? { increment: 1 } : { decrement: 1 },
         },
     });
 }
