@@ -94,12 +94,155 @@ async function main() {
             userId: user1.id,
         },
     });
+    const post2content = `# **The Art of Clean Code**
+
+Writing clean, maintainable, and efficient code is an essential skill for every developer. In this post, we'll explore best practices that will help you improve the readability and structure of your code.
+
+## **Why Clean Code Matters**
+
+Messy code leads to:
+- **Harder debugging**
+- **Slower development**
+- **Increased technical debt**
+- **Poor collaboration in teams**
+
+On the other hand, **clean code**:
+- Is easier to read and maintain ✅
+- Reduces bugs and errors 🔍
+- Improves collaboration among developers 👥
+
+## **Principles of Clean Code**
+
+Here are some key principles to follow when writing clean code:
+
+### **1️⃣ Use Meaningful Variable & Function Names**
+
+❌ Bad:
+
+\`\`\`js
+let a = 10;
+function x(y) {
+    return y * 2;
+}
+\`\`\`
+
+✅ Better:
+
+\`\`\`js
+let userAge = 10;
+function doubleValue(number) {
+    return number * 2;
+}
+\`\`\`
+
+Names should clearly describe what the variable or function does.
+
+### **2️⃣ Keep Functions Small**
+
+Each function should do one thing and do it well.
+
+❌ Bad: A function that does too much
+
+\`\`\`js
+function processUser(user) {
+    console.log("Processing user...");
+    user.isActive = true;
+    sendWelcomeEmail(user.email);
+    saveToDatabase(user);
+}
+\`\`\`
+
+✅ Better: Break functions into smaller pieces
+
+\`\`\`js
+function activateUser(user) {
+    user.isActive = true;
+}
+
+function notifyUser(email) {
+    sendWelcomeEmail(email);
+}
+
+function saveUser(user) {
+    saveToDatabase(user);
+}
+\`\`\`
+
+### **3️⃣ Follow Consistent Formatting**
+
+Use consistent indentation, spacing, and line breaks to improve readability.
+
+\`\`\`js
+if (isLoggedIn) {
+    console.log("Welcome back!");
+} else {
+    console.log("Please log in.");
+}
+\`\`\`
+
+### **4️⃣ Avoid Unnecessary Comments**
+
+❌ Bad: Commenting obvious things
+
+\`\`\`js
+// Loop through the array
+for (let i = 0; i < items.length; i++) {
+    console.log(items[i]); // Print item to console
+}
+\`\`\`
+
+✅ Better: Use clear code instead of excessive comments
+
+\`\`\`js
+items.forEach(item => console.log(item));
+\`\`\`
+
+### **5️⃣ Use DRY (Don't Repeat Yourself)**
+
+Repeating the same logic in multiple places leads to maintenance nightmares.
+
+❌ Bad:
+
+\`\`\`js
+function getAdmin() {
+    return fetch("https://api.example.com/admins").then(res => res.json());
+}
+
+function getUsers() {
+    return fetch("https://api.example.com/users").then(res => res.json());
+}
+\`\`\`
+
+✅ Better: Use a reusable function
+
+\`\`\`js
+function fetchData(endpoint) {
+    return fetch(\`https://api.example.com/\${endpoint}\`).then(res => res.json());
+}
+\`\`\`
+
+### **Quotes on Clean Code**
+
+"Programs must be written for people to read, and only incidentally for machines to execute."
+— Harold Abelson
+
+"Any fool can write code that a computer can understand. Good programmers write code that humans can understand."
+— Martin Fowler
+
+### **Further Reading**
+
+📌 Clean Code by Robert C. Martin
+📌 The Pragmatic Programmer
+
+### **Final Thoughts**
+
+Writing clean code is a skill that takes time to develop. Start applying these principles today, and soon it will become second nature. Happy coding! 🚀`;
 
     const post2 = await prisma.post.create({
         data: {
             title: "Second Post",
             slug: "second-post",
-            content: "This is the second post content.",
+            content: post2content,
             published: true,
             userId: user2.id,
         },

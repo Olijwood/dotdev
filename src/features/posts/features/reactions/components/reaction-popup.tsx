@@ -65,8 +65,9 @@ const ReactionPopup = ({
             <PopoverTrigger asChild>
                 <button
                     className={cn(
-                        " flex items-center gap-2",
+                        "flex items-center justify-center gap-2",
                         !isMobile && "flex-col",
+                        !isDetailView && "gap-1",
                     )}
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
@@ -76,8 +77,10 @@ const ReactionPopup = ({
                         <>
                             <div
                                 className={cn(
-                                    "flex text-sm ",
-                                    isDetailView && " text-lg grid grid-cols-2",
+                                    "flex text-sm",
+                                    !isDetailView && "-space-x-1 ",
+                                    isDetailView &&
+                                        " text-base lg:text-lg grid grid-cols-2",
                                     isDetailView &&
                                         isMobile &&
                                         "text-xs grid-cols-2",
@@ -95,8 +98,7 @@ const ReactionPopup = ({
                             </div>
                             <span
                                 className={cn(
-                                    "text-sm",
-                                    isDetailView && "text-lg",
+                                    isDetailView ? "text-lg" : "text-sm ",
                                 )}
                             >
                                 {reactions.length}
@@ -104,7 +106,7 @@ const ReactionPopup = ({
                         </>
                     ) : (
                         <>
-                            <Heart className="flex size-4 self-center" />
+                            <Heart className="ml-0.5 flex size-4 self-center" />
                             <span className="text-sm">{reactions.length}</span>
                         </>
                     )}

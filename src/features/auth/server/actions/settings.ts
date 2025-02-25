@@ -3,10 +3,10 @@
 import bcrypt from "bcryptjs";
 import * as z from "zod";
 
-import { getUserByEmail, getUserById } from "@/data/user";
 import { currentUser, updateSession } from "@/lib/auth";
 import db from "@/lib/db";
 import { SettingsSchema } from "@/schemas";
+import { getUserByEmail, getUserById } from "@/server/db/user";
 import { sendVerificationEmail } from "../../lib/mail";
 import { generateVerificationToken } from "../../lib/token";
 import { getUserByUsername } from "../db/data";

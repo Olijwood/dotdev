@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { twMerge } from "tailwind-merge";
+import { FormStatus } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -55,4 +56,11 @@ export const getDateString = (date: Date, full = false) => {
             ? `${postedMonth} ${postedDay}`
             : `${postedMonth} ${postedDay}, ${postedYear.toString().slice(-2)}`;
     return postedDate;
+};
+
+export const getStatusValues = (status: FormStatus) => {
+    const isLoading = status.state === "loading";
+    const error = status.state === "error" ? status.message : "";
+    const success = status.state === "success" ? status.message : "";
+    return { isLoading, error, success };
 };

@@ -11,7 +11,7 @@ export const FormSuccess = ({ message }: FormSuccessProps) => {
         return null;
     }
     return (
-        <div className="flex w-full items-center justify-center space-x-2 rounded-lg bg-emerald-500/30 p-2 text-center text-emerald-500">
+        <div className="flex w-full items-center justify-center space-x-2 rounded-lg bg-emerald-500/30 p-2 text-center text-emerald-600">
             <CheckCheckIcon className=" size-4" />
             <p className="text-center text-sm font-semibold leading-normal">
                 {message}

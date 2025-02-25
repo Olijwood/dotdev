@@ -3,10 +3,6 @@
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import * as z from "zod";
-import {
-    deleteTwoFactorConfirmationById,
-    getTwoFactorConfirmationByUserId,
-} from "@/data/user";
 import { LOGIN_STATUS } from "@/features/auth/constants";
 import {
     sendTwoFactorTokenEmail,
@@ -17,6 +13,10 @@ import {
     generateVerificationToken,
 } from "@/features/auth/lib/token";
 import { signIn } from "@/lib/auth";
+import {
+    deleteTwoFactorConfirmationById,
+    getTwoFactorConfirmationByUserId,
+} from "@/server/db/user";
 import { LoginSchema } from "../../../../schemas";
 import {
     createTwoFactorConfirmation,

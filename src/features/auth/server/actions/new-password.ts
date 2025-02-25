@@ -2,8 +2,8 @@
 
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { getUserByEmail } from "@/data/user";
 import { NewPasswordSchema } from "@/schemas";
+import { getUserByEmail } from "@/server/db/user";
 import { NEW_PASSWORD_STATUS } from "../../constants";
 import {
     deletePasswordResetTokenById,

@@ -66,7 +66,7 @@ const ProfileDropdown = () => {
                         <span>Dashboard</span>
                     </DropdownMenuItem>
                 </Link>
-                <Link href="/admin/create/">
+                <Link href="/create-post">
                     <DropdownMenuItem>
                         <PenSquare className="mr-1 size-4" />
                         <span>Create Post</span>

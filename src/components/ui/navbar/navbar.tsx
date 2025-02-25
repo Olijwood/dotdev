@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-// import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthButton, Button } from "@/components/ui/button";
 import { ProfileDropdown } from "@/components/ui/dropdown-menu";
@@ -9,7 +8,6 @@ import { ProfileDropdown } from "@/components/ui/dropdown-menu";
 const Navbar = () => {
     const { data: session } = useSession();
     const user = session?.user;
-    // const pathname = usePathname();
     const { username } = user || {};
 
     return (
@@ -28,30 +26,8 @@ const Navbar = () => {
 
                 {username && (
                     <>
-                        {/* <div className="ml-2 flex gap-x-2">
-                            <Button
-                                asChild
-                                variant={
-                                    pathname === "/server"
-                                        ? "default"
-                                        : "outline"
-                                }
-                            >
-                                <Link href="/server">Server</Link>
-                            </Button>
-                            <Button
-                                asChild
-                                variant={
-                                    pathname === "/client"
-                                        ? "default"
-                                        : "outline"
-                                }
-                            >
-                                <Link href="/client">Client</Link>
-                            </Button>
-                        </div> */}
                         <li className="ml-auto">
-                            <Link href="/dashboard">
+                            <Link href="/create-post">
                                 <Button
                                     variant="outline"
                                     size="lg"

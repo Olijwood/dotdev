@@ -1,3 +1,5 @@
+export * from "./markdown";
+
 export const getWordCount = (content: string) => {
     return content.trim().split(/\s+/g).length;
 };

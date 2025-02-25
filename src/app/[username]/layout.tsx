@@ -1,8 +1,13 @@
+import { Suspense } from "react";
+import Loading from "./loading";
+
 const PostLayout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <main className="scrollbar-y scrollbar-thin flex h-[--main-height] flex-col items-center sm:py-4">
-            <>{children}</>
-        </main>
+        <Suspense fallback={<Loading />}>
+            <main className="scrollbar-y flex h-[--main-height] flex-col items-center bg-neutral-200 sm:py-3">
+                {children}
+            </main>
+        </Suspense>
     );
 };
 

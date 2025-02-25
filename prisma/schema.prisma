@@ -91,6 +91,7 @@ model Post {
     title         String
     slug          String     @unique
     content       String
+    bannerImgUrl  String     @default("")
     published     Boolean    @default(false)
     createdAt     DateTime   @default(now())
     updatedAt     DateTime   @updatedAt

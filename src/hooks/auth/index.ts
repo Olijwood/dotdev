@@ -17,4 +17,9 @@ const useCurrentRole = () => {
     return session?.user?.role;
 };
 
-export { useCurrentUser, useCurrentRole, useCurrentUserId };
+const useCurrentUsername = () => {
+    const { data: session } = useSession();
+    return session?.user?.username;
+};
+
+export { useCurrentUser, useCurrentRole, useCurrentUserId, useCurrentUsername };

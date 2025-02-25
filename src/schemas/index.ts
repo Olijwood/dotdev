@@ -73,10 +73,55 @@ const SettingsSchema = z
         path: ["password"],
     });
 
+const CreatePostSchema = z.object({
+    title: z
+        .string()
+        .min(4, {
+            message: "Title is too short",
+        })
+        .max(100, {
+            message: "Title is too long",
+        }),
+    slug: z.string(),
+    content: z
+        .string()
+        .min(10, {
+            message: "Content is too short",
+        })
+        .max(10000, {
+            message: "Content is too long",
+        }),
+    bannerImgUrl: z.string().optional().or(z.literal("")),
+});
+
+const UpdatePostSchema = z.object({
+    title: z
+        .string()
+        .min(4, {
+            message: "Title is too short",
+        })
+        .max(100, {
+            message: "Title is too long",
+        }),
+    slug: z.string(),
+    content: z
+        .string()
+        .min(10, {
+            message: "Content is too short",
+        })
+        .max(10000, {
+            message: "Content is too long",
+        }),
+    published: z.boolean(),
+    bannerImgUrl: z.string().optional().or(z.literal("")),
+});
+
 export {
     RegisterSchema,
     LoginSchema,
     ResetPasswordSchema,
     NewPasswordSchema,
     SettingsSchema,
+    CreatePostSchema,
+    UpdatePostSchema,
 };

@@ -43,4 +43,7 @@ next-env.d.ts
 goog-api.json
 
 .vscode
+
 .husky
+
+md-test-posts/

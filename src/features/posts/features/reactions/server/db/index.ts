@@ -1,9 +1,9 @@
 "use server";
 
 import { ReactionType } from "@prisma/client";
-import { getUserById } from "@/data/user";
 import { togglePostCount } from "@/features/posts/server/db";
 import db from "@/lib/db";
+import { getUserById } from "@/server/db/user";
 
 export async function getReactionsByPost(postId: string) {
     const reactions = await db.reaction.findMany({

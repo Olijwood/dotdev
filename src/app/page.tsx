@@ -1,5 +1,5 @@
 import { Main } from "@/components/ui/main";
-import PostFeed from "@/features/posts/components/post-feed";
+import { PostFeed } from "@/features/posts/components/list-view";
 
 export default function Home() {
     return (

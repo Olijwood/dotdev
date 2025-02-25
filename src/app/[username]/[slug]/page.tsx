@@ -1,9 +1,13 @@
 import { ReactionType } from "@prisma/client";
 import { notFound } from "next/navigation";
-import { AuthorSidebar } from "@/features/posts/components/author-sidebar";
-import { PostContent } from "@/features/posts/components/post-content";
-import { PostToolbar } from "@/features/posts/components/post-toolbar";
+import { Suspense } from "react";
+import {
+    AuthorSidebar,
+    PostContent,
+} from "@/features/posts/components/detail-view";
+import { PostToolbar } from "@/features/posts/components/toolbar";
 import { getPostBySlug } from "@/features/posts/server/db";
+import Loading from "../loading";
 
 const PostPage = async ({ params }: { params: { slug: string } }) => {
     const { slug } = await params;
@@ -13,7 +17,15 @@ const PostPage = async ({ params }: { params: { slug: string } }) => {
     const post = await getPostBySlug(slug);
 
     if (!post) return notFound();
-    const { user: author, title, content, createdAt, id, reactions } = post;
+    const {
+        user: author,
+        title,
+        content,
+        createdAt,
+        id,
+        reactions,
+        bannerImgUrl,
+    } = post;
 
     const reactionCounts = reactions.reduce(
         (acc, { type }) => {
@@ -25,6 +37,7 @@ const PostPage = async ({ params }: { params: { slug: string } }) => {
 
     const contentPostProp = {
         id,
+        bannerImgUrl,
         author,
         title,
         content,
@@ -33,14 +46,14 @@ const PostPage = async ({ params }: { params: { slug: string } }) => {
     };
 
     return (
-        <>
-            <div className="flex w-full max-w-6xl flex-col justify-stretch sm:flex-row sm:gap-3">
+        <Suspense fallback={<Loading />}>
+            <div className="flex size-full  max-w-6xl flex-col sm:flex-row sm:gap-3">
                 {/* Actions sidebar - hidden on mobile */}
-                <div className="hidden w-16 sm:flex">
-                    <PostToolbar postId={id} />
+                <div className="relative  hidden items-start sm:flex md:flex">
+                    <PostToolbar postId={id} slug={slug} />
                 </div>
                 {/* Main content */}{" "}
-                <div className="flex-1">
+                <div className="min-w-0 flex-1">
                     <PostContent post={contentPostProp} />
                 </div>
                 {/* Author sidebar - hidden on mobile */}
@@ -53,8 +66,8 @@ const PostPage = async ({ params }: { params: { slug: string } }) => {
             </div>
 
             {/* Mobile actions - fixed to bottom */}
-            <PostToolbar postId={id} isMobile />
-        </>
+            <PostToolbar postId={id} slug={slug} isMobile />
+        </Suspense>
     );
 };
 

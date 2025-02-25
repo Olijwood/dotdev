@@ -8,8 +8,9 @@
     :root {
         --background: 0 0% 100%;
         --foreground: 222.2 84% 4.9%;
-
+        --paper: hsl(0, 0%, 97.5%);
         --card: 0 0% 100%;
+
         --card-foreground: 222.2 84% 4.9%;
         --popover: 0 0% 100%;
         --popover-foreground: 222.2 84% 4.9%;
@@ -37,6 +38,7 @@
         --radius: 0.5rem;
         --navbar-height: 3.6rem;
         --main-height: calc(100vh - calc(var(--navbar-height) + 2px));
+        /* --main-height2: calc(100vh - calc(var(--navbar-height) -10px)); */
         --tag-color: rgb(var(--grey-700));
         --tag-color-hover: rgb(var(--grey-900));
         --tag-bg: rgba(var(--grey-900), 0.05);
@@ -83,11 +85,12 @@
 
 @layer components {
     .bbar-container {
-        @apply fixed flex-row flex bottom-0 gap-4 inset-x-0 sm:hidden py-0.5 px-1 items-center z-[1001] bg-white border shadow-lg justify-evenly;
+        @apply fixed flex-row flex bottom-0 gap-4 inset-x-0 sm:hidden py-1.5 px-1 items-center z-[1001] bg-white justify-evenly;
+        box-shadow: 0 -4px 16px -8px #666;
     }
 
     .sidebar-container {
-        @apply ml-3 fixed flex gap-4 bg-transparent flex-col items-center rounded-xl;
+        @apply !flex !gap-3 ml-2 !px-1  !py-1 !bg-transparent !flex-col !items-center !rounded-xl !bg-white !border !border-gray-300;
     }
 
     .line-break {
@@ -95,15 +98,36 @@
     }
 
     .bar-b {
-        @apply sm:p-1 px-2 py-1.5 h-full hover:bg-gray-100  w-full rounded-full flex justify-center items-center  gap-2;
+        @apply sm:!px-1 sm:!py-1.5 !px-1 sm:mx-1 !py-1.5 !h-full !rounded-lg hover:!bg-gray-200 !w-full !gap-2 !flex !flex-row sm:!flex-col !justify-center !items-center;
+    }
+
+    .e-bar-b {
+        @apply sm:!px-1 sm:!py-1.5 !px-1 sm:mx-1 !py-1.5 !h-full !rounded-lg hover:!bg-gray-200 !w-full !gap-2 !flex !flex-col !justify-center !items-center;
+    }
+
+    .bar-i {
+        @apply !size-6 sm:!size-5 !flex !items-center !gap-4;
+    }
+
+    .h-withBbar {
+        height: calc(var(--main-height) - 56px);
+    }
+
+    .e-bbar-container {
+        @apply fixed flex-row flex bottom-0  inset-x-0 sm:hidden py-2 px-1 items-center z-[1001] bg-white justify-evenly;
+        box-shadow: 0 -4px 16px -8px #666;
+    }
+
+    .e-sidebar-container {
+        @apply !flex !gap-5  px-1 py-2 !bg-transparent !flex-col !items-center !rounded-xl !bg-white !border !border-gray-300;
+    }
+
+    .e-bar-i {
+        @apply !size-5 flex items-center gap-4;
     }
 
     .sidebar-container button {
         @apply flex-col items-center;
-    }
-
-    .bar-i {
-        @apply w-6 h-6 flex items-center gap-4;
     }
 
     .confirm-delete {
@@ -134,13 +158,11 @@
         @apply overflow-y-scroll;
         scrollbar-width: thin;
     }
-}
 
-/* @media only screen and (width <= 768px) and (width >= 500px) {
-    main {
-        padding: 0 1rem;
+    .scrollbar-thin {
+        scrollbar-width: thin;
     }
-} */
+}
 
 .crayons-tag {
     display: inline-flex;
@@ -206,4 +228,29 @@
     color: #222;
     font-weight: bold;
     margin-top: 0.5rem;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.upload-snippet {
+    width: 75%;
+    margin-left: auto;
+    background: white;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+}
+
+.controls textarea {
+    height: 60vh;
+    border: none;
+    outline: none;
+    padding: 0.5rem;
+    font-size: 1.25rem;
 }

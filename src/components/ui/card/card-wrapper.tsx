@@ -7,9 +7,9 @@ import CardHeaderSection from "./card-header-section";
 export type CardWrapperProps = {
     children: React.ReactNode;
     headerLabel?: string;
-    backButtonLabel: string;
+    backButtonLabel?: string;
     title?: string;
-    backButtonHref: string;
+    backButtonHref?: string;
 };
 
 const CardWrapper = ({
@@ -26,7 +26,9 @@ const CardWrapper = ({
             </CardHeader>
             <CardContent>{children}</CardContent>
             <CardFooter>
-                <BackButton label={backButtonLabel} href={backButtonHref} />
+                {backButtonLabel && backButtonHref && (
+                    <BackButton label={backButtonLabel} href={backButtonHref} />
+                )}
             </CardFooter>
         </Card>
     );
