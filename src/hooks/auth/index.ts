@@ -7,6 +7,15 @@ const useCurrentUser = () => {
     return session.data?.user;
 };
 
+export const useCurrentUserInfo = () => {
+    const { data: session } = useSession();
+    return {
+        id: session?.user?.id,
+        username: session?.user?.username,
+        image: session?.user?.image,
+    };
+};
+
 const useCurrentUserId = () => {
     const { data: session } = useSession();
     return session?.user?.id;

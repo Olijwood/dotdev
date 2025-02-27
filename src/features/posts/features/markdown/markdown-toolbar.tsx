@@ -17,17 +17,22 @@ import {
 } from "@/components/ui/tooltip";
 import { useImageUpload } from "@/hooks";
 import { useCurrentUserId } from "@/hooks/auth";
+import { cn } from "@/lib/utils";
 import { markdownSyntax, insertMarkdown } from "./constants";
+
+type MarkdownToolbarProps = {
+    textareaRef: RefObject<HTMLTextAreaElement | null>;
+    content: string;
+    setContent: (string: string) => void;
+    className?: string;
+};
 
 export function MarkdownToolbar({
     textareaRef,
     content,
     setContent,
-}: {
-    textareaRef: RefObject<HTMLTextAreaElement | null>;
-    content: string;
-    setContent: (string: string) => void;
-}) {
+    className = "",
+}: MarkdownToolbarProps) {
     const userId = useCurrentUserId();
     const [overflowItems, setOverflowItems] = useState<string[]>([]);
     const { fileInputRef, handleUpload } = useImageUpload();
@@ -96,7 +101,10 @@ export function MarkdownToolbar({
         <TooltipProvider>
             <div
                 id="markdown-toolbar"
-                className="flex items-center gap-1 border-b p-1"
+                className={cn(
+                    "flex items-center gap-1 border-b p-1",
+                    className,
+                )}
             >
                 {Object.entries(markdownSyntax)
                     .filter(([label]) => !overflowItems.includes(label))

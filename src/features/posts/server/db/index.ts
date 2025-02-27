@@ -35,7 +35,7 @@ export async function getPostById(id: string) {
 }
 
 export async function getPostBySlug(slug: string) {
-    return await db.post.findUnique({
+    const post = await db.post.findUnique({
         where: { slug },
         include: {
             user: { select: { username: true, image: true, createdAt: true } },
@@ -43,6 +43,12 @@ export async function getPostBySlug(slug: string) {
             reactions: true,
         },
     });
+    if (!post) return null;
+    return {
+        ...post,
+        commentCount: post.comments.length || 0,
+        reactionCount: post.reactions.length || 0,
+    };
 }
 
 export async function postBySlugExists(slug: string) {

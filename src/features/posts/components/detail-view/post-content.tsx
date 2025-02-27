@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactionType } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +38,7 @@ export function PostContent({ post }: PostContentProps) {
         <>
             {/* Banner Image */}
             {postBanner && (
-                <div className="relative aspect-[2/1] overflow-hidden sm:mb-3  sm:rounded-lg">
+                <div className="relative aspect-[2/1] overflow-hidden sm:mb-2  sm:rounded-lg">
                     <Image
                         src={postBanner}
                         alt="RESTful API Banner"
@@ -47,7 +49,7 @@ export function PostContent({ post }: PostContentProps) {
                     />
                 </div>
             )}
-            <article className="h-auto rounded-lg border border-gray-300 bg-[--paper] px-5 py-4 pb-20 sm:mx-[2.5%] md:mx-[2%] ">
+            <article className="h-auto border border-gray-300 bg-white p-4 sm:mx-[1%] sm:rounded-lg md:mx-[2.5%]">
                 {/* Author Info */}
 
                 <div className="mb-4 flex items-center gap-3">

@@ -3,13 +3,23 @@ import Link from "next/link";
 import { CSSProperties, HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-const generateTagStyles = () => {
-    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+const hashStringToColor = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `#${((hash & 0xffffff) >>> 0).toString(16).padStart(6, "0")}`;
+    return color;
+};
+
+const generateTagStyles = (tag: string) => {
+    // const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    const stableColor = hashStringToColor(tag);
     return {
-        "--tag-bg": `${randomColor}20`, // 10% opacity
-        "--tag-prefix": randomColor,
-        "--tag-bg-hover": `${randomColor}30`, // Darker hover color
-        "--tag-prefix-hover": `${randomColor}`,
+        "--tag-bg": `${stableColor}20`,
+        "--tag-prefix": stableColor,
+        "--tag-bg-hover": `${stableColor}30`,
+        "--tag-prefix-hover": `${stableColor}`,
     } as CSSProperties;
 };
 
@@ -41,13 +51,13 @@ export function CrayonTag({
     href,
     ...props
 }: CrayonTagProps) {
-    const tagStyles = generateTagStyles(); // ✅ Generate random colors
+    const tagStyles = generateTagStyles(tag);
 
     return (
         <Link
             href={href || `/t/${tag}`}
             className={cn(crayonTagVariants({ variant }), className)}
-            style={tagStyles} // ✅ Apply styles inline
+            style={tagStyles}
             {...props}
         >
             <span className="crayons-tag__prefix">#</span>

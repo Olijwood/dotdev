@@ -9,6 +9,10 @@ import { PostToolbarItem, PostToolbarItemProps } from "./toolbar-item";
 type PostToolbarProps = HTMLAttributes<HTMLDivElement> & {
     postId: string;
     slug: string;
+    counts: {
+        commentCount: number;
+        saveCount: number;
+    };
     isMobile?: boolean;
     isAuthor?: boolean;
 };
@@ -16,15 +20,12 @@ type PostToolbarProps = HTMLAttributes<HTMLDivElement> & {
 export const PostToolbar = ({
     postId,
     slug,
+    counts,
     isMobile = false,
     isAuthor = true,
 }: PostToolbarProps) => {
     const [saved, setSaved] = useState(false);
-    const post = {
-        likeCount: 5,
-        commentCount: 1,
-        saveCount: 2,
-    };
+    const { commentCount, saveCount } = counts;
     const handleSaveToggle = () => {
         setSaved((prev) => !prev);
     };
@@ -32,12 +33,12 @@ export const PostToolbar = ({
     const postToolbarItems: PostToolbarItemProps[] = [
         {
             Icon: MessageCircleIcon,
-            text: post.commentCount.toString(),
+            text: commentCount.toString(),
             tooltipText: "Comments",
         },
         {
             Icon: BookmarkIcon,
-            text: post.saveCount.toString(),
+            text: saveCount.toString(),
             tooltipText: "Save",
             handleClick: handleSaveToggle,
             iconClassName: saved ? "fill-black" : "",
