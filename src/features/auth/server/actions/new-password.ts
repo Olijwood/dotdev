@@ -1,9 +1,9 @@
 "use server";
 
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { NewPasswordSchema } from "@/schemas";
 import { getUserByEmail } from "@/server/db/user";
+import { hashPassword } from "@/server/utils";
 import { NEW_PASSWORD_STATUS } from "../../constants";
 import {
     deletePasswordResetTokenById,
@@ -48,7 +48,7 @@ export const newPassword = async (
         return { error: NEW_PASSWORD_STATUS.CRED_ERR };
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     await updateUserPassword(existingUser.id, hashedPassword);
 

@@ -1,7 +1,7 @@
 "use server";
 
-import bcrypt from "bcryptjs";
 import * as z from "zod";
+import { hashPassword } from "@/server/utils";
 import { RegisterSchema } from "../../../../schemas";
 import { REGISTER_STATUS } from "../../constants";
 import { sendVerificationEmail } from "../../lib/mail";
@@ -22,7 +22,7 @@ const register = async (data: z.infer<typeof RegisterSchema>) => {
             return { error: REGISTER_STATUS.PASSWORD_ERR };
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await hashPassword(password);
 
         const userExists = await getUserByEmail(email);
 

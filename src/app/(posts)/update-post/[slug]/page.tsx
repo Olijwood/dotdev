@@ -10,16 +10,17 @@ import Loading from "../../loading";
 export default async function UpdatePostPage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
-    const { slug } = params;
+    const { slug } = await params;
+
+    if (!slug) return redirect("/");
+
     const user = await currentUser();
     if (!user || !user.id) return redirect("/");
 
     const post = await getPostForUpdate(slug, user.id);
-    if (!post) {
-        redirect("/");
-    }
+    if (!post) return redirect("/");
 
     return (
         <Suspense fallback={<Loading />}>

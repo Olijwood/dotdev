@@ -1,10 +1,10 @@
-import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import db from "@/lib/db";
 import { LoginSchema } from "@/schemas";
+import { verifyPassword } from "@/server/utils";
 
 export default {
     providers: [
@@ -32,7 +32,11 @@ export default {
                     return null;
                 }
 
-                const passwordsMatch = await bcrypt.compare(
+                // const passwordsMatch = await bcrypt.compare(
+                //     password,
+                //     user.password,
+                // );
+                const passwordsMatch = await verifyPassword(
                     password,
                     user.password,
                 );

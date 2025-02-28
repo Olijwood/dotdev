@@ -1,6 +1,5 @@
 "use server";
 
-import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import * as z from "zod";
 import { LOGIN_STATUS } from "@/features/auth/constants";
@@ -17,6 +16,7 @@ import {
     deleteTwoFactorConfirmationById,
     getTwoFactorConfirmationByUserId,
 } from "@/server/db/user";
+import { verifyPassword } from "@/server/utils";
 import { LoginSchema } from "../../../../schemas";
 import {
     createTwoFactorConfirmation,
@@ -38,10 +38,11 @@ const login = async (data: z.infer<typeof LoginSchema>) => {
     if (!existingUser || !existingUser.password)
         return { error: LOGIN_STATUS.CRED_ERR };
 
-    const passwordsMatch = await bcrypt.compare(
+    const passwordsMatch = await verifyPassword(
         password,
         existingUser.password,
     );
+
     if (!passwordsMatch) return { error: LOGIN_STATUS.CRED_ERR };
 
     if (!existingUser.emailVerified) {
