@@ -5,6 +5,12 @@ const prisma = new PrismaClient();
 async function main() {
     console.log("🌱 Seeding database...");
 
+    const existingUser = await prisma.user.findFirst();
+    if (existingUser) {
+        console.log("🌱 Database is already seeded");
+        return;
+    }
+
     // Create Users
     const user1 = await prisma.user.upsert({
         where: { email: "user1@gmail.com" },
@@ -29,6 +35,12 @@ async function main() {
             role: "USER",
         },
     });
+
+    const existingPost = await prisma.post.findFirst();
+    if (existingPost) {
+        console.log("🌱 Database is already seeded");
+        return;
+    }
 
     const post1content =
         'RESTful API (Representational State Transfer API) is a network interface design style used for interactions between network applications. REST is a set of architectural principles and constraints rather than a standard or protocol. When a web service is "RESTful," it follows REST principles and provides an efficient, reliable, and scalable network service.\n\n' +
