@@ -12,7 +12,7 @@ import { CommentSection } from "@/features/posts/features/comments/components/co
 import { getPostBySlug } from "@/features/posts/server/db";
 import Loading from "../loading";
 
-const PostPage = async ({ params }: { params: { slug: string } }) => {
+const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = await params;
 
     if (!slug) return notFound();
