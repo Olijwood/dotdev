@@ -50,11 +50,6 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     }
 
     if (values.password && values.newPassword && dbUser.password) {
-        // const passwordsMatch = await bcrypt.compare(
-        //     values.password,
-        //     dbUser.password,
-        // );
-
         const passwordsMatch = await verifyPassword(
             values.password,
             dbUser.password,
@@ -63,7 +58,6 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
             return { error: "Invalid credentials" };
         }
 
-        // const hashedPw = await bcrypt.hash(values.newPassword, 10);
         const hashedPw = await hashPassword(values.newPassword);
         values.password = hashedPw;
     }

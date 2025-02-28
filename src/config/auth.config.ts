@@ -32,10 +32,6 @@ export default {
                     return null;
                 }
 
-                // const passwordsMatch = await bcrypt.compare(
-                //     password,
-                //     user.password,
-                // );
                 const passwordsMatch = await verifyPassword(
                     password,
                     user.password,
