@@ -4,6 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "heroku-prebuild": "yarn migrate deploy && yarn dbgen && yarn dbseed",
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
@@ -17,9 +18,7 @@
         "dbgpush": "prisma generate && prisma db push",
         "dbstud": "prisma studio",
         "dbrst": "prisma migrate reset --force && prisma db push &&  yarn dbseed",
-        "dbseed": "tsx prisma/seed.ts",
-        "dokku-prebuild": "yarn dbgen && yarn dbmdev init && yarn dbseed",
-        "dokku-postbuild": "yarn build"
+        "dbseed": "tsx prisma/seed.ts"
     },
     "dependencies": {
         "@auth/prisma-adapter": "^2.7.4",
