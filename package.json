@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "heroku-prebuild": "yarn migrate deploy && yarn dbgen && yarn dbseed",
+        "heroku-prebuild": "prisma migrate deploy init && yarn dbgen && yarn dbseed",
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
