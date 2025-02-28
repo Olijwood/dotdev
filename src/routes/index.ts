@@ -1,7 +1,14 @@
-export const PRIVATE_ROUTES = ["/dashboard"] as const;
-
-export type PublicRoute = "/" | "/new-verification";
-export const PUBLIC_ROUTES = ["/", "/new-verification"] as const;
+export const PRIVATE_ROUTES = [
+    "/dashboard",
+    "/settings",
+    "/create-post/:path",
+    "/update-post/:path",
+] as const;
+export type PrivateRoute =
+    | "/dashboard"
+    | "/settings"
+    | "/create-post/:path"
+    | "/update-post/:path";
 
 export type AuthRoute =
     | "/login"

@@ -4,10 +4,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "heroku-prebuild": "yarn install && yarn dbmprod && yarn dbgen && yarn dbseed && yarn tsx image-server",
+        "heroku-prebuild": "yarn install && yarn dbmprod && yarn dbgen && yarn dbseed ",
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
+        "image-server": "yarn tsx image-server/index.js",
         "lint": "next lint",
         "prepare": "husky",
         "check-types": "tsc --project tsconfig.json --pretty --noEmit",

@@ -22,7 +22,7 @@ export const PostToolbar = ({
     slug,
     counts,
     isMobile = false,
-    isAuthor = true,
+    isAuthor = false,
 }: PostToolbarProps) => {
     const [saved, setSaved] = useState(false);
     const { commentCount, saveCount } = counts;

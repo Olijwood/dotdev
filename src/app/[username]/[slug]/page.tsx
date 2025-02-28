@@ -10,10 +10,12 @@ import {
 import { PostToolbar } from "@/features/posts/components/toolbar";
 import { CommentSection } from "@/features/posts/features/comments/components/comment-section";
 import { getPostBySlug } from "@/features/posts/server/db";
+import { currentUser } from "@/server/actions/auth";
 import Loading from "../loading";
 
 const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = await params;
+    const user = await currentUser();
 
     if (!slug) return notFound();
 
@@ -31,6 +33,8 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
         commentCount,
         saveCount,
     } = post;
+
+    const isAuthor = user?.username === author.username;
 
     const reactionCounts = reactions.reduce(
         (acc, { type }) => {
@@ -62,7 +66,7 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
                     />
                 </div>
                 {/* Main content */}{" "}
-                <div className=" h-fit min-w-0 flex-1  sm:mr-2 md:mr-0">
+                <div className=" h-fit min-w-0 flex-1 pb-14 sm:mr-2 sm:pb-2 md:mr-0">
                     <PostContent post={contentPostProp} />
                     <CommentSection postId={id} />
                 </div>
@@ -80,6 +84,7 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
                 postId={id}
                 slug={slug}
                 counts={{ commentCount, saveCount }}
+                isAuthor={isAuthor}
                 isMobile
             />
         </Suspense>

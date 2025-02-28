@@ -3,8 +3,8 @@ import authConfig from "@/config/auth.config";
 import {
     AUTH_ROUTES,
     type AuthRoute,
-    type PublicRoute,
-    PUBLIC_ROUTES,
+    type PrivateRoute,
+    PRIVATE_ROUTES,
 } from "@/routes";
 
 const { auth } = NextAuth(authConfig);
@@ -15,8 +15,8 @@ export default auth(async function middleware(req) {
 
     const isAuthRoute = AUTH_ROUTES.includes(nextUrl.pathname as AuthRoute);
     const isApiRoute = nextUrl.pathname.startsWith("/api");
-    const isPublicRoute = PUBLIC_ROUTES.includes(
-        nextUrl.pathname as PublicRoute,
+    const isPrivateRoute = PRIVATE_ROUTES.includes(
+        nextUrl.pathname as PrivateRoute,
     );
 
     if (isApiRoute) return;
@@ -26,7 +26,7 @@ export default auth(async function middleware(req) {
     }
     if (isAuthRoute && !isLoggedIn) return;
 
-    if (!isLoggedIn && !isPublicRoute) {
+    if (!isLoggedIn && isPrivateRoute) {
         return Response.redirect(`${req.nextUrl.origin}/login`);
     }
 
