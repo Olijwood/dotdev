@@ -7,8 +7,21 @@ const nextConfig: NextConfig = {
             bodySizeLimit: "2mb",
         },
     },
+    async rewrites() {
+        return [
+            {
+                source: "/assets/:path*",
+                destination: "http://localhost:4000/assets/:path*",
+            },
+        ];
+    },
     images: {
+        unoptimized: true,
         remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "dotdev.olijwood.co.uk",
+            },
             {
                 protocol: "https",
                 hostname: "lh3.googleusercontent.com",

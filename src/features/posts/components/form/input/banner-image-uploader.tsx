@@ -26,7 +26,6 @@ export function ImageUploader({
         const url = await handleUpload(userId, postId);
         if (url) onUploadSuccess(url);
     };
-
     return (
         <div className="flex items-center gap-4">
             <input

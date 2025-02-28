@@ -7,6 +7,7 @@ import { LoginSchema } from "@/schemas";
 import { verifyPassword } from "@/server/utils";
 
 export default {
+    trustHost: true,
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID,

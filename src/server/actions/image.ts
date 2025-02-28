@@ -13,15 +13,14 @@ export async function uploadImage(formData: FormData) {
         return { error: "Invalid upload request." };
     }
     try {
-        const uploadDir = postId
-            ? path.join(process.cwd(), "public", userId, postId)
-            : path.join(process.cwd(), "public", userId);
+        const baseDir = path.join(process.cwd(), "assets/images", userId);
+        const uploadDir = postId ? path.join(baseDir, postId) : baseDir;
+
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
 
         const ext = path.extname(file.name);
-
         const uniqueId = crypto.randomUUID();
         const fileName = `${uniqueId}${ext}`;
         const filePath = path.join(uploadDir, fileName);
@@ -31,8 +30,9 @@ export async function uploadImage(formData: FormData) {
         fs.writeFileSync(filePath, fileBuffer);
 
         const fileUrl = postId
-            ? `/${userId}/${postId}/${fileName}`
-            : `/${userId}/${fileName}`;
+            ? `/assets/images/${userId}/${postId}/${fileName}`
+            : `/assets/images/${userId}/${fileName}`;
+
         return { imageUrl: fileUrl };
     } catch (error) {
         console.error("Upload failed:", error);
@@ -46,7 +46,7 @@ export async function deleteImage(imageUrl: string) {
     if (!imageUrl) return { error: "No image path provided." };
 
     try {
-        const filePath = path.join(process.cwd(), "public", imageUrl);
+        const filePath = path.join(process.cwd(), "assets/images", imageUrl);
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath); // Delete the file
             return { success: "Image deleted successfully." };
