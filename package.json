@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "heroku-prebuild": "yarn install && pdmdeploy init && yarn dbgen && yarn dbseed",
+        "heroku-prebuild": "yarn install && yarn dbmdeploy init && yarn dbgen && yarn dbseed",
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
