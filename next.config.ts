@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
         return [
             {
                 source: "/assets/:path*",
-                destination: "http://localhost:4000/assets/:path*",
+                destination: "http://localhost:4001/assets/:path*",
             },
         ];
     },
