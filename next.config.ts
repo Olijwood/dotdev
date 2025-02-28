@@ -8,12 +8,21 @@ const nextConfig: NextConfig = {
         },
     },
     async rewrites() {
-        return [
-            {
-                source: "/assets/:path*",
-                destination: "http://localhost:4001/assets/:path*",
-            },
-        ];
+        if (process.env.NODE_ENV === "development") {
+            return [
+                {
+                    source: "/assets/:path*",
+                    destination: "http://localhost:4001/assets/:path*",
+                },
+            ];
+        } else {
+            return [
+                {
+                    source: "/assets/:path*",
+                    destination: "http://image-server:4001/assets/:path*",
+                },
+            ];
+        }
     },
     images: {
         unoptimized: true,
