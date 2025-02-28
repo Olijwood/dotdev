@@ -15,7 +15,7 @@
         "dbpsh": "prisma db push",
         "dbgen": "prisma generate",
         "dbmdev": "prisma migrate dev --name",
-        "dbmdeploy": "prisma migrate --name",
+        "dbmprod": "prisma migrate --name",
         "dbgpush": "prisma generate && prisma db push",
         "dbstud": "prisma studio",
         "dbrst": "prisma migrate reset --force && prisma db push &&  yarn dbseed",

@@ -1,7 +1,7 @@
 "use server";
 
-import { currentUserId } from "@/lib/auth";
 import db from "@/lib/db";
+import { currentUserId } from "@/server/actions/auth";
 
 export async function getComments(postId: string) {
     const userId = await currentUserId();

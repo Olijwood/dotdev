@@ -2,9 +2,9 @@
 
 import * as z from "zod";
 
-import { currentUser, updateSession } from "@/lib/auth";
 import db from "@/lib/db";
 import { SettingsSchema } from "@/schemas";
+import { currentUser, updateSession } from "@/server/actions/auth";
 import { getUserByEmail, getUserById } from "@/server/db/user";
 import { hashPassword, verifyPassword } from "@/server/utils";
 import { sendVerificationEmail } from "../../lib/mail";

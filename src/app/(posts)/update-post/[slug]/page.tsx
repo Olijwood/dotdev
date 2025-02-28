@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { PostForm } from "@/features/posts/components/form";
 import { getPostForUpdate } from "@/features/posts/server/db";
-import { currentUser } from "@/lib/auth";
+import { currentUser } from "@/server/actions/auth";
 import Loading from "../../loading";
 
 export default async function UpdatePostPage({

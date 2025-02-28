@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { currentUser } from "@/lib/auth";
 import { UpdatePostSchema } from "@/schemas";
+import { currentUser } from "@/server/actions/auth";
 import { updatePost } from "../db";
 
 export const actionUpdatePost = async (

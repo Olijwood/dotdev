@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { currentUser } from "@/lib/auth";
 import { CreatePostSchema } from "@/schemas";
+import { currentUser } from "@/server/actions/auth";
 import type { PostForCreate } from "../../types";
 import { createPost } from "../db";
 
