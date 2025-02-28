@@ -12,7 +12,7 @@ export default async function UpdatePostPage({
 }: {
     params: { slug: string };
 }) {
-    const { slug } = await params;
+    const { slug } = params;
     const user = await currentUser();
     if (!user || !user.id) return redirect("/");
 
