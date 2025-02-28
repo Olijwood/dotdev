@@ -8,24 +8,18 @@ const nextConfig: NextConfig = {
         },
     },
     async rewrites() {
-        if (process.env.NODE_ENV === "development") {
-            return [
-                {
-                    source: "/assets/:path*",
-                    destination: "http://localhost:4001/assets/:path*",
-                },
-            ];
-        } else {
-            return [
-                {
-                    source: "/assets/:path*",
-                    destination: "http://image-server:4001/assets/:path*",
-                },
-            ];
-        }
+        return [
+            {
+                source: "/uploads/:path*",
+                destination: "/uploads/:path*",
+            },
+            {
+                source: "/:path*",
+                destination: "/:path*",
+            },
+        ];
     },
     images: {
-        unoptimized: true,
         remotePatterns: [
             {
                 protocol: "https",

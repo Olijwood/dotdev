@@ -8,7 +8,6 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "image-server": "yarn tsx image-server/index.js",
         "lint": "next lint",
         "prepare": "husky",
         "check-types": "tsc --project tsconfig.json --pretty --noEmit",
