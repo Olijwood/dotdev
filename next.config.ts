@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
             {
                 protocol: "https",
                 hostname: "dotdev.olijwood.co.uk",
+                pathname: "/uploads/**",
             },
             {
                 protocol: "https",

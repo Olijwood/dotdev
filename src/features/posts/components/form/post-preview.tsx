@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { RenderMarkdown } from "@/features/posts/features/markdown";
 
 export type PostPreviewProps = {
@@ -17,14 +16,13 @@ export const PostPreview = ({
     return (
         <div className=" scrollbar-thin flex max-h-[calc(100vh-5rem)] min-h-full flex-1 flex-col gap-2  overflow-y-auto p-3 ">
             {bannerImgUrl && (
-                <Image
+                <img
                     src={bannerImgUrl}
                     alt="RESTful API Banner"
                     width={300}
                     height={150}
                     className="mx-auto mb-2 rounded-lg object-contain"
                     style={{ width: "auto", height: "auto" }}
-                    priority
                 />
             )}
             <h1 className="text-center text-5xl font-extrabold">{title}</h1>
