@@ -5,9 +5,10 @@
     "type": "module",
     "scripts": {
         "heroku-prebuild": "yarn install && yarn dbmprod && yarn dbgen && yarn dbseed ",
-        "dev": "next dev --turbopack",
+        "dev": "node server.js & next dev --turbopack",
         "build": "next build",
         "start": "next start",
+        "startdev": "node static-server.js & next start",
         "lint": "next lint",
         "prepare": "husky",
         "check-types": "tsc --project tsconfig.json --pretty --noEmit",

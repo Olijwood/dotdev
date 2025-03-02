@@ -12,7 +12,6 @@ export const actionUpdatePost = async (
     const validatedFields = UpdatePostSchema.safeParse(data);
 
     if (!validatedFields.success) {
-        console.log(validatedFields.error);
         return { error: "Invalid input" };
     }
 
@@ -45,8 +44,6 @@ export const actionUpdatePostPublished = async (
     postId: string,
     published: boolean,
 ) => {
-    console.log("actions published", published);
-
     const user = await currentUser();
 
     if (!user || !user.id) {

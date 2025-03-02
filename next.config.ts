@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.STATIC_ENV === "development";
+
 const nextConfig: NextConfig = {
     reactStrictMode: true,
     experimental: {
@@ -7,13 +9,29 @@ const nextConfig: NextConfig = {
             bodySizeLimit: "2mb",
         },
     },
-    async rewrites() {
+    async headers() {
         return [
             {
                 source: "/uploads/:path*",
-                destination: "http://localhost:5000/uploads/:path*",
+                headers: [
+                    {
+                        key: "Cache-Control",
+                        value: "public, max-age=31536000, immutable",
+                    },
+                ],
             },
         ];
+    },
+    async rewrites() {
+        if (isDev) {
+            return [
+                {
+                    source: "/uploads/:path*",
+                    destination: "http://localhost:3001/uploads/:path*",
+                },
+            ];
+        }
+        return [];
     },
     images: {
         remotePatterns: [

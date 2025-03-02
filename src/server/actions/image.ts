@@ -13,7 +13,7 @@ export async function uploadImage(formData: FormData) {
         return { error: "Invalid upload request." };
     }
     try {
-        const baseDir = path.join("/uploads", userId);
+        const baseDir = path.join(process.cwd(), "uploads", userId);
         const uploadDir = postId ? path.join(baseDir, postId) : baseDir;
 
         if (!fs.existsSync(uploadDir)) {
@@ -46,7 +46,7 @@ export async function deleteImage(imageUrl: string) {
     if (!imageUrl) return { error: "No image path provided." };
 
     try {
-        const filePath = path.join("/uploads", imageUrl);
+        const filePath = path.join(process.cwd(), "uploads", imageUrl);
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath); // Delete the file
             return { success: "Image deleted successfully." };
