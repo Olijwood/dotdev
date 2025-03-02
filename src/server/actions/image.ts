@@ -3,6 +3,11 @@
 import fs from "fs";
 import path from "path";
 
+const baseDir =
+    process.env.STATIC_ENV === "development"
+        ? path.join(process.cwd(), "uploads")
+        : "/uploads";
+
 export async function uploadImage(formData: FormData) {
     "use server";
     const file = formData.get("file") as File | null;
@@ -13,8 +18,8 @@ export async function uploadImage(formData: FormData) {
         return { error: "Invalid upload request." };
     }
     try {
-        const baseDir = path.join(process.cwd(), "uploads", userId);
-        const uploadDir = postId ? path.join(baseDir, postId) : baseDir;
+        const userDir = path.join(baseDir, userId);
+        const uploadDir = postId ? path.join(userDir, postId) : userDir;
 
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
@@ -46,9 +51,12 @@ export async function deleteImage(imageUrl: string) {
     if (!imageUrl) return { error: "No image path provided." };
 
     try {
-        const filePath = path.join(process.cwd(), "uploads", imageUrl);
+        const filePath = path.join(
+            baseDir,
+            imageUrl.replace(/^\/?uploads\//, ""),
+        );
         if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath); // Delete the file
+            fs.unlinkSync(filePath);
             return { success: "Image deleted successfully." };
         } else {
             return { error: "File not found." };
