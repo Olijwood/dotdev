@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactionType } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

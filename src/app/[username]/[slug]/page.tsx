@@ -28,16 +28,20 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
         content,
         createdAt,
         id,
-        reactions,
+        reactions = [],
         bannerImgUrl,
         commentCount,
         saveCount,
+        isSaved,
     } = post;
 
     const isAuthor = user?.username === author.username;
 
     const reactionCounts = reactions.reduce(
-        (acc, { type }) => {
+        (
+            acc: Record<ReactionType, number>,
+            { type }: { type: ReactionType },
+        ) => {
             acc[type] = (acc[type] || 0) + 1;
             return acc;
         },
@@ -57,34 +61,36 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
     return (
         <Suspense fallback={<Loading />}>
             <div className="flex size-full  max-w-6xl flex-col  sm:flex-row sm:gap-2">
-                {/* Actions sidebar - hidden on mobile */}
                 <div className="relative  hidden items-start sm:flex md:flex">
                     <PostToolbar
                         postId={id}
                         slug={slug}
-                        counts={{ commentCount, saveCount }}
+                        isAuthor={isAuthor}
+                        reactionCounts={reactionCounts}
+                        commentCount={commentCount}
+                        saveCount={saveCount}
+                        isSaved={isSaved}
                     />
                 </div>
-                {/* Main content */}{" "}
+
                 <div className=" h-fit min-w-0 flex-1 pb-14 sm:mr-2 sm:pb-2 md:mr-0">
                     <PostContent post={contentPostProp} />
                     <CommentSection postId={id} />
                 </div>
-                {/* Author sidebar - hidden on mobile */}
+
                 <div className="mr-2 hidden w-48 md:block lg:w-64">
-                    <AuthorSidebar
-                        author={author}
-                        className="sticky space-y-2 "
-                    />
+                    <AuthorSidebar author={author} />
                 </div>
             </div>
 
-            {/* Mobile actions - fixed to bottom */}
             <PostToolbar
                 postId={id}
                 slug={slug}
-                counts={{ commentCount, saveCount }}
                 isAuthor={isAuthor}
+                reactionCounts={reactionCounts}
+                commentCount={commentCount}
+                saveCount={saveCount}
+                isSaved={isSaved}
                 isMobile
             />
         </Suspense>

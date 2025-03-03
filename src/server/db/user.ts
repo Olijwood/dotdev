@@ -14,6 +14,18 @@ const getAccountByUserId = async (userId: string) => {
     }
 };
 
+const getUserExistsById = async (id: string) => {
+    try {
+        const user = await db.user.findUnique({
+            select: { id: true },
+            where: { id },
+        });
+        return !!user;
+    } catch (error) {
+        logError("getUserExistsById", error);
+    }
+};
+
 const getUserById = async (id: string) => {
     try {
         const user = await db.user.findUnique({
@@ -55,6 +67,7 @@ const deleteTwoFactorConfirmationById = async (id: string) => {
 export {
     getAccountByUserId,
     getUserById,
+    getUserExistsById,
     getUserByEmail,
     getTwoFactorConfirmationByUserId,
     deleteTwoFactorConfirmationById,

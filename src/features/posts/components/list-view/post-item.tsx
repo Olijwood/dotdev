@@ -15,6 +15,7 @@ type PostItemProps = {
         image: string;
         commentCount: number;
         reactionCount: number;
+        isSaved?: boolean;
     };
 };
 
@@ -51,6 +52,7 @@ const PostItem = ({ post }: PostItemProps) => {
                     commentCount={post.commentCount}
                     minutesToRead={minutesToRead}
                     isAuthor={isAuthor}
+                    isSaved={post.isSaved}
                 />
             </div>
         </div>

@@ -80,7 +80,7 @@ const ReactionPopup = ({
                                     "flex text-sm",
                                     !isDetailView && "-space-x-1 ",
                                     isDetailView &&
-                                        " text-base lg:text-lg grid grid-cols-2",
+                                        "text-base md:text-lg grid grid-cols-2",
                                     isDetailView &&
                                         isMobile &&
                                         "text-xs grid-cols-2",

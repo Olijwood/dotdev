@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import ReactionPopup from "../../features/reactions/components/reaction-popup";
+import { useDeletePost } from "../../hooks";
+import { toggleSavePostAction } from "../../server/actions";
 
 type PostActionsProps = {
     postId: string;
@@ -26,6 +28,7 @@ type PostActionsProps = {
     commentCount?: number;
     minutesToRead?: number;
     isAuthor?: boolean;
+    isSaved?: boolean;
 };
 
 const PostActions = ({
@@ -34,8 +37,25 @@ const PostActions = ({
     commentCount = 0,
     minutesToRead = 0,
     isAuthor = false,
+    isSaved: initialIsSaved = false,
 }: PostActionsProps) => {
-    const [saved, setSaved] = useState(false);
+    const [isSaved, setIsSaved] = useState(initialIsSaved);
+    const [isSaving, setIsSaving] = useState(false);
+    const { modal, openModal } = useDeletePost(postId);
+
+    const handleToggleSave = async () => {
+        if (isSaving) return;
+
+        try {
+            setIsSaving(true);
+            const result = await toggleSavePostAction(postId);
+            setIsSaved(result.saved);
+        } catch (error) {
+            console.error("Error toggling saved post:", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <TooltipProvider>
@@ -72,7 +92,11 @@ const PostActions = ({
                     {isAuthor ? (
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" size="sm">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={openModal}
+                                >
                                     <Trash2Icon className="size-4" />
                                 </Button>
                             </TooltipTrigger>
@@ -102,23 +126,25 @@ const PostActions = ({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setSaved(!saved)}
+                                onClick={handleToggleSave}
+                                disabled={isSaving}
                                 className="flex items-center gap-1"
                             >
                                 <BookmarkIcon
                                     className={cn(
                                         "size-4 fill-none hover:fill-gray-900",
-                                        saved ? "fill-black" : "",
+                                        isSaved ? "fill-black" : "",
                                     )}
                                 />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{saved ? "Saved" : "Save"}</p>
+                            <p>{isSaved ? "Saved" : "Save"}</p>
                         </TooltipContent>
                     </Tooltip>
                 </div>
             </div>
+            {modal}
         </TooltipProvider>
     );
 };

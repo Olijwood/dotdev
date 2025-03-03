@@ -1,3 +1,5 @@
+"yse client";
+
 import { ReactionType } from "@prisma/client";
 import { reactionsList } from "../constants";
 import { ReactionButton } from "./reaction-button";

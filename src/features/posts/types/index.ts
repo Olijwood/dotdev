@@ -1,10 +1,19 @@
 export type Post = {
-    uid: string;
+    id: string;
     slug: string;
     title: string;
     content: string;
     username: string;
-    saveCount: number;
+    image: string;
+    createdAt: Date;
+    updatedAt: Date;
+    published: boolean;
+    bannerImgUrl: string;
+    commentCount: number;
+    reactionCount: number;
+    saveCount?: number;
+    isAuthor?: boolean;
+    isSaved?: boolean;
 };
 
 export type PostForCreate = {
@@ -24,4 +33,8 @@ export type PostForUpdate = {
     published: boolean;
     bannerImgUrl: string | null;
     username: string;
+};
+
+export type SavedPostStatus = {
+    [postId: string]: boolean;
 };

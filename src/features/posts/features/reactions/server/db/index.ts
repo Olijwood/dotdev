@@ -3,15 +3,23 @@
 import { ReactionType } from "@prisma/client";
 import { togglePostCount } from "@/features/posts/server/db";
 import db from "@/lib/db";
-import { getUserById } from "@/server/db/user";
+import { getUserExistsById } from "@/server/db/user";
 
 export async function getReactionsByPost(postId: string) {
-    const reactions = await db.reaction.findMany({
+    return await db.reaction.findMany({
         where: { postId },
-        include: { user: { select: { username: true, image: true } } },
+        select: {
+            type: true,
+            userId: true,
+            postId: true,
+            user: {
+                select: {
+                    username: true,
+                    image: true,
+                },
+            },
+        },
     });
-
-    return reactions;
 }
 
 export async function toggleReaction(
@@ -23,36 +31,39 @@ export async function toggleReaction(
         throw new Error("User ID required.");
     }
 
-    const userExists = getUserById(userId);
+    const userExists = await getUserExistsById(userId);
     if (!userExists) {
         throw new Error("Invalid credentials.");
     }
 
     try {
-        const existingReaction = await db.reaction.findUnique({
-            where: {
-                userId_postId_type: { userId, postId, type },
-            },
-        });
-
-        if (existingReaction) {
-            await db.reaction.delete({
+        return await db.$transaction(async (tx) => {
+            const existingReaction = await tx.reaction.findUnique({
                 where: {
                     userId_postId_type: { userId, postId, type },
                 },
             });
 
-            await togglePostCount(postId, false, "reactionCount");
+            if (existingReaction) {
+                await tx.reaction.delete({
+                    where: {
+                        userId_postId_type: { userId, postId, type },
+                    },
+                });
 
-            return { removed: true };
-        } else {
-            await db.reaction.create({
-                data: { userId, postId, type },
-            });
+                await togglePostCount(postId, false, "reactionCount");
 
-            await togglePostCount(postId, true, "reactionCount");
-            return { added: true };
-        }
+                return { removed: true };
+            } else {
+                await tx.reaction.create({
+                    data: { userId, postId, type },
+                });
+
+                await togglePostCount(postId, true, "reactionCount");
+
+                return { added: true };
+            }
+        });
     } catch (error) {
         console.error("Error in toggleReaction:", error);
         throw error;

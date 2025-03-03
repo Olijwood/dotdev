@@ -1,3 +1,5 @@
+"use client";
+
 import { PencilIcon, Save, View } from "lucide-react";
 import { Toolbar } from "@/components/ui/toolbar";
 import { PostToolbarItem, PostToolbarItemProps } from "./toolbar-item";
