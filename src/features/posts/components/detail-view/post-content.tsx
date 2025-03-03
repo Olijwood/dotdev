@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactionType } from "@prisma/client";
-import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
@@ -39,13 +38,11 @@ export function PostContent({ post }: PostContentProps) {
             {/* Banner Image */}
             {postBanner && (
                 <div className="relative aspect-[2/1] overflow-hidden sm:mb-2  sm:rounded-lg">
-                    <Image
+                    <img
                         src={postBanner}
                         alt="RESTful API Banner"
-                        fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 50vw"
                         className="h-auto max-w-full object-cover"
-                        priority
                     />
                 </div>
             )}
@@ -94,13 +91,11 @@ export function PostContent({ post }: PostContentProps) {
                     {/* Banner Image */}
                     {postBanner && (
                         <div className="relative mb-6 aspect-[2/1] overflow-hidden rounded-lg">
-                            <Image
+                            <img
                                 src={postBanner}
                                 alt="RESTful API Banner"
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                fill
                                 className="object-cover"
-                                priority
                             />
                         </div>
                     )}
