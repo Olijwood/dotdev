@@ -37,7 +37,7 @@ export function PostContent({ post }: PostContentProps) {
         <>
             {/* Banner Image */}
             {postBanner && (
-                <div className="relative aspect-[2/1] overflow-hidden sm:mb-2  sm:rounded-lg">
+                <div className="relative flex aspect-[2/1] justify-center overflow-hidden sm:mb-2  sm:rounded-lg">
                     <img
                         src={postBanner}
                         alt="RESTful API Banner"
@@ -90,7 +90,7 @@ export function PostContent({ post }: PostContentProps) {
                 <div>
                     {/* Banner Image */}
                     {postBanner && (
-                        <div className="relative mb-6 aspect-[2/1] overflow-hidden rounded-lg">
+                        <div className="relative mb-6 flex aspect-[2/1] justify-center overflow-hidden rounded-lg">
                             <img
                                 src={postBanner}
                                 alt="RESTful API Banner"
