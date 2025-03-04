@@ -19,6 +19,7 @@ const eslintConfig = [
             eqeqeq: ["error", "always"],
             // curly: "error",
             "no-console": "off",
+            "no-require-imports": "off",
         },
     },
 
@@ -35,9 +36,9 @@ const eslintConfig = [
         "plugin:import/typescript",
         "plugin:tailwindcss/recommended",
         "plugin:testing-library/react",
-        "plugin:jest-dom/recommended",
-        "next/core-web-vitals", // Next.js core web vitals rules
-        "next/typescript", // Next.js TypeScript rules
+        "plugin:testing-library/react",
+        "next/core-web-vitals",
+        "next/typescript",
     ),
     {
         languageOptions: {
@@ -55,12 +56,14 @@ const eslintConfig = [
             "generators/*",
         ],
         rules: {
-            "@next/next/no-img-element": "off", // Use if you need raw <img> tags
-            "react/react-in-jsx-scope": "off", // Not needed in Next.js
+            "@next/next/no-img-element": "off",
+            "react/react-in-jsx-scope": "off",
             "@typescript-eslint/no-unused-vars": [
                 "error",
                 { argsIgnorePattern: "^_" },
             ],
+            "@typescript-eslint/no-require-imports": "off",
+            "testing-library/no-manual-cleanup": "error",
             "import/order": [
                 "error",
                 {

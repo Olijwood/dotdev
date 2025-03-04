@@ -96,6 +96,7 @@ const PostActions = ({
                                     variant="ghost"
                                     size="sm"
                                     onClick={openModal}
+                                    aria-label="Delete post"
                                 >
                                     <Trash2Icon className="size-4" />
                                 </Button>
@@ -109,7 +110,10 @@ const PostActions = ({
                     {isAuthor ? (
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Link href={`/update-post/${slug}`}>
+                                <Link
+                                    href={`/update-post/${slug}`}
+                                    aria-label="Update post"
+                                >
                                     <Button variant="ghost" size="sm">
                                         <PencilIcon className="size-4" />
                                     </Button>
