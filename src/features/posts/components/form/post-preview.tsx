@@ -3,7 +3,7 @@
 import { RenderMarkdown } from "@/features/posts/features/markdown";
 
 export type PostPreviewProps = {
-    title: string;
+    title?: string | null | undefined | "";
     content: string | null | undefined;
     bannerImgUrl: string | null | undefined;
 };
@@ -25,7 +25,12 @@ export const PostPreview = ({
                     style={{ width: "auto", height: "auto" }}
                 />
             )}
-            <h1 className="text-center text-5xl font-extrabold">{title}</h1>
+            <h1
+                className="text-center text-5xl font-extrabold"
+                data-testid="post-title-preview"
+            >
+                {title?.trim() ? title : "No title"}
+            </h1>
             <RenderMarkdown content={content} />
         </div>
     );

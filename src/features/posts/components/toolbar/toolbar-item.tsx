@@ -19,6 +19,7 @@ export type PostToolbarItemProps = {
     handleClick?: () => void;
     href?: string;
     disabled?: boolean;
+    testid?: string;
 };
 
 export const PostToolbarItem = ({
@@ -29,6 +30,7 @@ export const PostToolbarItem = ({
     tooltipText,
     handleClick,
     href,
+    testid,
     disabled = false,
 }: PostToolbarItemProps) => {
     return (
@@ -42,6 +44,7 @@ export const PostToolbarItem = ({
                                 "!mx-0 w-full flex-col",
                                 isEdit ? "e-bar-b" : "bar-b",
                             )}
+                            data-testid={testid}
                         >
                             <ToolbarButtonContent
                                 isEdit={isEdit}
@@ -61,6 +64,7 @@ export const PostToolbarItem = ({
                         )}
                         onClick={handleClick}
                         disabled={disabled}
+                        data-testid={testid}
                     >
                         <ToolbarButtonContent
                             isEdit={isEdit}

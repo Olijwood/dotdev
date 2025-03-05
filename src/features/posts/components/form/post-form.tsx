@@ -3,7 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import kebabCase from "lodash.kebabcase";
 import { redirect } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import {
+    useMemo,
+    useRef,
+    useState,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,110 +31,247 @@ import { PostTitleInput, ImageUploader } from "./input";
 import { PostFormSchema, PostFormValues } from "./schema";
 import type { Post, FormState } from "./types";
 
+export type PostFormHandle = {
+    onSubmit: (data: PostFormValues, postId?: string) => Promise<void>;
+};
+
 type PostFormProps = {
     post?: Post;
     userId: string;
 };
 
-export const PostForm = ({ post, userId }: PostFormProps) => {
-    const [{ status, preview, isPublished }, setFormState] =
-        useState<FormState>({
-            status: { state: "idle" },
-            preview: false,
-            isPublished: post?.published || false,
-        });
-    const { watch, register, handleSubmit, setValue } = useForm<PostFormValues>(
-        {
-            resolver: zodResolver(PostFormSchema),
-            defaultValues: {
-                title: post?.title || "",
-                slug: post?.slug || "",
-                content: post?.content || "",
-                bannerImgUrl: post?.bannerImgUrl || "",
-                published: post?.published || false,
-            },
-        },
-    );
-    const formValues = watch(["title", "content", "bannerImgUrl", "slug"]);
-    const [title, content, bannerImgUrl, slug] = formValues;
+export const PostForm = forwardRef<PostFormHandle, PostFormProps>(
+    ({ post, userId }: PostFormProps, ref) => {
+        const [{ status, preview, isPublished }, setFormState] =
+            useState<FormState>({
+                status: { state: "idle" },
+                preview: false,
+                isPublished: post?.published || false,
+            });
+        const { watch, register, handleSubmit, setValue, formState } =
+            useForm<PostFormValues>({
+                resolver: zodResolver(PostFormSchema),
+                defaultValues: {
+                    title: post?.title || "",
+                    slug: post?.slug || "",
+                    content: post?.content || "",
+                    bannerImgUrl: post?.bannerImgUrl || "",
+                    published: post?.published || false,
+                },
+            });
 
-    const { isValid, validSlugMsg } = useValidateSlug(slug, post?.slug || "");
+        const formValues = watch(["title", "content", "bannerImgUrl", "slug"]);
+        const [title, content, bannerImgUrl, slug] = formValues;
 
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
+        const { isValid, validSlugMsg } = useValidateSlug(
+            slug,
+            post?.slug || "",
+        );
 
-    const updateFormState = (updates: Partial<FormState>) => {
-        setFormState((prev) => ({ ...prev, ...updates }));
-    };
+        const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const onSubmit = async (data: PostFormValues) => {
-        updateFormState({ status: { state: "loading" } });
+        const updateFormState = (updates: Partial<FormState>) => {
+            setFormState((prev) => ({ ...prev, ...updates }));
+        };
+        const onSubmit = async (data: PostFormValues, postId?: string) => {
+            console.log("Submitting form with data:", data);
+            console.log("postId:", postId); // Debugging log
 
-        try {
-            const response = post?.id
-                ? await actionUpdatePost(post.id, data)
-                : await actionCreatePost(data);
+            updateFormState({ status: { state: "loading" } });
 
-            if (response.error) {
-                toast.error(response.error);
-            } else {
-                toast.success(response.success);
+            try {
+                const id = postId || null;
+                const response = id
+                    ? await actionUpdatePost(id, data)
+                    : await actionCreatePost(data);
+
+                if (response.error) {
+                    console.log("Error:", response.error);
+                    toast.error(response.error);
+                    return;
+                } else {
+                    console.log("Success:", response.success);
+                    toast.success(response.success);
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error("Something went wrong. Please try again.");
+            } finally {
+                updateFormState({ status: { state: "idle" } });
+                if (slug !== post?.slug) {
+                    redirect(`/update-post/${slug}`);
+                }
             }
-        } catch (error) {
-            console.error(error);
-            toast.error("Something went wrong. Please try again.");
-        } finally {
-            updateFormState({ status: { state: "idle" } });
-            if (slug !== post?.slug) {
+        };
+
+        // Expose onSubmit so the test can call it
+        useImperativeHandle(ref, () => ({
+            onSubmit,
+        }));
+
+        const handlePublishedToggle = async () => {
+            if (!post) return;
+            updateFormState({ status: { state: "loading" } });
+
+            try {
+                const response = await actionUpdatePostPublished(
+                    post.id,
+                    !isPublished,
+                );
+
+                if (response.error) {
+                    toast.error(response.error);
+                } else {
+                    updateFormState({ isPublished: !isPublished });
+                    toast.success(
+                        `Post ${!isPublished ? "published" : "unpublished"}!`,
+                    );
+                }
+            } catch {
+                toast.error("Something went wrong.");
+            } finally {
+                updateFormState({ status: { state: "idle" } });
                 redirect(`/update-post/${slug}`);
             }
-        }
-    };
+        };
 
-    const handlePublishedToggle = async () => {
-        if (!post) return;
-        updateFormState({ status: { state: "loading" } });
+        const handleBannerImageSuccess = (url: string) =>
+            setValue("bannerImgUrl", url);
+        const togglePreview = () => updateFormState({ preview: !preview });
 
-        try {
-            const response = await actionUpdatePostPublished(
-                post.id,
-                !isPublished,
-            );
+        const submitHandler = handleSubmit((data) => {
+            const postId = post?.id || undefined;
+            console.log("Submitting with postId:", postId); // Debugging log
+            return onSubmit(data, postId);
+        });
 
-            if (response.error) {
-                toast.error(response.error);
-            } else {
-                updateFormState({ isPublished: !isPublished });
-                toast.success(
-                    `Post ${!isPublished ? "published" : "unpublished"}!`,
-                );
-            }
-        } catch {
-            toast.error("Something went wrong.");
-        } finally {
-            updateFormState({ status: { state: "idle" } });
-            redirect(`/update-post/${slug}`);
-        }
-    };
+        const previewProps = useMemo(
+            () => ({
+                title,
+                content,
+                bannerImgUrl,
+            }),
+            [title, content, bannerImgUrl],
+        );
 
-    const handleBannerImageSuccess = (url: string) =>
-        setValue("bannerImgUrl", url);
-    const togglePreview = () => updateFormState({ preview: !preview });
-    const submitHandler = handleSubmit(onSubmit);
+        const { isLoading } = getStatusValues(status);
 
-    const previewProps = useMemo(
-        () => ({
-            title,
-            content,
-            bannerImgUrl,
-        }),
-        [title, content, bannerImgUrl],
-    );
+        const validState = {
+            isValid,
+            isLoading,
+        };
 
-    const { isLoading } = getStatusValues(status);
+        return (
+            <PostFormContainer>
+                <SidebarContainer>
+                    {post ? (
+                        <UpdatePostToolbar
+                            postId={post.id}
+                            slug={post.slug}
+                            username={post.username}
+                            preview={preview}
+                            handlePreviewToggle={togglePreview}
+                            handlePublishedToggle={handlePublishedToggle}
+                            isPublished={isPublished}
+                            handleSubmit={submitHandler}
+                            validState={validState}
+                        />
+                    ) : (
+                        <CreatePostToolbar
+                            preview={preview}
+                            handlePreviewToggle={togglePreview}
+                            handleSubmit={submitHandler}
+                            validState={validState}
+                        />
+                    )}
+                </SidebarContainer>
+                <PostFormWrapper
+                    onSubmit={submitHandler}
+                    isPreview={preview}
+                    previewProps={previewProps}
+                >
+                    {!preview && (
+                        <>
+                            <div className="p-3 sm:pb-0">
+                                <ImageUploader
+                                    userId={userId}
+                                    onUploadSuccess={handleBannerImageSuccess}
+                                    initialUrl={bannerImgUrl}
+                                    label="Add Banner Image"
+                                />
 
-    return (
-        <PostFormContainer>
-            <SidebarContainer>
+                                <PostTitleInput
+                                    {...register("title")}
+                                    onBlur={(e) => {
+                                        if (e.target.value !== post?.title) {
+                                            setValue(
+                                                "slug",
+                                                encodeURI(
+                                                    kebabCase(e.target.value),
+                                                ),
+                                                {
+                                                    shouldValidate: true,
+                                                },
+                                            );
+                                        }
+                                    }}
+                                    validSlugMsg={validSlugMsg}
+                                />
+                                {formState.errors &&
+                                    Object.values(formState.errors).map(
+                                        (error) => (
+                                            <p
+                                                className="hidden"
+                                                key={error.message}
+                                            >
+                                                {error.message}
+                                            </p>
+                                        ),
+                                    )}
+                                {slug && slug.length > 0 && (
+                                    <p
+                                        className="hidden"
+                                        data-testid="post-slug"
+                                    >
+                                        {slug}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-t">
+                                <MarkdownToolbar
+                                    textareaRef={textareaRef}
+                                    content={content}
+                                    setContent={(content) =>
+                                        setValue("content", content)
+                                    }
+                                />
+                                <div className="flex min-h-0 grow flex-col ">
+                                    <Textarea
+                                        ref={textareaRef}
+                                        value={content}
+                                        onChange={(e) =>
+                                            setValue("content", e.target.value)
+                                        }
+                                        placeholder="Write your post content here..."
+                                        className="scrollbar-thin min-h-full flex-1 resize-none rounded-none border-0 p-2 text-xs focus-visible:ring-0"
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    {post && (
+                        <button
+                            type="submit"
+                            onClick={() => submitHandler()}
+                            className="hidden"
+                            data-testid="post-hidden-submit"
+                        >
+                            Hidden Submit
+                        </button>
+                    )}
+                </PostFormWrapper>
+
                 {post ? (
                     <UpdatePostToolbar
                         postId={post.id}
@@ -139,97 +282,21 @@ export const PostForm = ({ post, userId }: PostFormProps) => {
                         handlePublishedToggle={handlePublishedToggle}
                         isPublished={isPublished}
                         handleSubmit={submitHandler}
-                        validState={{ isValid, isLoading }}
+                        validState={validState}
+                        isMobile
                     />
                 ) : (
                     <CreatePostToolbar
                         preview={preview}
                         handlePreviewToggle={togglePreview}
                         handleSubmit={submitHandler}
-                        validState={{ isValid, isLoading }}
+                        validState={validState}
+                        isMobile
                     />
                 )}
-            </SidebarContainer>
-            <PostFormWrapper
-                onSubmit={submitHandler}
-                isPreview={preview}
-                previewProps={previewProps}
-            >
-                {!preview && (
-                    <>
-                        <div className="p-3 sm:pb-0">
-                            <ImageUploader
-                                userId={userId}
-                                onUploadSuccess={handleBannerImageSuccess}
-                                initialUrl={bannerImgUrl}
-                                label="Add Banner Image"
-                            />
+            </PostFormContainer>
+        );
+    },
+);
 
-                            <PostTitleInput
-                                {...register("title")}
-                                onBlur={(e) => {
-                                    if (e.target.value !== post?.title) {
-                                        setValue(
-                                            "slug",
-                                            encodeURI(
-                                                kebabCase(e.target.value),
-                                            ),
-                                            {
-                                                shouldValidate: true,
-                                            },
-                                        );
-                                    }
-                                }}
-                                validSlugMsg={validSlugMsg}
-                            />
-                        </div>
-
-                        <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-t">
-                            <MarkdownToolbar
-                                textareaRef={textareaRef}
-                                content={content}
-                                setContent={(content) =>
-                                    setValue("content", content)
-                                }
-                            />
-                            <div className="flex min-h-0 grow flex-col ">
-                                <Textarea
-                                    ref={textareaRef}
-                                    value={content}
-                                    onChange={(e) =>
-                                        setValue("content", e.target.value)
-                                    }
-                                    placeholder="Write your post content here..."
-                                    className="scrollbar-thin min-h-full flex-1 resize-none rounded-none border-0 p-2 text-xs focus-visible:ring-0"
-                                />
-                            </div>
-                        </div>
-                    </>
-                )}
-            </PostFormWrapper>
-
-            {post ? (
-                <UpdatePostToolbar
-                    postId={post.id}
-                    slug={post.slug}
-                    username={post.username}
-                    preview={preview}
-                    handlePreviewToggle={togglePreview}
-                    handlePublishedToggle={handlePublishedToggle}
-                    isPublished={isPublished}
-                    handleSubmit={submitHandler}
-                    validState={{ isValid, isLoading }}
-                    isMobile
-                />
-            ) : (
-                <CreatePostToolbar
-                    preview={preview}
-                    handlePreviewToggle={togglePreview}
-                    handleSubmit={submitHandler}
-                    validState={{ isValid, isLoading }}
-                    isMobile
-                />
-            )}
-        </PostFormContainer>
-    );
-};
+PostForm.displayName = "PostForm";

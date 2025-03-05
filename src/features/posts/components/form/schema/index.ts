@@ -12,7 +12,7 @@ export const PostFormSchema = z.object({
     slug: z.string(),
     content: z
         .string()
-        .min(10, {
+        .min(20, {
             message: "Content is too short",
         })
         .max(10000, {

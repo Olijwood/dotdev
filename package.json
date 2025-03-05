@@ -22,7 +22,8 @@
         "dbgpush": "prisma generate && prisma db push",
         "dbstud": "prisma studio",
         "dbrst": "prisma migrate reset --force && prisma db push &&  yarn dbseed",
-        "dbseed": "tsx prisma/seed.ts"
+        "dbseed": "tsx prisma/seed.ts",
+        "dbinit": "yarn dbpsh && yarn dbgen && yarn dbseed"
     },
     "dependencies": {
         "@auth/prisma-adapter": "^2.7.4",

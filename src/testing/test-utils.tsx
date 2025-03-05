@@ -3,13 +3,14 @@ import {
     screen,
     renderHook,
     act,
+    fireEvent,
     waitFor,
     waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ReactElement, ReactNode } from "react";
 import { test, expect, describe, vi, Mock } from "vitest";
-import Provider from "@/app/provider"; // Ensure this points to your actual Provider
+import Provider from "@/app/provider";
 
 const render = (
     ui: ReactElement,
@@ -28,7 +29,6 @@ const render = (
     });
 };
 
-// ✅ Mocking utilities (replace Jest `jest.fn()` with `vi.fn()`)
 export {
     render,
     renderHook,
@@ -36,6 +36,7 @@ export {
     userEvent,
     screen,
     waitFor,
+    fireEvent,
     waitForElementToBeRemoved,
     test,
     expect,

@@ -5,7 +5,7 @@ import { PostPreview, PostPreviewProps } from "..";
 import { PostFormCard } from "./post-form-card";
 
 type PostFormWrapperProps = {
-    onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+    onSubmit: (e?: React.FormEvent<HTMLElement>) => void;
     isPreview: boolean;
     previewProps: PostPreviewProps;
     children: ReactNode;
@@ -24,6 +24,7 @@ export const PostFormWrapper = ({
                 <form
                     onSubmit={onSubmit}
                     className="flex min-h-full w-full flex-1 flex-col"
+                    data-testid="post-form"
                 >
                     {children}
                 </form>

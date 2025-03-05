@@ -58,6 +58,7 @@ export const UpdatePostToolbar = ({
             handleClick: handleSubmit,
             disabled: !validState.isValid || validState.isLoading,
             text: validState.isLoading ? "Saving..." : "Save",
+            testid: "save-post-btn",
             isEdit: true,
         },
         {

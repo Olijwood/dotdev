@@ -11,7 +11,6 @@ vi.mock("@/hooks/auth", () => ({
 
 describe("PostItem Component", () => {
     it("renders post details correctly", () => {
-        // Generate mock post data
         const mockPost = generateMockPost({
             title: "Test Post",
             username: "testuser",
@@ -19,7 +18,7 @@ describe("PostItem Component", () => {
             commentCount: 5,
         });
 
-        (useCurrentUsername as Mock).mockReturnValue("anotheruser"); // Different user
+        (useCurrentUsername as Mock).mockReturnValue("anotheruser");
 
         render(<PostItem post={mockPost} />);
 
@@ -54,7 +53,7 @@ describe("PostItem Component", () => {
             content: "This is a test post with some words.",
         });
 
-        (useCurrentUsername as Mock).mockReturnValue("testuser"); // Same user
+        (useCurrentUsername as Mock).mockReturnValue("testuser");
 
         render(<PostItem post={mockPost} />);
 
@@ -66,16 +65,14 @@ describe("PostItem Component", () => {
             content: "This is a test post.",
         });
 
-        (useCurrentUsername as Mock).mockReturnValue("testuser"); // Same user (author)
+        (useCurrentUsername as Mock).mockReturnValue("testuser");
 
         render(<PostItem post={mockPost} />);
 
-        // Find Delete button using its icon
         const deleteButton = screen.getByRole("button", {
-            name: /delete post/i, // Matches the tooltip or aria-label
+            name: /delete post/i,
         });
 
-        // Find Edit button using its link role
         const editButton = screen.getByRole("link", {
             name: /update post/i,
         });

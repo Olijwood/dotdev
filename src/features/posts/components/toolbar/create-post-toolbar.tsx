@@ -28,6 +28,7 @@ export const CreatePostToolbar = ({
             tooltipText: preview ? "Edit" : "Preview",
             handleClick: handlePreviewToggle,
             text: preview ? "Edit" : "Preview",
+            testid: "preview-toggle-btn",
             isEdit: true,
         },
         {

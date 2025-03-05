@@ -18,7 +18,6 @@ import {
     SavedPostStatus,
 } from "@/features/posts/types";
 
-// Generate a mock user
 export const generateMockUser = (overrides = {}) => ({
     id: randUuid(),
     name: randFullName(),
@@ -29,7 +28,6 @@ export const generateMockUser = (overrides = {}) => ({
     ...overrides,
 });
 
-// Generate a mock post
 export const generateMockPost = (overrides = {}): Post => ({
     id: randUuid(),
     slug: randSlug(),
@@ -49,7 +47,6 @@ export const generateMockPost = (overrides = {}): Post => ({
     ...overrides,
 });
 
-// Generate a mock post for creation
 export const generateMockPostForCreate = (
     userId: string,
     overrides = {},
@@ -62,7 +59,6 @@ export const generateMockPostForCreate = (
     ...overrides,
 });
 
-// Generate a mock post for update
 export const generateMockPostForUpdate = (
     userId: string,
     overrides = {},
@@ -78,7 +74,6 @@ export const generateMockPostForUpdate = (
     ...overrides,
 });
 
-// Generate mock reaction data
 export const generateMockReaction = (
     userId: string,
     postId: string,
@@ -89,7 +84,6 @@ export const generateMockReaction = (
     type,
 });
 
-// Generate mock saved post status
 export const generateMockSavedPostStatus = (
     postIds: string[],
 ): SavedPostStatus => {
@@ -100,6 +94,5 @@ export const generateMockSavedPostStatus = (
     return status;
 };
 
-// Generate an array of mock posts
 export const generateMockPosts = (count = 5, overrides = {}): Post[] =>
     Array.from({ length: count }, () => generateMockPost(overrides));
