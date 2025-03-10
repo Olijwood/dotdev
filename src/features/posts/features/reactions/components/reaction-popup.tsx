@@ -98,6 +98,7 @@ const ReactionPopup = ({
                             </div>
                             <span
                                 className={cn(
+                                    "text-muted-foreground font-medium",
                                     isDetailView ? "text-lg" : "text-sm ",
                                 )}
                             >

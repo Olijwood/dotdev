@@ -39,7 +39,7 @@ type PostData = {
     published: boolean;
     bannerImgUrl: string;
     username: string;
-    image: string;
+    userImage: string;
     commentCount: number;
     reactionCount: number;
     isSaved?: boolean;
@@ -80,7 +80,7 @@ export async function getSavedPosts(): Promise<PostData[]> {
         return savedPosts.map(({ post }) => ({
             ...post,
             username: post.user.username ?? "Guest",
-            image: post.user.image ?? "/hacker.png",
+            userImage: post.user.image ?? "/hacker.png",
             commentCount: post._count.comments,
             reactionCount: post._count.reactions,
             isSaved: true,

@@ -7,7 +7,7 @@ import Provider from "./provider";
 
 export const metadata: Metadata = {
     title: "Dotdev",
-    description: "Blog Posting Platform by Olijwood",
+    description: "Blog Posting Platform by Oliver Wood",
 };
 
 const inter = Inter({ subsets: ["latin"] });

@@ -19,7 +19,7 @@ const ReadingListPage = async ({
     }
 
     return (
-        <div className="flex w-full max-w-4xl  flex-col  gap-4 p-4 lg:py-8">
+        <div className="flex w-full max-w-4xl  flex-col  gap-4  pt-4 sm:p-4 lg:py-8">
             <h1 className="text-center text-3xl font-bold">
                 Your Reading List
             </h1>

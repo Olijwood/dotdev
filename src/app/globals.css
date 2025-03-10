@@ -153,7 +153,9 @@
         width: 100%;
         padding: 5px 10px;
     }
+}
 
+@layer utilities {
     .scrollbar-y {
         @apply overflow-y-scroll;
         scrollbar-width: thin;
@@ -161,6 +163,14 @@
 
     .scrollbar-thin {
         scrollbar-width: thin;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
 }
 

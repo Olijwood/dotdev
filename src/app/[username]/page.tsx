@@ -7,7 +7,6 @@ import {
     UserProfileCard,
 } from "@/features/posts/components/list-view";
 
-
 const UserPage = async ({
     params,
 }: {
@@ -27,7 +26,7 @@ const UserPage = async ({
     };
 
     return (
-        <div className="flex w-full max-w-4xl flex-col gap-4 p-4 lg:py-8">
+        <div className="flex w-full max-w-3xl flex-col gap-4 pt-4 sm:p-4 lg:py-8">
             <UserProfileCard user={authorProfileInfoProps} />
             <UserPostFeed authorId={author.id} username={author.username} />
         </div>

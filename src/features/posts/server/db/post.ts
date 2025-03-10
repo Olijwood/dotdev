@@ -33,14 +33,12 @@ export async function getPosts() {
         },
         where: { published: true },
         orderBy: { createdAt: "desc" },
-        // Limit to improve performance
-        take: 20,
     });
 
     return posts.map((post) => ({
         ...post,
         username: post.user.username ?? "Guest",
-        image: post.user.image ?? "/hacker.png",
+        userImage: post.user.image ?? "/hacker.png",
         commentCount: post._count.comments,
         reactionCount: post._count.reactions,
         isSaved: userId ? post.savedBy.length > 0 : false,
@@ -83,7 +81,7 @@ export async function getPostsByUserId(userId: string) {
     return posts.map((post) => ({
         ...post,
         username: post.user.username ?? "Guest",
-        image: post.user.image ?? "/hacker.png",
+        userImage: post.user.image ?? "/hacker.png",
         commentCount: post._count.comments,
         reactionCount: post._count.reactions,
         isSaved: currUserId ? post.savedBy.length > 0 : false,
