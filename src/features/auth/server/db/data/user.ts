@@ -64,6 +64,7 @@ const generateUniqueUsername = async (email: string): Promise<string> => {
 
     return username;
 };
+
 const getUserByUsername = async (username: string) => {
     try {
         const user = await db.user.findUnique({
@@ -72,6 +73,18 @@ const getUserByUsername = async (username: string) => {
         return user;
     } catch (error) {
         logError("getUserByUsername", error);
+    }
+};
+
+const getUserProfileInfoByUsername = async (username: string) => {
+    try {
+        const user = await db.user.findUnique({
+            select: { id: true, username: true, name: true },
+            where: { username },
+        });
+        return user;
+    } catch (error) {
+        logError("getUserIdByUsername", error);
     }
 };
 
@@ -99,4 +112,5 @@ export {
     createUser,
     generateUniqueUsername,
     getUserByUsername,
+    getUserProfileInfoByUsername,
 };

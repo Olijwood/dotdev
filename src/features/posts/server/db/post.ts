@@ -49,6 +49,48 @@ export async function getPosts() {
     }));
 }
 
+export async function getPostsByUserId(userId: string) {
+    const currUserId = await currentUserId();
+
+    const posts = await db.post.findMany({
+        select: {
+            id: true,
+            title: true,
+            slug: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            published: true,
+            bannerImgUrl: true,
+            user: { select: { username: true, image: true } },
+            _count: {
+                select: {
+                    comments: true,
+                    reactions: true,
+                },
+            },
+            savedBy: currUserId
+                ? {
+                      where: { userId: currUserId },
+                      select: { id: true },
+                  }
+                : undefined,
+        },
+        where: { userId, published: true },
+        orderBy: { createdAt: "desc" },
+    });
+
+    return posts.map((post) => ({
+        ...post,
+        username: post.user.username ?? "Guest",
+        image: post.user.image ?? "/hacker.png",
+        commentCount: post._count.comments,
+        reactionCount: post._count.reactions,
+        isSaved: currUserId ? post.savedBy.length > 0 : false,
+        savedBy: undefined,
+    }));
+}
+
 export async function getPostById(id: string) {
     const userId = await currentUserId();
 

@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { SavedPostFeed } from "@/features/posts/components/saved-post";
+import { SavedPostFeed } from "@/features/posts/components/list-view";
 import { currentUser } from "@/server/actions/auth";
 import Loading from "../loading";
 
@@ -19,7 +19,7 @@ const ReadingListPage = async ({
     }
 
     return (
-        <div className="w-full max-w-4xl gap-1 p-4 lg:gap-4 lg:py-8">
+        <div className="flex w-full max-w-4xl  flex-col  gap-4 p-4 lg:py-8">
             <h1 className="text-center text-3xl font-bold">
                 Your Reading List
             </h1>
