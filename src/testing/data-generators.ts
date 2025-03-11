@@ -34,7 +34,7 @@ export const generateMockPost = (overrides = {}): Post => ({
     title: randProductName(),
     content: randParagraph({ length: 3 }).join("\n\n"),
     username: randUserName(),
-    image: randAvatar(),
+    userImage: randAvatar(),
     createdAt: new Date(),
     updatedAt: new Date(),
     published: randBoolean(),

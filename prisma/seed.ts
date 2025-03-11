@@ -215,8 +215,8 @@ Writing clean code is a skill that takes time to develop. Start applying these p
 
     const post2 = await prisma.post.create({
         data: {
-            title: "Second Post",
-            slug: "second-post",
+            title: "Art of Clean Code",
+            slug: "the-art-of-clean-code",
             content: post2content,
             published: true,
             userId: user2.id,
@@ -237,6 +237,41 @@ Writing clean code is a skill that takes time to develop. Start applying these p
             userId: user2.id,
             postId: post2.id,
             type: "CLAP",
+        },
+    });
+
+    await prisma.reaction.create({
+        data: {
+            userId: user1.id,
+            postId: post2.id,
+            type: "FIRE",
+        },
+    });
+
+    // Create Comments
+    const comment1 = await prisma.comment.create({
+        data: {
+            content: "I hope you like this post!",
+            userId: user1.id,
+            postId: post1.id,
+        },
+    });
+
+    await prisma.comment.create({
+        data: {
+            content: "Great Post!",
+            userId: user2.id,
+            postId: post1.id,
+        },
+    });
+
+    // Create Reply
+
+    await prisma.reply.create({
+        data: {
+            content: "Thanks for the feedback!",
+            userId: user1.id,
+            commentId: comment1.id,
         },
     });
 

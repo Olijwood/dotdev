@@ -56,7 +56,7 @@ const PostItem = ({ post }: PostItemProps) => {
                     <div className="pl-12">
                         <h2 className="mt-2 text-3xl font-bold leading-tight">
                             <Link
-                                href={`/posts/${post.id}`}
+                                href={`/posts/${post.slug}`}
                                 className="hover:text-blue-600"
                             >
                                 {post.title}

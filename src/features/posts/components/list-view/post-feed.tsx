@@ -1,10 +1,18 @@
+"use server";
+
 import { Suspense } from "react";
 import { Loader } from "@/components/ui/loader";
-import { getPosts } from "../../server/db";
+import { getPosts, getTopPosts } from "../../server/db";
 import { PostList } from "./post-list";
+import type { Post } from "./post-list";
 
-export const PostFeed = async () => {
-    const posts = await getPosts();
+type PostListOrderBy = "latest" | "top";
+type PostFeedProps = {
+    orderBy?: PostListOrderBy;
+};
+
+export const PostFeed = async ({ orderBy = "latest" }: PostFeedProps = {}) => {
+    const posts = orderBy === "latest" ? await getPosts() : await getTopPosts();
 
     if (posts.length === 0) {
         return (
@@ -16,7 +24,7 @@ export const PostFeed = async () => {
 
     return (
         <Suspense fallback={<Loader size="xl" />}>
-            <PostList posts={posts} />
+            <PostList posts={posts as Post[]} />
         </Suspense>
     );
 };

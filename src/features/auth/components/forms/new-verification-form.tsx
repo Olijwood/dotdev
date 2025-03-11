@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
@@ -12,28 +12,30 @@ import { FormStatus } from "@/types";
 export default function NewVerificationForm() {
     const [status, setStatus] = useState<FormStatus>({ state: "idle" });
     const searchParams = useSearchParams();
+    const router = useRouter();
     const token = searchParams.get("token");
 
     const onSubmit = useCallback(() => {
         setStatus({ state: "loading" });
         if (!token) {
-            setStatus({ state: "error", message: "Token not found" });
+            setStatus({ state: "error", message: "No token" });
             return;
         }
 
         newVerification(token)
             .then((res) => {
-                if (res.error) {
-                    setStatus({ state: "error", message: res.error });
-                }
                 if (res.success) {
                     setStatus({ state: "success", message: res.success });
+                    router.push("/login");
+                }
+                if (res.error) {
+                    setStatus({ state: "error", message: res.error });
                 }
             })
             .catch(() => {
                 setStatus({ state: "error", message: "Something went wrong" });
             });
-    }, [token]);
+    }, [token, router]);
 
     useEffect(() => {
         onSubmit();
@@ -53,8 +55,8 @@ export default function NewVerificationForm() {
         >
             <div className="flex w-full items-center justify-center">
                 {!success && !error && <BeatLoader />}
-                <FormSuccess message={success} />
-                <FormError message={error} />
+                {success && <FormSuccess message={success} />}
+                {error && <FormError message={error} />}
             </div>
         </CardWrapper>
     );

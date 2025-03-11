@@ -42,6 +42,11 @@ const register = async (data: z.infer<typeof RegisterSchema>) => {
         await createUser(name, email, username, hashedPassword);
 
         const verificationToken = await generateVerificationToken(email);
+        if (!verificationToken) {
+            return {
+                error: "Something went wrong. Please try again later.",
+            };
+        }
         await sendVerificationEmail(
             verificationToken.email,
             verificationToken.token,
@@ -59,7 +64,9 @@ const register = async (data: z.infer<typeof RegisterSchema>) => {
             };
         } else {
             return {
-                error: "An unexpected error occurred. Please try again later.",
+                error:
+                    "An unexpected error occurred. Please try again later." +
+                    error,
             };
         }
     }

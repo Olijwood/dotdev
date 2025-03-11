@@ -4,7 +4,7 @@ export type Post = {
     title: string;
     content: string;
     username: string;
-    image: string;
+    userImage: string;
     createdAt: Date;
     updatedAt: Date;
     published: boolean;

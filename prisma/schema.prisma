@@ -52,6 +52,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model VerificationToken {
@@ -106,6 +107,11 @@ model Post {
     reactions     Reaction[]
     comments      Comment[]
     savedBy       SavedPost[]
+
+    @@index([userId])
+    @@index([createdAt])
+    @@index([published])
+    @@index([commentCount, reactionCount, saveCount])
 }
 
 enum ReactionType {
@@ -123,6 +129,7 @@ model Reaction {
     post   Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
 
     @@id([userId, postId, type])
+    @@index([postId]) 
 }
 
 model SavedPost {
@@ -149,6 +156,8 @@ model Comment {
     post         Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
     replies      Reply[]
     commentLike  CommentLike[]
+
+    @@index([postId])
 }
 
 model Reply {
@@ -162,6 +171,8 @@ model Reply {
     user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
     comment   Comment     @relation(fields: [commentId], references: [id], onDelete: Cascade)
     replyLike ReplyLike[]
+
+    @@index([commentId])   
 }
 
 model CommentLike {

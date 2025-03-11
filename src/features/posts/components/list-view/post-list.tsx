@@ -2,7 +2,7 @@
 
 import { PostItem } from "./post-item";
 
-type Post = {
+export type Post = {
     id: string;
     title: string;
     slug: string;

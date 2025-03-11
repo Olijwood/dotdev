@@ -21,7 +21,7 @@
         "dbmprod": "prisma migrate deploy",
         "dbgpush": "prisma generate && prisma db push",
         "dbstud": "prisma studio",
-        "dbrst": "prisma migrate reset --force && prisma db push &&  yarn dbseed",
+        "dbrst": "prisma migrate reset --force && prisma db push && yarn dbseed",
         "dbseed": "tsx prisma/seed.ts",
         "dbinit": "yarn dbpsh && yarn dbgen && yarn dbseed"
     },
