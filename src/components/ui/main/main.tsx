@@ -10,7 +10,7 @@ function Main({ className, children }: MainProps) {
     return (
         <main
             className={cn(
-                "flex h-(--main-height) flex-col items-center justify-center !bg-(--main-bg)",
+                "flex h-(--main-height) flex-col items-center justify-center bg-muted",
                 className,
             )}
         >

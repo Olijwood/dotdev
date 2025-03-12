@@ -1,5 +1,6 @@
 "use client";
 
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -39,6 +40,18 @@ const Navbar = () => {
                 >
                     <SearchBar placeholder="Search..." id="navbar-search" />
                 </div>
+                <li
+                    className={cn(
+                        "h-[40px] w-[40px] flex items-center",
+                        hideSearch && "!hidden",
+                    )}
+                >
+                    <div className="block border-2 border-gray-400 h-full w-full p-2 rounded-lg sm:hidden ml-2 text-muted-foreground">
+                        <Link href="/search">
+                            <Search size={20} />
+                        </Link>
+                    </div>
+                </li>
                 {username && (
                     <div className="ml-auto flex items-center gap-2">
                         <li className={cn(hideCreate && "hidden")}>
