@@ -16,7 +16,7 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
                     </div>
                 }
             >
-                <main className="scrollbar-y scrollbar-thin flex h-[--main-height] flex-col items-center bg-neutral-200 py-2 sm:py-4">
+                <main className="scrollbar-y scrollbar-thin flex h-[var(--main-height)] flex-col items-center bg-neutral-200 py-2 sm:py-4">
                     {children}
                 </main>
                 <Toaster position={"bottom-center"} className="bg-gray-100" />

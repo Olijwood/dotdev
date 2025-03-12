@@ -1,22 +1,10 @@
 "use client";
 
+import type { PostListItem } from "@/features/posts/types";
 import { PostItem } from "./post-item";
 
-export type Post = {
-    id: string;
-    title: string;
-    slug: string;
-    content: string;
-    username: string;
-    createdAt: Date;
-    bannerImgUrl: string;
-    userImage: string;
-    commentCount: number;
-    reactionCount: number;
-};
-
 type PostListProps = {
-    posts: Post[];
+    posts: PostListItem[];
 };
 
 export const PostList = ({ posts }: PostListProps) => {

@@ -16,6 +16,22 @@ export type Post = {
     isSaved?: boolean;
 };
 
+export type PostListItem = {
+    id: string;
+    title: string;
+    slug: string;
+    content: string;
+    username: string;
+    createdAt: Date;
+    published?: boolean;
+    userImage: string;
+    bannerImgUrl: string;
+    commentCount: number;
+    reactionCount: number;
+    saveCount?: number;
+    isSaved?: boolean;
+};
+
 export type PostForCreate = {
     title: string;
     slug: string;

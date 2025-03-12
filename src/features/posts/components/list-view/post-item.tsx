@@ -1,30 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import type { PostListItem } from "@/features/posts/types";
 import { useCurrentUsername } from "@/hooks/auth";
-import { getDateString } from "@/lib/utils";
+import { cn, getDateString } from "@/lib/utils";
 import { getMinutesToRead, getWordCount } from "../../utils";
 import { PostActions } from "./post-actions";
 import PostMetadata from "./post-metadata";
 import PostTags from "./post-tags";
 
 type PostItemProps = {
-    post: {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        username: string;
-        createdAt: Date;
-        userImage: string;
-        bannerImgUrl: string;
-        commentCount: number;
-        reactionCount: number;
-        isSaved?: boolean;
-    };
+    post: PostListItem;
+    containerCn?: string;
 };
 
-const PostItem = ({ post }: PostItemProps) => {
+const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
     const wordCount = getWordCount(post?.content);
     const username = useCurrentUsername();
     const isAuthor = username === post.username;
@@ -38,7 +28,12 @@ const PostItem = ({ post }: PostItemProps) => {
 
     const tags = ["webdev", "accessibility", "html"];
     return (
-        <div className="flex w-full flex-col align-middle md:w-2/3 lg:w-full">
+        <div
+            className={cn(
+                "flex w-full flex-col align-middle lg:w-full",
+                containerCn,
+            )}
+        >
             <article className="rounded-lg border border-gray-300 bg-card ">
                 {post.bannerImgUrl && (
                     <div className="overflow-hidden">

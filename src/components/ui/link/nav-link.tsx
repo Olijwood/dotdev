@@ -7,14 +7,16 @@ type TabLinkProps = {
     href: string;
     isActive?: boolean;
     children: React.ReactNode;
+    className?: string;
 };
 
-export function TabLink({ href, isActive, children }: TabLinkProps) {
+export function TabLink({ href, isActive, children, className }: TabLinkProps) {
     return (
         <Link
             href={href}
             className={cn(
                 "px-4 py-3 text-lg ",
+                className,
                 isActive
                     ? "text-black font-bold border-b-2 border-black"
                     : "text-gray-600 font-medium",

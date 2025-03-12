@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { TabLink } from "@/components/ui/link";
 import { Main } from "@/components/ui/main";
 import { PostFeed } from "@/features/posts/components/list-view";
+import Loading from "../../loading";
 
 export default function TopPostsPage() {
     return (
@@ -12,8 +14,9 @@ export default function TopPostsPage() {
                         Top
                     </TabLink>
                 </div>
-
-                <PostFeed orderBy="top" />
+                <Suspense fallback={<Loading />}>
+                    <PostFeed orderBy="top" />
+                </Suspense>
                 <p className=" text-gray-500">You have reached the end!</p>
             </div>
         </Main>

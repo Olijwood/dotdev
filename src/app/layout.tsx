@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import React from "react";
+import React, { Suspense } from "react";
 import { Navbar } from "@/components/ui/navbar";
+import Loading from "./(posts)/loading";
 import Provider from "./provider";
 
 export const metadata: Metadata = {
@@ -41,7 +42,9 @@ export default function RootLayout({
             </head>
             <body className={inter.className}>
                 <Provider>
-                    <Navbar />
+                    <Suspense fallback={<Loading />}>
+                        <Navbar />
+                    </Suspense>
                     {children}
                 </Provider>
             </body>

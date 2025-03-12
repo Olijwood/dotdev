@@ -1,18 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthButton, Button } from "@/components/ui/button";
 import { ProfileDropdown } from "@/components/ui/dropdown-menu";
+import { SearchBar } from "@/features/search/components";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
     const { data: session } = useSession();
+    const pathname = usePathname();
+
     const user = session?.user;
     const { username } = user || {};
 
+    const hideSearch = pathname === "/search";
+    const hideCreate = pathname === "/create-post";
+
     return (
         <nav className="border-b-2 border-gray-300">
-            <ul className="flex h-[--navbar-height] items-center justify-between px-2.5">
+            <ul className="flex h-[var(--navbar-height)] items-center justify-between px-2.5">
                 <li>
                     <Link href="/">
                         <Button
@@ -23,10 +31,17 @@ const Navbar = () => {
                         </Button>
                     </Link>
                 </li>
-
+                <div
+                    className={cn(
+                        "hidden sm:block ml-4",
+                        hideSearch && "!hidden",
+                    )}
+                >
+                    <SearchBar placeholder="Search..." id="navbar-search" />
+                </div>
                 {username && (
-                    <>
-                        <li className="ml-auto">
+                    <div className="ml-auto flex items-center gap-2">
+                        <li className={cn(hideCreate && "hidden")}>
                             <Link href="/create-post">
                                 <Button
                                     variant="outline"
@@ -38,10 +53,10 @@ const Navbar = () => {
                             </Link>
                         </li>
 
-                        <li className="ml-2">
+                        <li>
                             <ProfileDropdown />
                         </li>
-                    </>
+                    </div>
                 )}
 
                 {!username && (
