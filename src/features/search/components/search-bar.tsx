@@ -20,6 +20,7 @@ type SearchBarProps = {
     className?: string;
     id?: string;
     variant?: "header" | "large";
+    padding?: string;
 };
 
 export function SearchBar({
@@ -28,6 +29,7 @@ export function SearchBar({
     className = "",
     id,
     variant = "header",
+    padding = "",
 }: SearchBarProps) {
     const [query, setQuery] = useState("");
     const [isFocused, setIsFocused] = useState(false);
@@ -80,7 +82,7 @@ export function SearchBar({
         <div ref={wrapperRef} className={cn("relative", className)} id={id}>
             <div
                 className={cn(
-                    "flex items-center",
+                    "flex items-center ",
                     variant === "large" ? "w-full" : "",
                 )}
             >
@@ -101,6 +103,7 @@ export function SearchBar({
                             ? "w-full"
                             : "w-[240px] md:w-[300px]",
                         "border-muted bg-muted/50",
+                        padding,
                     )}
                 />
             </div>

@@ -34,7 +34,7 @@ const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
                 containerCn,
             )}
         >
-            <article className="rounded-lg border border-gray-300 bg-card ">
+            <article className="sm:rounded-lg sm:border border-gray-300 bg-card ">
                 {post.bannerImgUrl && (
                     <div className="overflow-hidden">
                         <img
@@ -49,7 +49,7 @@ const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
                 <div className="p-3 pb-2">
                     <PostMetadata author={authorProps} date={date} />
                     <div className="pl-12">
-                        <h2 className="mt-2 text-3xl font-bold leading-tight">
+                        <h2 className="mt-2 text-2xl md:text-3xl md font-bold leading-tight">
                             <Link
                                 href={`/posts/${post.slug}`}
                                 className="hover:text-blue-600"

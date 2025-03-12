@@ -15,7 +15,7 @@ export function TabLink({ href, isActive, children, className }: TabLinkProps) {
         <Link
             href={href}
             className={cn(
-                "px-4 py-3 text-lg ",
+                "px-2 text-lg",
                 className,
                 isActive
                     ? "text-black font-bold border-b-2 border-black"

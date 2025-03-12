@@ -19,14 +19,14 @@ export function SearchFilters({
     ];
 
     return (
-        <div className="flex flex-col w-full md:w-48 md:min-w-48">
-            <div className="md:hidden flex overflow-x-auto pb-2  border-b">
+        <div className="flex flex-col w-full md:w-48 md:min-w-48 md:fixed md:-mt-26">
+            <div className="md:hidden flex overflow-x-auto border-b">
                 {filters.map((filter) => (
                     <Link
                         key={filter.value}
                         href={`/search?q=${encodeURIComponent(query)}&filter=${filter.value}`}
                         className={cn(
-                            "px-4 py-2 whitespace-nowrap",
+                            "px-2 pb-2 whitespace-nowrap",
                             activeFilter === filter.value
                                 ? "font-bold text-primary"
                                 : "text-muted-foreground",
@@ -37,13 +37,13 @@ export function SearchFilters({
                 ))}
             </div>
 
-            <div className="hidden md:flex md:flex-col space-y-2">
+            <div className="hidden md:flex  md:flex-col space-y-3">
                 {filters.map((filter) => (
                     <Link
                         key={filter.value}
                         href={`/search?q=${encodeURIComponent(query)}&filter=${filter.value}`}
                         className={cn(
-                            "px-4 py-2 rounded-md hover:bg-muted transition-colors",
+                            "px-4 py-3 rounded-md hover:bg-muted transition-colors",
                             activeFilter === filter.value
                                 ? "font-bold text-primary bg-muted"
                                 : "text-muted-foreground",

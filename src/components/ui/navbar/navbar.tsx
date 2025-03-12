@@ -40,21 +40,14 @@ const Navbar = () => {
                 >
                     <SearchBar placeholder="Search..." id="navbar-search" />
                 </div>
-                <li
-                    className={cn(
-                        "h-[40px] w-[40px] flex items-center",
-                        hideSearch && "!hidden",
-                    )}
-                >
-                    <div className="block border-2 border-gray-400 h-full w-full p-2 rounded-lg sm:hidden ml-2 text-muted-foreground">
-                        <Link href="/search">
-                            <Search size={20} />
-                        </Link>
-                    </div>
-                </li>
-                {username && (
-                    <div className="ml-auto flex items-center gap-2">
-                        <li className={cn(hideCreate && "hidden")}>
+                <div className="ml-auto flex items-center justify-evenly gap-1">
+                    {username && (
+                        <li
+                            className={cn(
+                                "hidden sm:block",
+                                hideCreate && "hidden",
+                            )}
+                        >
                             <Link href="/create-post">
                                 <Button
                                     variant="outline"
@@ -65,12 +58,26 @@ const Navbar = () => {
                                 </Button>
                             </Link>
                         </li>
+                    )}
+                    <li
+                        className={cn(
+                            "flex items-center",
+                            hideSearch && "!hidden",
+                        )}
+                    >
+                        <div className="block h-full w-full p-2 rounded-lg sm:hidden  text-muted-foreground">
+                            <Link href="/search">
+                                <Search size={20} />
+                            </Link>
+                        </div>
+                    </li>
 
+                    {username && (
                         <li>
                             <ProfileDropdown />
                         </li>
-                    </div>
-                )}
+                    )}
+                </div>
 
                 {!username && (
                     <>

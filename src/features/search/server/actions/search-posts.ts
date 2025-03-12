@@ -1,5 +1,6 @@
 "use server";
 
+import { getPosts } from "@/features/posts/server/db";
 import { searchPosts } from "../db/search-posts";
 
 export async function searchPostsAction({
@@ -11,9 +12,10 @@ export async function searchPostsAction({
 }) {
     try {
         if (!query || query.length < 2) {
+            const posts = await getPosts();
             return {
                 success: true,
-                posts: [],
+                posts,
             };
         }
 

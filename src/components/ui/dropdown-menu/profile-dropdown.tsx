@@ -33,7 +33,7 @@ const ProfileDropdown = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Avatar className="ml-2 size-11 border">
+                <Avatar className="size-11 border">
                     <AvatarImage
                         referrerPolicy="no-referrer"
                         src={image || "/hacker.png"}

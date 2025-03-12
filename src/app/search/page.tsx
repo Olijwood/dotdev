@@ -33,7 +33,7 @@ export default function SearchPage() {
 
     useEffect(() => {
         async function fetchSearchResults() {
-            if (!query) {
+            if (filter !== "posts" && !query) {
                 setPosts([]);
                 setPeople([]);
                 setComments([]);
@@ -73,36 +73,54 @@ export default function SearchPage() {
         fetchSearchResults();
     }, [query, filter, sort]);
     return (
-        <div className="py-4 px-2 h-(--main-height) sm:container sm:py-8">
-            <div className="mb-4 sm:mb-8">
+        <div className="py-2 h-(--main-height) sm:container sm:py-4 gap-3 flex  flex-col">
+            <div className=" px-2  flex items-center justify-center w-full">
                 <SearchBar
                     variant="large"
                     placeholder="Search posts, people, and comments..."
-                    className="w-full "
+                    className="w-full md:ml-50  "
+                    padding="md:py-6 md:px-10s"
                 />
             </div>
-            {query && hasSearched && (
-                <h1 className="text-2xl font-bold mb-2 sm:mb-4">
-                    Search results for &quot;{query}&quot;
-                </h1>
-            )}
-            <div className="flex flex-col overflow-hidden flex-1 h-[90%]  md:flex-row md:gap-2 ">
-                <SearchFilters activeFilter={filter} query={query} />
+            <div className="justify-self-start md:flex md:items-start md:ml-54  ">
+                {query ? (
+                    <h1 className="text-2xl font-bold py-2 sm:py-0 px-2 md:px-0 ">
+                        Search results for: {query}
+                    </h1>
+                ) : (
+                    <h1 className="text-lg text-black/60 font-bold py-2 sm:py-0 px-2 md:px-0 ">
+                        Enter a search term to find posts, people, and comments
+                    </h1>
+                )}
+            </div>
 
-                <div className="flex-1 -mx-2 sm:mx-0 overflow-hidden ">
+            <div className="flex flex-col overflow-hidden flex-1 h-full   md:flex-row md:gap-2 ">
+                <SearchFilters activeFilter={filter} query={query} />
+                <div className="flex-1 -mx-2 sm:mx-0 overflow-hidden md:ml-50">
                     {query && <SearchSort activeSort={sort} />}
-                    <div className="flex-1 mt-2 bg-muted rounded-lg sm:bg-none h-[94%] overflow-auto ">
+                    <div className="p-2 mt-1 flex-1  bg-muted rounded-lg sm:bg-none md:ml-1 h-full scrollbar-thin overflow-auto ">
                         {isLoading ? (
                             <div className="flex justify-center py-12">
                                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                             </div>
                         ) : !query ? (
-                            <div className="p-2 text-center text-muted-foreground">
-                                <p>
-                                    Enter a search term to find posts, people,
-                                    and comments
-                                </p>
-                            </div>
+                            <>
+                                {posts.length > 0 && (
+                                    <div className="rounded-lg sm:bg-none -mx-2 sm:mx-0">
+                                        <div className="flex flex-col items-center gap-2 bg-none sm:gap-2 ">
+                                            {posts.map((post) => {
+                                                return (
+                                                    <PostItem
+                                                        post={post}
+                                                        key={post.id}
+                                                        containerCn="sm:!w-full sm:mx-auto"
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             hasSearched && (
                                 <>
@@ -110,7 +128,7 @@ export default function SearchPage() {
                                         <>
                                             {posts.length > 0 ? (
                                                 <div className=" rounded-lg sm:bg-none -mx-2 sm:mx-0">
-                                                    <div className="p-2 flex flex-col items-center gap-2 bg-none sm:gap-2 ">
+                                                    <div className="flex flex-col items-center gap-2 bg-none sm:gap-2 ">
                                                         {posts.map((post) => {
                                                             return (
                                                                 <PostItem
@@ -125,7 +143,7 @@ export default function SearchPage() {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="p-2 text-center text-muted-foreground">
+                                                <div className=" text-center text-muted-foreground">
                                                     <p>
                                                         No posts found matching
                                                         &quot;{query}&quot;
@@ -147,7 +165,7 @@ export default function SearchPage() {
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <div className="p-2 text-center text-muted-foreground">
+                                                <div className=" text-center text-muted-foreground">
                                                     <p>
                                                         No people found matching
                                                         &quot;{query}&quot;
@@ -169,7 +187,7 @@ export default function SearchPage() {
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <div className="p-2 text-center text-muted-foreground">
+                                                <div className="text-center text-muted-foreground">
                                                     <p>
                                                         No comments found
                                                         matching &quot;{query}

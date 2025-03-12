@@ -9,7 +9,7 @@ export default function SearchLayout({
 }) {
     return (
         <Suspense fallback={<Loading />}>
-            <Main className="justify-start scrollbar-y  items-stretch !bg-white">
+            <Main className="justify-start   items-stretch !bg-white">
                 {children}
             </Main>
         </Suspense>
