@@ -3,6 +3,7 @@
 import { notFound } from "next/navigation";
 import { getUserProfileInfoByUsername } from "@/features/auth/server/db/data";
 import {
+    PostFeedWrapper,
     UserPostFeed,
     UserProfileCard,
 } from "@/features/posts/components/list-view";
@@ -26,10 +27,10 @@ const UserPage = async ({
     };
 
     return (
-        <div className="flex w-full max-w-3xl flex-col gap-4 pt-4 sm:p-4 lg:py-8">
+        <PostFeedWrapper isFiltersVisible={false} showEndMessage={false}>
             <UserProfileCard user={authorProfileInfoProps} />
             <UserPostFeed authorId={author.id} username={author.username} />
-        </div>
+        </PostFeedWrapper>
     );
 };
 

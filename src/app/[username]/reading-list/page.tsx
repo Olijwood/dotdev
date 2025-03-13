@@ -2,9 +2,12 @@
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { SavedPostFeed } from "@/features/posts/components/list-view";
+import Loading from "@/components/ui/loading";
+import {
+    PostFeedWrapper,
+    SavedPostFeed,
+} from "@/features/posts/components/list-view";
 import { currentUser } from "@/server/actions/auth";
-import Loading from "../loading";
 
 const ReadingListPage = async ({
     params,
@@ -19,14 +22,14 @@ const ReadingListPage = async ({
     }
 
     return (
-        <div className="flex w-full max-w-4xl  flex-col  gap-4  pt-4 sm:p-4 lg:py-8">
+        <PostFeedWrapper isFiltersVisible={false}>
             <h1 className="text-center text-3xl font-bold">
                 Your Reading List
             </h1>
             <Suspense fallback={<Loading />}>
                 <SavedPostFeed />
             </Suspense>
-        </div>
+        </PostFeedWrapper>
     );
 };
 

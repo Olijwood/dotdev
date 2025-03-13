@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "./loading";
+import Loading from "@/components/ui/loading";
 
 const PostLayout = ({ children }: { children: React.ReactNode }) => {
     return (

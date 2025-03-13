@@ -1,10 +1,8 @@
 "use server";
 
-import { Suspense } from "react";
-import { Loader } from "@/components/ui/loader";
 import type { PostListItem } from "@/features/posts/types";
-import { getPosts, getTopPosts } from "../../server/db";
-import { PostList } from "./post-list";
+import { getPosts, getTopPosts } from "../../../server/db";
+import { PostList } from "../post-list";
 
 type PostListOrderBy = "latest" | "top";
 type PostFeedProps = {
@@ -22,9 +20,5 @@ export const PostFeed = async ({ orderBy = "latest" }: PostFeedProps = {}) => {
         );
     }
 
-    return (
-        <Suspense fallback={<Loader size="xl" />}>
-            <PostList posts={posts as PostListItem[]} />
-        </Suspense>
-    );
+    return <PostList posts={posts as PostListItem[]} />;
 };

@@ -138,6 +138,7 @@ describe("PostForm Component", () => {
             content: "Some content",
             published: false,
             username: "testuser",
+            tags: [],
         };
 
         (actionUpdatePostPublished as Mock).mockResolvedValue({
@@ -178,6 +179,7 @@ describe("PostForm Component", () => {
                         content: "Updated content",
                         bannerImgUrl: "",
                         published: false,
+                        tags: [],
                     },
                     "post-1",
                 );

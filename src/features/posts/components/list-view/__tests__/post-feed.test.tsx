@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, Mock } from "vitest";
-import { PostFeed } from "@/features/posts/components/list-view/post-feed";
+import { PostFeed } from "@/features/posts/components/list-view/post-feed/post-feed";
 import { getPosts } from "@/features/posts/server/db";
 import { generateMockPosts } from "@/testing/data-generators";
 import { render, screen, waitFor } from "@/testing/test-utils";
