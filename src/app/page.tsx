@@ -5,7 +5,7 @@ import { PostFeed } from "@/features/posts/components/list-view";
 export default function Home({}) {
     return (
         <Main className=" scrollbar-y justify-start">
-            <div className="mb-4 flex w-full flex-col items-center gap-4 sm:p-4  lg:py-8">
+            <div className="mb-4 flex w-full flex-col items-center gap-4 py-2 sm:p-4 lg:py-8">
                 <div className="no-scrollbar flex w-full max-w-3xl items-start overflow-x-auto border-b pl-1  lg:w-full">
                     <TabLink href="/" isActive>
                         Latest

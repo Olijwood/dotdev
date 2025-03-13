@@ -7,11 +7,12 @@ import type React from "react";
 
 import { useState, useRef, useMemo } from "react";
 import { Input } from "@/components/ui/input";
+import { useClickOutside } from "@/hooks";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { cn } from "@/lib/utils";
 import { suggestionIcons } from "../constants";
-import { useClickOutside, useFetchSuggestions } from "../hooks";
+import { useFetchSuggestions } from "../hooks";
 
 type SearchBarProps = {
     placeholder?: string;
@@ -98,7 +99,7 @@ export function SearchBar({
                     onFocus={() => setIsFocused(true)}
                     onKeyDown={handleKeyDown}
                     className={cn(
-                        "pl-9 pr-3 focus-visible:ring-blue-800",
+                        "pl-9 pr-3 shadow-sm focus-visible:ring-blue-800",
                         variant === "large"
                             ? "w-full"
                             : "w-[240px] md:w-[300px]",

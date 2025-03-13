@@ -138,9 +138,9 @@ const ReactionPopup = ({
                                                 ? "bg-neutral-100 border-b-gray-500 border-b-2"
                                                 : "bg-transparent border-none",
                                         )}
-                                        onClick={() =>
-                                            handleReactionToggle(type)
-                                        }
+                                        onClick={async () => {
+                                            await handleReactionToggle(type);
+                                        }}
                                     >
                                         <span className="mb-1 text-xl">
                                             {emoji}

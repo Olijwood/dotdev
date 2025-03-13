@@ -20,6 +20,7 @@ export const PostFormSchema = z.object({
         }),
     published: z.boolean(),
     bannerImgUrl: z.string().optional().or(z.literal("")),
+    tags: z.array(z.string()).optional().default([]),
 });
 
 export type PostFormValues = z.infer<typeof PostFormSchema>;

@@ -38,6 +38,11 @@ export const useReactions = (
 
             startTransition(async () => {
                 try {
+                    console.log("userId:", userId);
+                    if (!userId) {
+                        console.error("User ID required.");
+                        redirect("/login");
+                    }
                     const result = await toggleReaction(postId, userId, type);
                     if (result.added) {
                         setReactions((prev) => [

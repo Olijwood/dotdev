@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import db from "@/lib/db";
 import { currentUserId } from "@/server/actions/auth";
 import { PostForCreate } from "../../types";
+import { addTagToPost, getOrCreateTag, updatePostTags } from "./tags";
 
 export async function getPosts() {
     const userId = await currentUserId();
@@ -19,6 +20,19 @@ export async function getPosts() {
             published: true,
             bannerImgUrl: true,
             user: { select: { username: true, image: true } },
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            name: true,
+                            id: true,
+                            color: true,
+                            badge: true,
+                            description: true,
+                        },
+                    },
+                },
+            },
             _count: {
                 select: {
                     comments: true,
@@ -43,8 +57,8 @@ export async function getPosts() {
         commentCount: post._count.comments,
         reactionCount: post._count.reactions,
         isSaved: userId ? post.savedBy.length > 0 : false,
-        // Remove savedBy from the returned object to reduce payload size
-        savedBy: undefined,
+        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
+        savedBy: undefined, // Remove savedBy from the returned object to reduce payload size
     }));
 }
 
@@ -68,6 +82,13 @@ export async function getTopPosts() {
             saveCount: number;
             combinedScore: number;
             isSaved: boolean;
+            tags: {
+                id: string;
+                name: string;
+                description: string | null;
+                color: string;
+                badge: string | null;
+            }[];
         }>
     >(Prisma.sql`
         SELECT 
@@ -95,12 +116,25 @@ export async function getTopPosts() {
             ) AS "combinedScore",
 
             -- Whether the current user has saved the post
-            CASE WHEN su."userId" IS NOT NULL THEN true ELSE false END AS "isSaved"
+            CASE WHEN su."userId" IS NOT NULL THEN true ELSE false END AS "isSaved",
+
+            -- Full tag details
+            COALESCE(
+                jsonb_agg(
+                    DISTINCT jsonb_build_object(
+                        'id', t.id,
+                        'name', t.name,
+                        'description', t.description,
+                        'color', t.color,
+                        'badge', t.badge
+                    )
+                ) FILTER (WHERE t.id IS NOT NULL), '[]'
+            ) AS "tags"
 
         FROM "Post" p
         LEFT JOIN "User" u ON u.id = p."userId"
 
-         LEFT JOIN (
+        LEFT JOIN (
             SELECT "postId", COUNT(*) AS count
             FROM "Comment"
             GROUP BY "postId"
@@ -119,10 +153,18 @@ export async function getTopPosts() {
         ) AS save_counts ON save_counts."postId" = p.id
 
         LEFT JOIN "SavedPost" su ON su."postId" = p.id AND su."userId" = ${userId}
-      
+
+        LEFT JOIN "PostTag" pt ON pt."postId" = p.id
+        LEFT JOIN "Tag" t ON t.id = pt."tagId"
+
         WHERE p.published = true
 
-       
+        GROUP BY 
+            p.id, u.username, u.image, 
+            comment_counts.count, 
+            reaction_counts.count, 
+            save_counts.count, su."userId"
+
         ORDER BY "combinedScore" DESC, p."createdAt" DESC;
     `);
 
@@ -134,11 +176,8 @@ export async function getTopPosts() {
         reactionCount: post.reactionCount,
         saveCount: post.saveCount,
         isSaved: post.isSaved,
-        published: post.published,
-        bannerImgUrl: post.bannerImgUrl,
-        createdAt: post.createdAt,
-        updatedAt: post.updatedAt,
-        slug: post.slug,
+        combinedScore: post.combinedScore,
+        tags: post.tags || [],
     }));
 }
 
@@ -156,6 +195,20 @@ export async function getPostsByUserId(userId: string) {
             published: true,
             bannerImgUrl: true,
             user: { select: { username: true, image: true } },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            name: true,
+                            id: true,
+                            color: true,
+                            badge: true,
+                            description: true,
+                        },
+                    },
+                },
+            },
             _count: {
                 select: {
                     comments: true,
@@ -181,13 +234,14 @@ export async function getPostsByUserId(userId: string) {
         reactionCount: post._count.reactions,
         isSaved: currUserId ? post.savedBy.length > 0 : false,
         savedBy: undefined,
+        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
     }));
 }
 
 export async function getPostById(id: string) {
     const userId = await currentUserId();
 
-    return await db.post.findUnique({
+    const post = await db.post.findUnique({
         where: { id },
         select: {
             id: true,
@@ -199,6 +253,20 @@ export async function getPostById(id: string) {
             published: true,
             bannerImgUrl: true,
             user: { select: { username: true, image: true, createdAt: true } },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            name: true,
+                            id: true,
+                            color: true,
+                            badge: true,
+                            description: true,
+                        },
+                    },
+                },
+            },
             _count: {
                 select: {
                     comments: true,
@@ -213,6 +281,21 @@ export async function getPostById(id: string) {
                 : undefined,
         },
     });
+
+    if (!post) {
+        return null;
+    }
+
+    return {
+        ...post,
+        username: post.user.username ?? "Guest",
+        userImage: post.user.image ?? "/hacker.png",
+        commentCount: post._count.comments,
+        reactionCount: post._count.reactions,
+        isSaved: userId ? post.savedBy.length > 0 : false,
+        savedBy: undefined,
+        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
+    };
 }
 
 export async function getPostBySlug(slug: string) {
@@ -232,6 +315,20 @@ export async function getPostBySlug(slug: string) {
             userId: true,
             saveCount: true,
             user: { select: { username: true, image: true, createdAt: true } },
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            name: true,
+                            id: true,
+                            color: true,
+                            badge: true,
+                            description: true,
+                        },
+                    },
+                },
+            },
+
             reactions: {
                 select: {
                     type: true,
@@ -260,6 +357,7 @@ export async function getPostBySlug(slug: string) {
         commentCount: post._count.comments,
         reactionCount: post._count.reactions,
         isSaved: userId ? post.savedBy.length > 0 : false,
+        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
         savedBy: undefined,
     };
 }
@@ -284,6 +382,20 @@ export async function getPostForUpdate(slug: string, userId: string) {
             published: true,
             bannerImgUrl: true,
             user: { select: { username: true } },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            name: true,
+                            id: true,
+                            color: true,
+                            badge: true,
+                            description: true,
+                        },
+                    },
+                },
+            },
         },
         where: {
             slug,
@@ -291,12 +403,16 @@ export async function getPostForUpdate(slug: string, userId: string) {
         },
     });
     if (!post) return null;
-    return { ...post, username: post.user.username || "Guest" };
+    return {
+        ...post,
+        username: post.user.username || "Guest",
+        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
+    };
 }
 
 export async function createPost(data: PostForCreate) {
     try {
-        await db.post.create({
+        const post = await db.post.create({
             data: {
                 title: data.title,
                 slug: data.slug,
@@ -305,6 +421,16 @@ export async function createPost(data: PostForCreate) {
                 bannerImgUrl: data.bannerImgUrl,
             },
         });
+
+        if (data.tags && data.tags.length > 0) {
+            for (const tagName of data.tags) {
+                const tag = await getOrCreateTag(tagName);
+                if (tag.id) {
+                    await addTagToPost(post.id, tag.id);
+                }
+            }
+        }
+
         return true;
     } catch (error) {
         console.error(error);
@@ -318,14 +444,24 @@ type updatePostData = {
     content?: string;
     published?: boolean;
     bannerImgUrl?: string;
+    tags?: string[];
 };
 
 export async function updatePost(id: string, data: updatePostData) {
     try {
         await db.post.update({
             where: { id },
-            data,
+            data: {
+                title: data.title,
+                slug: data.slug,
+                content: data.content,
+                published: data.published,
+                bannerImgUrl: data.bannerImgUrl,
+            },
         });
+        if (data.tags) {
+            await updatePostTags(id, data.tags);
+        }
         return true;
     } catch (error) {
         console.error(error);

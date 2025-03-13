@@ -1,4 +1,5 @@
 import { FormStatus } from "@/types";
+import type { Tag } from "../../../types";
 
 export type Post = {
     id: string;
@@ -8,6 +9,7 @@ export type Post = {
     published: boolean;
     bannerImgUrl?: string | null;
     username: string;
+    tags?: Tag[];
 };
 
 export type FormState = {

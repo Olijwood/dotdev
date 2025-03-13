@@ -2,14 +2,126 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const TOP_TAGS = [
+    {
+        name: "webdev",
+        description: "Because the internet...",
+        color: "text-blue-600",
+        badge: "",
+    },
+    {
+        name: "programming",
+        description: "The magic behind computers. 💻 ✨",
+        color: "text-purple-600",
+        badge: "",
+    },
+    {
+        name: "javascript",
+        description: "JavaScript is everywhere.",
+        color: "text-yellow-600",
+        badge: "JS",
+    },
+    {
+        name: "react",
+        description: "A JavaScript library for building user interfaces.",
+        color: "text-blue-500",
+        badge: "",
+    },
+    {
+        name: "beginners",
+        description:
+            '"A journey of a thousand miles begins with a single step." -Chinese Proverb',
+        color: "text-green-600",
+        badge: "",
+    },
+    {
+        name: "python",
+        description: "A versatile programming language.",
+        color: "text-blue-700",
+        badge: "",
+    },
+    {
+        name: "tailwindcss",
+        description: "A utility-first CSS framework.",
+        color: "text-cyan-600",
+        badge: "",
+    },
+    {
+        name: "ai",
+        description: "Artificial Intelligence and Machine Learning.",
+        color: "text-green-500",
+        badge: "",
+    },
+    {
+        name: "css",
+        description: "Cascading Style Sheets: the styling language of the web.",
+        color: "text-pink-500",
+        badge: "",
+    },
+    {
+        name: "html",
+        description: "The markup language of the web.",
+        color: "text-orange-600",
+        badge: "",
+    },
+    {
+        name: "typescript",
+        description: "JavaScript with syntax for types.",
+        color: "text-blue-600",
+        badge: "TS",
+    },
+    {
+        name: "node",
+        description: "Server-side JavaScript runtime.",
+        color: "text-green-700",
+        badge: "",
+    },
+];
+
 async function main() {
     console.log("🌱 Seeding database...");
+    console.log("🌱 Seeding tags...");
+
+    await Promise.all(
+        TOP_TAGS.map((tag) =>
+            prisma.tag.upsert({
+                where: { name: tag.name },
+                update: {},
+                create: tag,
+            }),
+        ),
+    );
+    console.log("✅ Tags seeded successfully.");
+    // try {
+    //     for (const tag of TOP_TAGS) {
+    //         await prisma.tag.upsert({
+    //             where: { name: tag.name },
+    //             update: {
+    //                 description: tag.description,
+    //                 color: tag.color,
+    //                 badge: tag.badge || null,
+    //             },
+    //             create: {
+    //                 name: tag.name,
+    //                 description: tag.description,
+    //                 color: tag.color,
+    //                 badge: tag.badge || null,
+    //             },
+    //         });
+    //     }
+
+    //     console.log("✅ Tags seeded successfully.");
+    // } catch (error) {
+    //     console.error("❌ Error seeding tags:", error);
+    // }
 
     const existingUser = await prisma.user.findFirst();
     if (existingUser) {
         console.log("🌱 Database is already seeded");
         return;
     }
+
+    const allTags = await prisma.tag.findMany();
 
     // Create Users
     const user1 = await prisma.user.upsert({
@@ -67,6 +179,11 @@ async function main() {
             content: post1content,
             published: true,
             userId: user1.id,
+            tags: {
+                create: allTags.slice(0, 3).map((tag) => ({
+                    tagId: tag.id,
+                })),
+            },
         },
     });
     const post2content = `# **The Art of Clean Code**
@@ -220,6 +337,11 @@ Writing clean code is a skill that takes time to develop. Start applying these p
             content: post2content,
             published: true,
             userId: user2.id,
+            tags: {
+                create: allTags.slice(3, 6).map((tag) => ({
+                    tagId: tag.id,
+                })),
+            },
         },
     });
 

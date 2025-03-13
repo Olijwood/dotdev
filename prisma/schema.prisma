@@ -107,6 +107,7 @@ model Post {
     reactions     Reaction[]
     comments      Comment[]
     savedBy       SavedPost[]
+    tags          PostTag[]
 
     @@index([userId])
     @@index([createdAt])
@@ -195,4 +196,30 @@ model ReplyLike {
     reply Reply @relation(fields: [replyId], references: [id], onDelete: Cascade)
 
     @@unique([userId, replyId])
+}
+
+model Tag {
+    id          String    @id @default(cuid())
+    name        String    @unique
+    description String?
+    color       String    @default("text-gray-600")
+    badge       String?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    posts       PostTag[]
+
+    @@index([name])
+}
+
+model PostTag {
+    id        String   @id @default(cuid())
+    postId    String
+    tagId     String
+    createdAt DateTime @default(now())
+    post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+    tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@unique([postId, tagId])
+    @@index([postId])
+    @@index([tagId])
 }

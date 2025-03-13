@@ -6,10 +6,11 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGFM from "remark-gfm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CrayonTag } from "@/components/ui/badge";
 import { getDateString } from "@/lib/utils";
 
 import { PostReactions } from "../../features/reactions/components/post-reactions";
+import { Tag } from "../../types";
+import PostTags from "../list-view/post-tags";
 
 type postContentPost = {
     id: string;
@@ -23,6 +24,7 @@ type postContentPost = {
     bannerImgUrl: string | null | undefined;
     createdAt: Date;
     reactions: Record<ReactionType, number>;
+    tags: Tag[];
 };
 
 type PostContentProps = {
@@ -33,6 +35,7 @@ export function PostContent({ post }: PostContentProps) {
     const { author, title, content, createdAt, reactions, bannerImgUrl } = post;
     const postBanner = bannerImgUrl || "/post-banner.png";
     const postedDate = getDateString(createdAt);
+    const tags = post.tags || [];
     return (
         <>
             {/* Banner Image */}
@@ -79,11 +82,7 @@ export function PostContent({ post }: PostContentProps) {
 
                 {/* Tags */}
                 <div className="mb-4 flex flex-wrap gap-0.5 ">
-                    {["webdev", "networking", "programming", "backend"].map(
-                        (tag) => (
-                            <CrayonTag key={tag} tag={tag} href={`/t/${tag}`} />
-                        ),
-                    )}
+                    <PostTags tags={tags} />
                 </div>
 
                 {/* Content */}

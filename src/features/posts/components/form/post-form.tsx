@@ -27,7 +27,7 @@ import {
     SidebarContainer,
 } from "../toolbar";
 import { PostFormContainer, PostFormWrapper } from "./container";
-import { PostTitleInput, ImageUploader } from "./input";
+import { PostTitleInput, ImageUploader, TagInput } from "./input";
 import { PostFormSchema, PostFormValues } from "./schema";
 import type { Post, FormState } from "./types";
 
@@ -57,11 +57,18 @@ export const PostForm = forwardRef<PostFormHandle, PostFormProps>(
                     content: post?.content || "",
                     bannerImgUrl: post?.bannerImgUrl || "",
                     published: post?.published || false,
+                    tags: post?.tags?.map((tag) => tag.name) || [],
                 },
             });
 
-        const formValues = watch(["title", "content", "bannerImgUrl", "slug"]);
-        const [title, content, bannerImgUrl, slug] = formValues;
+        const formValues = watch([
+            "title",
+            "content",
+            "bannerImgUrl",
+            "slug",
+            "tags",
+        ]);
+        const [title, content, bannerImgUrl, slug, tags] = formValues;
 
         const { isValid, validSlugMsg } = useValidateSlug(
             slug,
@@ -74,9 +81,6 @@ export const PostForm = forwardRef<PostFormHandle, PostFormProps>(
             setFormState((prev) => ({ ...prev, ...updates }));
         };
         const onSubmit = async (data: PostFormValues, postId?: string) => {
-            console.log("Submitting form with data:", data);
-            console.log("postId:", postId); // Debugging log
-
             updateFormState({ status: { state: "loading" } });
 
             try {
@@ -86,11 +90,9 @@ export const PostForm = forwardRef<PostFormHandle, PostFormProps>(
                     : await actionCreatePost(data);
 
                 if (response.error) {
-                    console.log("Error:", response.error);
                     toast.error(response.error);
                     return;
                 } else {
-                    console.log("Success:", response.success);
                     toast.success(response.success);
                 }
             } catch (error) {
@@ -141,7 +143,6 @@ export const PostForm = forwardRef<PostFormHandle, PostFormProps>(
 
         const submitHandler = handleSubmit((data) => {
             const postId = post?.id || undefined;
-            console.log("Submitting with postId:", postId); // Debugging log
             return onSubmit(data, postId);
         });
 
@@ -236,6 +237,10 @@ export const PostForm = forwardRef<PostFormHandle, PostFormProps>(
                                         {slug}
                                     </p>
                                 )}
+                                <TagInput
+                                    initialTags={tags}
+                                    onChange={(tags) => setValue("tags", tags)}
+                                />
                             </div>
 
                             <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-t">

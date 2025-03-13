@@ -10,6 +10,7 @@ import {
 import { PostToolbar } from "@/features/posts/components/toolbar";
 import { CommentSection } from "@/features/posts/features/comments/components/comment-section";
 import { getPostBySlug } from "@/features/posts/server/db";
+import { Tag } from "@/features/posts/types";
 import { currentUser } from "@/server/actions/auth";
 import Loading from "../loading";
 
@@ -56,6 +57,7 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
         content,
         createdAt,
         reactions: reactionCounts,
+        tags: post.tags as Tag[],
     };
 
     return (

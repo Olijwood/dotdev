@@ -14,6 +14,7 @@ export type Post = {
     saveCount?: number;
     isAuthor?: boolean;
     isSaved?: boolean;
+    tags?: Tag[];
 };
 
 export type PostListItem = {
@@ -30,6 +31,7 @@ export type PostListItem = {
     reactionCount: number;
     saveCount?: number;
     isSaved?: boolean;
+    tags?: Tag[];
 };
 
 export type PostForCreate = {
@@ -38,6 +40,7 @@ export type PostForCreate = {
     content: string;
     userId: string;
     bannerImgUrl?: string;
+    tags?: string[];
 };
 
 export type PostForUpdate = {
@@ -49,8 +52,17 @@ export type PostForUpdate = {
     published: boolean;
     bannerImgUrl: string | null;
     username: string;
+    tags?: Tag[];
 };
 
 export type SavedPostStatus = {
     [postId: string]: boolean;
+};
+
+export type Tag = {
+    id?: string;
+    name: string;
+    description?: string | null;
+    color?: string;
+    badge?: string | null;
 };

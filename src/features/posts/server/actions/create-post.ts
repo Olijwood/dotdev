@@ -15,7 +15,7 @@ export const actionCreatePost = async (
         return { error: "Invalid input" };
     }
 
-    const { title, slug, content, bannerImgUrl } = validatedFields.data;
+    const { title, slug, content, bannerImgUrl, tags } = validatedFields.data;
 
     const user = await currentUser();
 
@@ -28,6 +28,7 @@ export const actionCreatePost = async (
         slug,
         content,
         userId: user.id,
+        tags,
     };
     if (bannerImgUrl) {
         createData.bannerImgUrl = bannerImgUrl;

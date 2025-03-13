@@ -1,6 +1,7 @@
 "use server";
 
 import { ReactionType } from "@prisma/client";
+import { redirect } from "next/navigation";
 import { togglePostCount } from "@/features/posts/server/db";
 import db from "@/lib/db";
 import { getUserExistsById } from "@/server/db/user";
@@ -28,11 +29,13 @@ export async function toggleReaction(
     type: ReactionType,
 ) {
     if (!userId) {
+        redirect("/login");
         throw new Error("User ID required.");
     }
 
     const userExists = await getUserExistsById(userId);
     if (!userExists) {
+        redirect("/login");
         throw new Error("Invalid credentials.");
     }
 

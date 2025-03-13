@@ -15,7 +15,7 @@ export const actionUpdatePost = async (
         return { error: "Invalid input" };
     }
 
-    const { title, slug, content, published, bannerImgUrl } =
+    const { title, slug, content, published, bannerImgUrl, tags } =
         validatedFields.data;
 
     const user = await currentUser();
@@ -30,6 +30,7 @@ export const actionUpdatePost = async (
         content,
         published,
         bannerImgUrl,
+        tags,
     };
 
     const updated = await updatePost(id, updateData);

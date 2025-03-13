@@ -26,7 +26,7 @@ const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
         userImg: post.userImage,
     };
 
-    const tags = ["webdev", "accessibility", "html"];
+    const tags = post.tags || [];
     return (
         <div
             className={cn(
