@@ -35,7 +35,7 @@ export function SkeletonLeftSidebar() {
                     Create Post
                 </div>
             </div>
-            <GuidelinesCard />
+            <SkeletonGuidelinesCard />
             <SkeletonAboutCard />
             <SkeletonModeratorsCard />
         </aside>
@@ -43,6 +43,20 @@ export function SkeletonLeftSidebar() {
 }
 
 function GuidelinesCard({ guidelines }: { guidelines?: string | null }) {
+    return (
+        <div className=" border-b border-gray-300 p-4 ">
+            <SidebarHeading>Submission Guidelines</SidebarHeading>
+            <p className="text-gray-700 text-sm">
+                {guidelines || "No guidelines provided"}
+            </p>
+        </div>
+    );
+}
+function SkeletonGuidelinesCard({
+    guidelines,
+}: {
+    guidelines?: string | null;
+}) {
     return (
         <div className=" border-b border-gray-300 p-4 ">
             <SidebarHeading>Submission Guidelines</SidebarHeading>

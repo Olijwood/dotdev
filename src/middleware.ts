@@ -21,9 +21,6 @@ export default auth(async function middleware(req) {
 
     if (isApiRoute) return;
 
-    if (isAuthRoute && isLoggedIn) {
-        return Response.redirect(`${req.nextUrl.origin}/`);
-    }
     if (isAuthRoute && !isLoggedIn) return;
 
     if (!isLoggedIn && isPrivateRoute) {

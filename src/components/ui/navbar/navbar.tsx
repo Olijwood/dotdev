@@ -11,10 +11,11 @@ import { cn } from "@/lib/utils";
 
 const Navbar = () => {
     const { data: session } = useSession();
+
     const pathname = usePathname();
 
     const user = session?.user;
-    const { username } = user || {};
+    const { email } = user || {};
 
     const hideSearch = pathname === "/search";
     const hideCreate = pathname === "/create-post";
@@ -41,7 +42,7 @@ const Navbar = () => {
                     <SearchBar placeholder="Search..." id="navbar-search" />
                 </div>
                 <div className="ml-auto flex items-center justify-evenly gap-1">
-                    {username && (
+                    {email && (
                         <li
                             className={cn(
                                 "hidden sm:block",
@@ -72,14 +73,14 @@ const Navbar = () => {
                         </div>
                     </li>
 
-                    {username && (
+                    {email && (
                         <li>
                             <ProfileDropdown />
                         </li>
                     )}
                 </div>
 
-                {!username && (
+                {!email && (
                     <>
                         <li className="ml-auto">
                             <AuthButton href="/register">Register</AuthButton>
@@ -95,3 +96,5 @@ const Navbar = () => {
 };
 
 export { Navbar };
+
+export const dynamic = "force-dynamic";
