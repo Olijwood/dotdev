@@ -64,3 +64,7 @@ export const getStatusValues = (status: FormStatus) => {
     const success = status.state === "success" ? status.message : "";
     return { isLoading, error, success };
 };
+
+// Simulate server delay
+export const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));

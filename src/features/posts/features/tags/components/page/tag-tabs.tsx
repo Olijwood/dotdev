@@ -54,3 +54,25 @@ function TabButton({ label, activeTab, onClick }: TabButtonProps) {
         </button>
     );
 }
+
+function SkeletonTabButton({ label }: { label: string }) {
+    return (
+        <div className="px-4 py-3 text-gray-600 hover:text-gray-900 hover:font-bold">
+            <span className=" h-6 w-16 block">{label}</span>
+        </div>
+    );
+}
+
+export function SkeletonTagTabs({ className }: { className?: string }) {
+    return (
+        <div
+            className={cn(
+                "border-b flex justify-between items-center",
+                className,
+            )}
+        >
+            <SkeletonTabButton label="Latest" />
+            <SkeletonTabButton label="Top" />
+        </div>
+    );
+}

@@ -1,4 +1,4 @@
-import { CrayonTag } from "@/components/ui/badge";
+import { CrayonTag, SkeletonCrayonTag } from "@/components/ui/badge";
 import { Tag } from "../../types";
 
 interface PostTagsProps {
@@ -22,6 +22,16 @@ export default function PostTags({ tags }: PostTagsProps) {
                     />
                 );
             })}
+        </div>
+    );
+}
+
+export function SkeletonPostTags() {
+    return (
+        <div className="-ml-1.5 mt-1  flex flex-wrap gap-0.5">
+            <SkeletonCrayonTag />
+            <SkeletonCrayonTag />
+            <SkeletonCrayonTag />
         </div>
     );
 }

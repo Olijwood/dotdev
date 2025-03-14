@@ -2,6 +2,7 @@
 
 import {
     BookmarkIcon,
+    HeartIcon,
     MessageCircle,
     PencilIcon,
     Trash2Icon,
@@ -161,3 +162,40 @@ const PostActions = ({
 };
 
 export { PostActions };
+
+export const SkeletonPostActions = ({}) => {
+    return (
+        <div className="flex items-center gap-2 border-t p-2 pl-4">
+            <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2"
+            >
+                <HeartIcon className="size-4" />
+                <span className="text-sm text-muted-foreground">0</span>
+            </Button>
+            <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2"
+            >
+                <MessageCircle className="size-4" />
+                <span className="text-sm text-muted-foreground">0</span>
+            </Button>
+
+            <div className="ml-auto flex  items-center">
+                <span className="pt-0.5 text-xs text-muted-foreground">
+                    0 min read
+                </span>
+
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-1"
+                >
+                    <BookmarkIcon className="size-4 fill-none" />
+                </Button>
+            </div>
+        </div>
+    );
+};

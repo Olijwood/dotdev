@@ -10,7 +10,7 @@ interface PostMetadataProps {
     date: string;
 }
 
-export default function PostMetadata({ author, date }: PostMetadataProps) {
+export function PostMetadata({ author, date }: PostMetadataProps) {
     const { name, username, userImg } = author;
     return (
         <div className="flex items-center">
@@ -32,6 +32,25 @@ export default function PostMetadata({ author, date }: PostMetadataProps) {
                 </div>
 
                 <div className="text-sm text-gray-500">{date}</div>
+            </div>
+        </div>
+    );
+}
+
+export function SkeletonPostMetadata() {
+    return (
+        <div className="flex items-center">
+            <div className="rounded-full bg-gray-200 h-10 w-10 flex items-center justify-center text-lg font-bolder"></div>
+
+            <div className="ml-3">
+                <div className="flex items-center">
+                    <Link
+                        href="#"
+                        className="font-medium text-transparent"
+                    ></Link>
+                </div>
+
+                <div className="text-sm text-transparent"></div>
             </div>
         </div>
     );

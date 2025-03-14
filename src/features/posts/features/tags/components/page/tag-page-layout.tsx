@@ -10,7 +10,10 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { TagTabs } from "./tag-tabs";
+import { SkeletonPostList } from "@/features/posts/components/list-view";
+import { SkeletonLeftSidebar, SkeletonRightSidebar } from "./sidebar";
+import { SkeletonTagHeader } from "./tag-header";
+import { SkeletonTagTabs, TagTabs } from "./tag-tabs";
 
 type LayoutProps = {
     children: React.ReactNode;
@@ -19,7 +22,7 @@ type LayoutProps = {
     tagHeader: React.ReactNode;
 };
 
-export function Layout({
+export function TagPageLayout({
     children,
     leftSidebar,
     rightSidebar,
@@ -104,5 +107,48 @@ export function Layout({
                 </div>
             </div>
         </>
+    );
+}
+
+export function SkeletonTagPageLayout() {
+    return (
+        <div className="relative flex size-full flex-col items-center justify-center">
+            <SkeletonTagHeader />
+            <div className="flex-1">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                        <div className="hidden md:block md:col-span-1 xl:col-span-1">
+                            <SkeletonLeftSidebar />
+                        </div>
+
+                        <main className="md:col-span-2 h-full xl:col-span-3 flex flex-col gap-2">
+                            <div className="flex justify-between items-center">
+                                <button className="p-2 md:hidden">
+                                    <Menu className="h-5 w-5" />
+                                    <span className="sr-only">
+                                        Open right sidebar
+                                    </span>
+                                </button>
+                                <SkeletonTagTabs className="justify-center flex flex-1 md:ml-7 lg:ml-0" />
+
+                                <button className="p-2 lg:hidden">
+                                    <Menu className="h-5 w-5" />
+                                    <span className="sr-only">
+                                        Open right sidebar
+                                    </span>
+                                </button>
+                            </div>
+                            <div className="flex-1 overflow-y-hidden">
+                                <SkeletonPostList />
+                            </div>
+                        </main>
+
+                        <div className="hidden lg:block lg:col-span-1">
+                            <SkeletonRightSidebar />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

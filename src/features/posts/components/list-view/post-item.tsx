@@ -5,16 +5,16 @@ import type { PostListItem } from "@/features/posts/types";
 import { useCurrentUsername } from "@/hooks/auth";
 import { cn, getDateString } from "@/lib/utils";
 import { getMinutesToRead, getWordCount } from "../../utils";
-import { PostActions } from "./post-actions";
-import PostMetadata from "./post-metadata";
-import PostTags from "./post-tags";
+import { PostActions, SkeletonPostActions } from "./post-actions";
+import { PostMetadata, SkeletonPostMetadata } from "./post-metadata";
+import PostTags, { SkeletonPostTags } from "./post-tags";
 
 type PostItemProps = {
     post: PostListItem;
     containerCn?: string;
 };
 
-const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
+export const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
     const wordCount = getWordCount(post?.content);
     const username = useCurrentUsername();
     const isAuthor = username === post.username;
@@ -74,4 +74,33 @@ const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
     );
 };
 
-export { PostItem };
+export const SkeletonPostItem = ({
+    containerCn = "",
+}: {
+    containerCn?: string;
+}) => {
+    return (
+        <div
+            className={cn(
+                "flex w-full flex-col align-middle lg:w-full",
+                containerCn,
+            )}
+        >
+            <article className="sm:rounded-lg sm:border border-gray-300 bg-card ">
+                <div className="p-3 pb-2">
+                    <SkeletonPostMetadata />
+                    <div className="pl-12">
+                        <h2 className="mt-2 text-2xl md:text-3xl md font-bold leading-tight">
+                            <Link href="#" className="text-white">
+                                Post
+                            </Link>
+                        </h2>
+
+                        <SkeletonPostTags />
+                    </div>
+                </div>
+                <SkeletonPostActions />
+            </article>
+        </div>
+    );
+};

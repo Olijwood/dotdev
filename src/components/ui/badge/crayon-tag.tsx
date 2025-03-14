@@ -65,3 +65,12 @@ export function CrayonTag({
         </Link>
     );
 }
+
+export function SkeletonCrayonTag() {
+    return (
+        <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 crayons-tag">
+            <span className="crayons-tag__prefix">#</span>
+            <span className="text-white">tag</span>
+        </div>
+    );
+}

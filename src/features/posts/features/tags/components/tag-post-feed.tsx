@@ -3,9 +3,9 @@
 import { PostList, EmptyState } from "../../../components/list-view";
 import { getPostsByTagName } from "../../../server/db";
 
-type PostFeedByTagName = { tagName: string };
+type TagPostFeedProps = { tagName: string };
 
-export const PostFeedByTagName = async ({ tagName }: PostFeedByTagName) => {
+export const TagPostFeed = async ({ tagName }: TagPostFeedProps) => {
     const posts = await getPostsByTagName(tagName);
 
     if (posts.length === 0) {
@@ -18,8 +18,9 @@ export const PostFeedByTagName = async ({ tagName }: PostFeedByTagName) => {
     }
 
     return (
-        <>
-            <PostList posts={posts} />;
-        </>
+        <PostList
+            posts={posts}
+            className="overflow-y-auto no-scrollbar lg:!scrollbar-thin h-[74vh]  sm:rounded-lg sm:pr-1"
+        />
     );
 };
