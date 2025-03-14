@@ -4,6 +4,7 @@ import { togglePostCount } from "@/features/posts/server/db";
 import { SavedPostStatus } from "@/features/posts/types";
 import db from "@/lib/db";
 import { currentUserId } from "@/server/actions/auth";
+import { getUserExistsById } from "@/server/db/user";
 
 // the type for saved post data
 type SavedPostWithPost = {
@@ -155,10 +156,16 @@ export async function batchCheckSavedStatus(
 
 export async function toggleSavePost(
     postId: string,
-): Promise<{ saved: boolean }> {
+): Promise<{ saved: boolean; redirectToLogin?: boolean }> {
     const userId = await currentUserId();
+
     if (!userId) {
-        throw new Error("User ID required.");
+        return { saved: false, redirectToLogin: true };
+    }
+
+    const userExists = await getUserExistsById(userId);
+    if (!userExists) {
+        return { saved: false, redirectToLogin: true };
     }
 
     try {

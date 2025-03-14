@@ -22,7 +22,7 @@
         "dbgpush": "prisma generate && prisma db push",
         "dbstud": "prisma studio",
         "dbrst": "prisma migrate reset --force && prisma db push && yarn dbseed",
-        "dbseed": "tsx prisma/seed.ts",
+        "dbseed": "tsx prisma/seed",
         "dbinit": "yarn dbpsh && yarn dbgen && yarn dbseed"
     },
     "dependencies": {
@@ -81,8 +81,8 @@
         "sonner": "^1.7.3",
         "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
-        "uuid": "^11.0.5",
         "tsx": "^4.19.3",
+        "uuid": "^11.0.5",
         "zod": "^3.24.1"
     },
     "devDependencies": {

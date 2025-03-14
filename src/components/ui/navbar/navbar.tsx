@@ -21,7 +21,7 @@ const Navbar = () => {
 
     return (
         <nav className="border-b-2 border-gray-300">
-            <ul className="flex h-[var(--navbar-height)] items-center justify-between px-2.5">
+            <ul className="max-w-7xl mx-auto  flex h-[var(--navbar-height)] items-center justify-between px-2.5 ">
                 <li>
                     <Link href="/">
                         <Button

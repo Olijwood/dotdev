@@ -62,7 +62,11 @@ export type SavedPostStatus = {
 export type Tag = {
     id?: string;
     name: string;
+    displayName?: string | null;
     description?: string | null;
     color?: string;
     badge?: string | null;
+    guidelines?: string | null;
+    about?: string | null;
+    aboutLink?: string | null;
 };

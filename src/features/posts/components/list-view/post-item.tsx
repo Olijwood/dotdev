@@ -42,7 +42,7 @@ const PostItem = ({ post, containerCn = "" }: PostItemProps) => {
                             alt={post.title}
                             width={400}
                             height={200}
-                            className="w-full rounded-t-lg object-cover"
+                            className="w-full sm:rounded-t-lg object-cover"
                         />
                     </div>
                 )}

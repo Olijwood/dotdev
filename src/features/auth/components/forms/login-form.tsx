@@ -69,10 +69,14 @@ const LoginForm = () => {
         searchParams.get("error") === "OAuthAccountNotLinked"
             ? "Email already in use with another provider!"
             : "";
+
     const urlWarning =
         searchParams.get("warning") === REACT_PLEASE_LOGIN_WARN.URL_QUERY_PARAM
             ? REACT_PLEASE_LOGIN_WARN.WARNING
-            : "";
+            : searchParams.get("warning") === "NotLoggedInSave"
+              ? "Please login to save a post"
+              : "";
+
     return (
         <CardWrapper
             title="Login"

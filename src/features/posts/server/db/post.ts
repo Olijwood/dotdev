@@ -494,3 +494,77 @@ export async function deletePostById(id: string) {
         return { success: false, error: "Failed to delete post" };
     }
 }
+
+export async function getPostsByTagName(tagName: string) {
+    const userId = await currentUserId();
+
+    const posts = await db.post.findMany({
+        where: {
+            published: true,
+            tags: {
+                some: {
+                    tag: {
+                        name: tagName,
+                    },
+                },
+            },
+        },
+        select: {
+            id: true,
+            title: true,
+            slug: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            published: true,
+            bannerImgUrl: true,
+            user: {
+                select: {
+                    username: true,
+                    image: true,
+                },
+            },
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            description: true,
+                            color: true,
+                            badge: true,
+                        },
+                    },
+                },
+            },
+            _count: {
+                select: {
+                    comments: true,
+                    reactions: true,
+                    savedBy: true,
+                },
+            },
+            savedBy: userId
+                ? {
+                      where: { userId },
+                      select: { id: true },
+                  }
+                : undefined,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+
+    return posts.map((post) => ({
+        ...post,
+        username: post.user.username ?? "Guest",
+        userImage: post.user.image ?? "/hacker.png",
+        commentCount: post._count.comments,
+        reactionCount: post._count.reactions,
+        saveCount: post._count.savedBy,
+        isSaved: userId ? post.savedBy.length > 0 : false,
+        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
+        savedBy: undefined,
+    }));
+}

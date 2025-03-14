@@ -31,7 +31,8 @@
         "vitest.setup.ts",
         "jest.setup.cjs",
         "jest.config.cjs",
-        "es-modules.js"
+        "es-modules.js",
+        "prisma/seed/constants/tagts"
     ],
     "exclude": ["node_modules"]
 }

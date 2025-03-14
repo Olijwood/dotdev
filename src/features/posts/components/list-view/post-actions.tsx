@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -42,6 +43,7 @@ const PostActions = ({
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [isSaving, setIsSaving] = useState(false);
     const { modal, openModal } = useDeletePost(postId);
+    const router = useRouter();
 
     const handleToggleSave = async () => {
         if (isSaving) return;
@@ -49,6 +51,11 @@ const PostActions = ({
         try {
             setIsSaving(true);
             const result = await toggleSavePostAction(postId);
+            if (result.redirectToLogin) {
+                console.log("Redirecting to login page");
+                router.push("/login?warning=NotLoggedInSave");
+                return;
+            }
             setIsSaved(result.saved);
         } catch (error) {
             console.error("Error toggling saved post:", error);

@@ -29,9 +29,13 @@ export async function getTagByName(name: string): Promise<Tag | null> {
     return {
         id: tag.id,
         name: tag.name,
+        displayName: tag.displayName,
         description: tag.description || "",
         color: tag.color,
         badge: tag.badge,
+        guidelines: tag.guidelines || "",
+        about: tag.about || "",
+        aboutLink: tag.aboutLink || "",
     };
 }
 
