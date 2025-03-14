@@ -32,7 +32,7 @@ export const SkeletonPostList = ({
     return (
         <div
             className={cn(
-                "mx-auto flex w-full max-w-3xl flex-col items-center gap-3 bg-none sm:gap-2",
+                "flex w-screen sm:w-full max-w-3xl flex-col items-center gap-3 bg-none sm:gap-2",
                 className,
             )}
         >

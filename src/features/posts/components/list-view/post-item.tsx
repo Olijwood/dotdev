@@ -80,13 +80,8 @@ export const SkeletonPostItem = ({
     containerCn?: string;
 }) => {
     return (
-        <div
-            className={cn(
-                "flex w-full flex-col align-middle lg:w-full",
-                containerCn,
-            )}
-        >
-            <article className="sm:rounded-lg sm:border border-gray-300 bg-card ">
+        <div className={cn("flex w-full flex-col align-middle ", containerCn)}>
+            <article className="sm:rounded-lg sm:border w-full border-gray-300 bg-card ">
                 <div className="p-3 pb-2">
                     <SkeletonPostMetadata />
                     <div className="pl-12">

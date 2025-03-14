@@ -78,18 +78,19 @@ const Navbar = () => {
                             <ProfileDropdown />
                         </li>
                     )}
+                    {!email && (
+                        <>
+                            <li className="">
+                                <AuthButton href="/register">
+                                    Register
+                                </AuthButton>
+                            </li>
+                            <li className="ml-1">
+                                <AuthButton href="/login">Login</AuthButton>
+                            </li>
+                        </>
+                    )}
                 </div>
-
-                {!email && (
-                    <>
-                        <li className="ml-auto">
-                            <AuthButton href="/register">Register</AuthButton>
-                        </li>
-                        <li className="ml-2">
-                            <AuthButton href="/login">Login</AuthButton>
-                        </li>
-                    </>
-                )}
             </ul>
         </nav>
     );
