@@ -16,11 +16,7 @@ export function FollowButton({ followingId, className }: FollowButtonProps) {
         <Button
             onClick={handleToggleFollow}
             disabled={isPending}
-            className={cn(
-                "w-full hover:bg-opacity-80 ",
-                className,
-                isFollowing ? "bg-blue-600 hover:bg-blue-700" : "",
-            )}
+            className={cn("bg-blue-600 w-full hover:bg-blue-700 ", className)}
         >
             {isFollowing ? "Following" : "Follow"}
         </Button>

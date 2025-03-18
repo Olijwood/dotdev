@@ -33,7 +33,7 @@ type PostContentProps = {
 
 export function PostContent({ post }: PostContentProps) {
     const { author, title, content, createdAt, reactions, bannerImgUrl } = post;
-    const postBanner = bannerImgUrl || "/post-banner.png";
+    const postBanner = bannerImgUrl || "";
     const postedDate = getDateString(createdAt);
     const tags = post.tags || [];
     return (
@@ -49,7 +49,7 @@ export function PostContent({ post }: PostContentProps) {
                     />
                 </div>
             )}
-            <article className="h-auto border border-gray-300 bg-white p-4 sm:mx-[1%] sm:rounded-lg md:mx-[2.5%]">
+            <article className="h-auto border border-gray-300 bg-white p-4  sm:rounded-lg">
                 {/* Author Info */}
 
                 <div className="mb-4 flex items-center gap-3">

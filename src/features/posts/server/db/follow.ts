@@ -88,3 +88,86 @@ export async function checkIsFollowingByUserId(
 
     return !!existingFollow;
 }
+
+export async function toggleTagFollowAction(tagId: string) {
+    const userId = await currentUserId();
+
+    if (!userId) {
+        return { error: "Unauthorized" };
+    }
+
+    const existingFollow = await tagCheckIsFollowingByUserId(tagId, userId);
+
+    if (existingFollow) {
+        await tagUnfollow(tagId, userId);
+
+        return { following: false };
+    } else {
+        await tagFollow(tagId, userId);
+
+        return { following: true };
+    }
+}
+
+export async function tagFollow(tagId: string, userId: string) {
+    try {
+        await db.tagFollow.create({
+            data: {
+                userId,
+                tagId,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function tagUnfollow(tagId: string, userId: string) {
+    try {
+        await db.tagFollow.delete({
+            where: {
+                userId_tagId: {
+                    userId,
+                    tagId,
+                },
+            },
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function tagCheckIsFollowing(tagId: string) {
+    const userId = await currentUserId();
+    if (!userId) return false;
+    console.log(tagId);
+    const existingFollow = await db.tagFollow.findUnique({
+        select: {
+            id: true,
+        },
+        where: {
+            userId_tagId: {
+                userId,
+                tagId,
+            },
+        },
+    });
+
+    return !!existingFollow;
+}
+
+export async function tagCheckIsFollowingByUserId(
+    tagId: string,
+    userId: string,
+) {
+    const existingFollow = await db.tagFollow.findUnique({
+        where: {
+            userId_tagId: {
+                userId,
+                tagId,
+            },
+        },
+    });
+
+    return !!existingFollow;
+}

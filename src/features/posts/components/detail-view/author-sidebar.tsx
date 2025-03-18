@@ -27,8 +27,8 @@ export function AuthorSidebar({
     const description =
         "leapcell.io: serverless web hosting / async task / microservices";
     return (
-        <div className={cn("space-y-6", className)} {...props}>
-            <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-4 sm:mx-[0.25%] sm:my-2 sm:rounded-lg md:mx-[2.5%]">
+        <div className={cn("space-y-6 ", className)} {...props}>
+            <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-2  sm:my-2 sm:rounded-lg md:my-0 ">
                 <CardContent className="p-2 md:p-4">
                     <div className="flex flex-col items-center text-center">
                         <Avatar className="mb-2 size-16">
@@ -68,7 +68,7 @@ export function AuthorSidebar({
                 </CardContent>
             </div>
 
-            <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-4 sm:mx-[0.25%] sm:my-2 sm:rounded-lg md:mx-[2.5%]">
+            <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-2  sm:my-2 sm:rounded-lg">
                 <CardContent className="p-2 md:p-4">
                     <h3 className="mb-4 font-semibold">More from {username}</h3>
                     <div className="space-y-4">

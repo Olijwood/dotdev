@@ -13,7 +13,7 @@ export async function TagPageComponent({ tagName }: { tagName: string }) {
     const tag = await getTagByName(tagName);
     if (!tag) return redirect("/");
 
-    const { name, displayName, description, guidelines, about, aboutLink } =
+    const { id, name, displayName, description, guidelines, about, aboutLink } =
         tag;
 
     return (
@@ -30,6 +30,7 @@ export async function TagPageComponent({ tagName }: { tagName: string }) {
                 rightSidebar={<RightSidebar />}
                 tagHeader={
                     <TagHeader
+                        id={id}
                         title={displayName || name}
                         description={description || ""}
                     />

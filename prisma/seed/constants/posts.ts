@@ -367,56 +367,41 @@ export const POSTS_DATA: POST_DATA[] = [
         id: "2",
         title: "The Art of Clean Code",
         slug: "the-art-of-clean-code",
-        content: `# **The Art of Clean Code**
-    
-    
-    Writing clean, maintainable, and efficient code is an essential skill for every developer. In this post, we'll explore best practices that will help you improve the readability and structure of your code.
-    
-    ## **Why Clean Code Matters**
-    
-    Messy code leads to:
-    - **Harder debugging**
-    - **Slower development**
-    - **Increased technical debt**
-    - **Poor collaboration in teams**
-    
-    On the other hand, **clean code**:
-    - Is easier to read and maintain ✅
-    - Reduces bugs and errors 🔍
-    - Improves collaboration among developers 👥
-    
-    ## **Principles of Clean Code**
-    
-    Here are some key principles to follow when writing clean code:
-    
-    ### **1️⃣ Use Meaningful Variable & Function Names**
-    
-    ❌ Bad:
-    
-    \`\`\`js
-    let a = 10;
-    function x(y) {
-    return y * 2;
-    }
-    \`\`\`
-    
-    ✅ Better:
-    
-    \`\`\`js
-    let userAge = 10;
-    function doubleValue(number) {
-    return number * 2;
-    }
-    \`\`\`
-    
-    ### **5️⃣ Use DRY (Don't Repeat Yourself)**
-    
-    Repeating the same logic in multiple places leads to maintenance nightmares.
-    
-    ### **Quotes on Clean Code**
-    
-    "Programs must be written for people to read, and only incidentally for machines to execute."
-    — Harold Abelson`,
+        content:
+            "# **The Art of Clean Code** \n" +
+            " Writing clean, maintainable, and efficient code is an essential skill for every developer. In this post, we'll explore best practices that will help you improve the readability and structure of your code.\n" +
+            "## **Why Clean Code Matters** \n" +
+            `Messy code leads to:
+- **Harder debugging**
+- **Slower development**
+- **Increased technical debt**
+- **Poor collaboration in teams** \n\n` +
+            `On the other hand, clean code:
+- **Is easier to read and maintain** ✅
+- **Reduces bugs and errors** 🔍
+- **Improves collaboration among developers** 👥 \n\n` +
+            "## **Principles of Clean Code** \n" +
+            "Here are some key principles to follow when writing clean code: \n" +
+            "### **1️⃣ Use Meaningful Variable & Function Names** \n" +
+            "❌ **Bad:** \n" +
+            "```js\n" +
+            "let a = 10;\n" +
+            "function x(y) {\n" +
+            "    return y * 2;\n" +
+            "}\n" +
+            "```\n\n" +
+            "✅ **Better:** \n" +
+            "```js\n" +
+            "let userAge = 10;\n" +
+            "function doubleValue(number) {\n" +
+            "    return number * 2;\n" +
+            "}\n" +
+            "```\n\n" +
+            "### **5️⃣ Use DRY (Don't Repeat Yourself)** \n" +
+            "Repeating the same logic in multiple places leads to maintenance nightmares. \n" +
+            "### **Quotes on Clean Code** \n" +
+            `> "Programs must be written for people to read, and only incidentally for machines to execute."
+— Harold Abelson`,
         published: true,
         userId: "2",
         bannerImgUrl: "/seed/clean-post-banner.jpg",

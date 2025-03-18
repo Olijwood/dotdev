@@ -12,7 +12,7 @@ export const CommentSection = ({ postId }: CommentsSectionProps) => {
     const { comments, handleNewComment } = useComments(postId);
 
     return (
-        <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-4 sm:mx-[1%] sm:my-2 sm:rounded-lg md:mx-[2.5%]">
+        <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-4 sm:my-2 sm:rounded-lg ">
             <h2 className="mb-6 flex items-center gap-2 text-xl font-semibold">
                 Latest comments
             </h2>

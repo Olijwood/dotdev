@@ -1,9 +1,12 @@
+import { TagFollowButton } from "./tag-follow-button";
+
 type TagHeaderProps = {
+    id: string;
     title: string;
     description: string;
 };
 
-export function TagHeader({ title, description }: TagHeaderProps) {
+export function TagHeader({ id, title, description }: TagHeaderProps) {
     return (
         <div className="w-full max-w-7xl min-h-fit border overflow-hidden rounded-lg ">
             <div className="bg-blue-900 w-full min-h-3"></div>
@@ -17,9 +20,7 @@ export function TagHeader({ title, description }: TagHeaderProps) {
                             <p className="text-gray-700">{description}</p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2">
-                            <button className="bg-blue-700 hover:bg-blue-700/90 text-white px-4 py-2 rounded-md font-medium">
-                                Follow
-                            </button>
+                            <TagFollowButton tagId={id} />
                             <button className="bg-white hover:bg-gray-100 border px-4 py-2 rounded-md font-medium">
                                 Hide
                             </button>

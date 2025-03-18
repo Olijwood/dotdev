@@ -9,7 +9,12 @@ import { addTagToPost, getOrCreateTag, updatePostTags } from "./tags";
 const postFilterMap = {
     onlyFollowing: (userId?: string) =>
         userId
-            ? Prisma.sql`AND p."userId" IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${userId})`
+            ? Prisma.sql`AND p."userId" IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${userId}) OR p.id IN (
+                        SELECT pt."postId" 
+                        FROM "PostTag" pt
+                        INNER JOIN "TagFollow" tf ON pt."tagId" = tf."tagId"
+                        WHERE tf."userId" = ${userId}
+                    )`
             : Prisma.empty,
 };
 
@@ -25,6 +30,7 @@ export async function getPosts(
     const followingFilter = filters.onlyFollowing
         ? postFilterMap.onlyFollowing(userId)
         : Prisma.empty;
+
     const posts = await db.$queryRaw<
         Array<{
             id: string;
@@ -138,7 +144,7 @@ export async function getTopPosts(
     const userId = await currentUserId();
 
     const followingFilter = filters.onlyFollowing
-        ? Prisma.sql`AND p."userId" IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${userId})`
+        ? postFilterMap.onlyFollowing(userId)
         : Prisma.empty;
 
     const posts = await db.$queryRaw<
