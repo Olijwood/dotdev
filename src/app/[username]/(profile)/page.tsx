@@ -22,12 +22,13 @@ const UserPage = async ({
     }
 
     const authorProfileInfoProps = {
+        id: author.id,
         username: author.username,
         name: author.name,
     };
 
     return (
-        <PostFeedWrapper isFiltersVisible={false} showEndMessage={false}>
+        <PostFeedWrapper hidden showEndMessage={false}>
             <UserProfileCard user={authorProfileInfoProps} />
             <UserPostFeed authorId={author.id} username={author.username} />
         </PostFeedWrapper>

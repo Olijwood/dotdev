@@ -77,6 +77,10 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
 
                 <div className=" h-fit min-w-0 flex-1 pb-14 sm:mr-2 sm:pb-2 md:mr-0">
                     <PostContent post={contentPostProp} />
+                    <AuthorSidebar
+                        author={author}
+                        className="px-1 space-y-2 md:hidden"
+                    />
                     <CommentSection postId={id} />
                 </div>
 

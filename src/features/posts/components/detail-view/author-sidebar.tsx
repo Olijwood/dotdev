@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import type React from "react";
-import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { cn, getDateString } from "@/lib/utils";
+import { FollowButton } from "./follow-button";
 
 type AuthorSidebarProps = React.ComponentPropsWithoutRef<"div"> & {
     author: {
+        id: string;
         username: string | null;
         image: string | null;
         createdAt: Date;
@@ -19,19 +19,17 @@ type AuthorSidebarProps = React.ComponentPropsWithoutRef<"div"> & {
 
 export function AuthorSidebar({
     author,
-    following = false,
     className,
     ...props
 }: AuthorSidebarProps) {
-    const { username, image, createdAt } = author;
+    const { id: authorId, username, image, createdAt } = author;
     const joinedDate = getDateString(createdAt, true);
     const description =
         "leapcell.io: serverless web hosting / async task / microservices";
-    const [isFollowing, setIsFollowing] = useState(following);
     return (
         <div className={cn("space-y-6", className)} {...props}>
-            <Card>
-                <CardContent className="p-4">
+            <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-4 sm:mx-[0.25%] sm:my-2 sm:rounded-lg md:mx-[2.5%]">
+                <CardContent className="p-2 md:p-4">
                     <div className="flex flex-col items-center text-center">
                         <Avatar className="mb-2 size-16">
                             <AvatarImage
@@ -50,15 +48,7 @@ export function AuthorSidebar({
                                 {description}
                             </p>
                         )}
-                        <Button
-                            onClick={() => setIsFollowing(!isFollowing)}
-                            className={cn(
-                                "w-full hover:bg-opacity-80 ",
-                                isFollowing && "bg-blue-600 hover:bg-blue-700",
-                            )}
-                        >
-                            {isFollowing ? "Following" : "Follow"}
-                        </Button>
+                        <FollowButton followingId={authorId} />
                     </div>
 
                     <div className="mt-4 space-y-3 text-xs font-semibold">
@@ -76,10 +66,10 @@ export function AuthorSidebar({
                         </div>
                     </div>
                 </CardContent>
-            </Card>
+            </div>
 
-            <Card>
-                <CardContent className="p-4">
+            <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-4 sm:mx-[0.25%] sm:my-2 sm:rounded-lg md:mx-[2.5%]">
+                <CardContent className="p-2 md:p-4">
                     <h3 className="mb-4 font-semibold">More from {username}</h3>
                     <div className="space-y-4">
                         {[
@@ -97,7 +87,7 @@ export function AuthorSidebar({
                         ))}
                     </div>
                 </CardContent>
-            </Card>
+            </div>
         </div>
     );
 }

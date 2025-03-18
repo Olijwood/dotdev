@@ -6,7 +6,7 @@ import { currentUserId } from "@/server/actions/auth";
 import { PostForCreate } from "../../types";
 import { addTagToPost, getOrCreateTag, updatePostTags } from "./tags";
 
-export async function getPosts() {
+export async function getPosts(where?: Prisma.PostWhereInput) {
     const userId = await currentUserId();
 
     const posts = await db.post.findMany({
@@ -46,7 +46,7 @@ export async function getPosts() {
                   }
                 : undefined,
         },
-        where: { published: true },
+        where: { published: true, ...where },
         orderBy: { createdAt: "desc" },
     });
 
@@ -62,8 +62,14 @@ export async function getPosts() {
     }));
 }
 
-export async function getTopPosts() {
+export async function getTopPosts(
+    { filters } = { filters: { onlyFollowing: false } },
+) {
     const userId = await currentUserId();
+
+    const followingFilter = filters.onlyFollowing
+        ? Prisma.sql`AND p."userId" IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${userId})`
+        : Prisma.empty;
 
     const posts = await db.$queryRaw<
         Array<{
@@ -158,6 +164,8 @@ export async function getTopPosts() {
         LEFT JOIN "Tag" t ON t.id = pt."tagId"
 
         WHERE p.published = true
+        ${followingFilter}
+
 
         GROUP BY 
             p.id, u.username, u.image, 
@@ -314,7 +322,14 @@ export async function getPostBySlug(slug: string) {
             bannerImgUrl: true,
             userId: true,
             saveCount: true,
-            user: { select: { username: true, image: true, createdAt: true } },
+            user: {
+                select: {
+                    id: true,
+                    username: true,
+                    image: true,
+                    createdAt: true,
+                },
+            },
             tags: {
                 select: {
                     tag: {

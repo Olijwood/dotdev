@@ -26,6 +26,16 @@ const currentUserId = async (): Promise<string | undefined> => {
 };
 
 /**
+ * Checks if the current user is authenticated.
+ * @returns {Promise<boolean >}
+ */
+const checkIfCurrentUser = async (): Promise<boolean> => {
+    const session = await auth();
+    const userId = session?.user?.id;
+    return !!userId;
+};
+
+/**
  * Retrieves the user role from the session.
  * @returns {Promise<UserRole | undefined>} A promise that resolves to the user's role, or undefined if not available.
  */
@@ -60,4 +70,10 @@ async function updateSession(userId: string) {
     }
 }
 
-export { currentUser, currentUserId, currentUserRole, updateSession };
+export {
+    currentUser,
+    currentUserId,
+    currentUserRole,
+    updateSession,
+    checkIfCurrentUser,
+};

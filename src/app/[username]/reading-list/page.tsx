@@ -22,7 +22,7 @@ const ReadingListPage = async ({
     }
 
     return (
-        <PostFeedWrapper isFiltersVisible={false}>
+        <PostFeedWrapper hidden>
             <h1 className="text-center text-3xl font-bold">
                 Your Reading List
             </h1>

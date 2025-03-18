@@ -34,6 +34,12 @@ model User {
     Reply                   Reply[]
     replyLike               ReplyLike[]
     savedPosts              SavedPost[]
+    following               Follow[]               @relation("Following")
+    followers               Follow[]               @relation("Followers")
+
+    // Tag following
+    tagFollows              TagFollow[]
+
 }
 
 model Account {
@@ -211,6 +217,7 @@ model Tag {
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
     posts       PostTag[]
+    followers   TagFollow[] 
 
     @@unique([name])
     @@index([name])
@@ -227,4 +234,28 @@ model PostTag {
     @@unique([postId, tagId])
     @@index([postId])
     @@index([tagId])
+}
+
+model Follow {
+    id           String   @id @default(cuid())
+    followerId   String
+    followingId  String
+    createdAt    DateTime @default(now())
+
+    follower     User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+    following    User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+    @@unique([followerId, followingId])
+}
+
+model TagFollow {
+    id        String   @id @default(cuid())
+    userId    String
+    tagId     String
+    createdAt DateTime @default(now())
+
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, tagId])
 }

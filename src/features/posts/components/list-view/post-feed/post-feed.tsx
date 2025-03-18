@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import type { PostListItem } from "@/features/posts/types";
 import { getPosts, getTopPosts } from "../../../server/db";
 import { PostList } from "../post-list";
@@ -7,10 +8,21 @@ import { PostList } from "../post-list";
 type PostListOrderBy = "latest" | "top";
 type PostFeedProps = {
     orderBy?: PostListOrderBy;
+    where?: Prisma.PostWhereInput;
+    filters?: {
+        filters: { onlyFollowing: boolean };
+    };
 };
 
-export const PostFeed = async ({ orderBy = "latest" }: PostFeedProps = {}) => {
-    const posts = orderBy === "latest" ? await getPosts() : await getTopPosts();
+export const PostFeed = async ({
+    orderBy = "latest",
+    where = {},
+    filters,
+}: PostFeedProps = {}) => {
+    const posts =
+        orderBy === "latest"
+            ? await getPosts(where)
+            : await getTopPosts(filters);
 
     if (posts.length === 0) {
         return (

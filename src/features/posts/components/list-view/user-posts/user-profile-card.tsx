@@ -1,7 +1,10 @@
 "use client";
 
+import { FollowButton } from "../../detail-view/follow-button";
+
 type Props = {
     user: {
+        id: string;
         username: string;
         name?: string;
         photoURL?: string;
@@ -21,6 +24,7 @@ export const UserProfileCard = ({ user }: Props) => {
                 <i>@{user.username}</i>
             </p>
             <h1 className="text-2xl font-bold">{user.name || user.username}</h1>
+            <FollowButton followingId={user.id} className="w-2/3" />
         </div>
     );
 };
