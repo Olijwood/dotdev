@@ -1,8 +1,7 @@
-"use client";
-
 import { SortByDropdown } from "@/components/ui/dropdown-menu";
 import { TabLink } from "@/components/ui/link/nav-link";
 import { cn } from "@/lib/utils";
+import { checkIfCurrentUser } from "@/server/actions/auth";
 
 export type PostSortName = "Top" | "Latest";
 export type PostFilterName = "Discover" | "Following";
@@ -21,17 +20,18 @@ type PostFeedFiltersProps = {
     page?: string;
     activeTab?: PostFilterName;
     activeSort?: PostSortName;
-    isAuthenticated?: boolean;
+    isDropdown?: boolean;
     hidden?: boolean;
 };
 
-export function PostFeedFilter({
+export async function PostFeedFilter({
     page = "",
     activeTab = "Discover",
     activeSort = "Latest",
-    isAuthenticated = false,
+    isDropdown = false,
     hidden = false,
 }: PostFeedFiltersProps) {
+    const isAuthenticated = (await checkIfCurrentUser()) && isDropdown;
     const tabs = isAuthenticated ? authenticatedTabs : unauthenticatedTabs;
     return (
         <div
