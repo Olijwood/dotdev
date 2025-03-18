@@ -8,7 +8,7 @@ import {
 } from "./post-feed-filters2";
 
 export async function PostFeedWrapper({
-    page = "posts",
+    page = "",
     activeTab = "Discover",
     activeSort = "Latest",
     showEndMessage = true,

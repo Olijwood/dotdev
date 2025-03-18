@@ -26,7 +26,7 @@ type PostFeedFiltersProps = {
 };
 
 export function PostFeedFilter({
-    page = "posts",
+    page = "",
     activeTab = "Discover",
     activeSort = "Latest",
     isAuthenticated = false,
@@ -44,7 +44,7 @@ export function PostFeedFilter({
             {tabs.map((tab) => (
                 <TabLink
                     key={tab.name}
-                    href={`/${page}${tab.href}`}
+                    href={`${page}${tab.href}`}
                     isActive={
                         isAuthenticated
                             ? activeTab === tab.name

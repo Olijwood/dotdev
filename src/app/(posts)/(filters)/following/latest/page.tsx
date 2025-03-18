@@ -4,11 +4,11 @@ import {
     PostFeedWrapper,
 } from "@/features/posts/components/list-view";
 
-export default function LatestPostsPage({}) {
+export default async function FollowingPostsPage({}) {
     return (
         <Main className="scrollbar-y justify-start ">
-            <PostFeedWrapper>
-                <PostFeed />
+            <PostFeedWrapper page="/following" isDropdown={false}>
+                <PostFeed filters={{ onlyFollowing: true }} />
             </PostFeedWrapper>
         </Main>
     );

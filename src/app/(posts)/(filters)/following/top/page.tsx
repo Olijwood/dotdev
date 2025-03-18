@@ -8,14 +8,11 @@ export default function TopFollowingPostsPage() {
     return (
         <Main className="scrollbar-y justify-start">
             <PostFeedWrapper
-                page="posts/following"
+                page="/following"
                 activeSort="Top"
                 isDropdown={false}
             >
-                <PostFeed
-                    orderBy="top"
-                    filters={{ filters: { onlyFollowing: true } }}
-                />
+                <PostFeed orderBy="top" filters={{ onlyFollowing: true }} />
             </PostFeedWrapper>
         </Main>
     );

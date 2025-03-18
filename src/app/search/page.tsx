@@ -49,12 +49,7 @@ export default function SearchPage() {
                     const result = await searchPostsAction({ query, sort });
                     // Map the API response to match the expected Post type
                     const formattedPosts =
-                        result.success && result.posts
-                            ? result.posts.map((post: PostListItem) => ({
-                                  ...post,
-                                  bannerImgUrl: post.bannerImgUrl || "",
-                              }))
-                            : [];
+                        result.success && result.posts ? result.posts : [];
                     setPosts(formattedPosts);
                 } else if (filter === "people") {
                     const result = await searchPeopleAction({ query, sort });

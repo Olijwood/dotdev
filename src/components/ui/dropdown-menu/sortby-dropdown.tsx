@@ -12,12 +12,12 @@ import {
 import { cn } from "@/lib/utils";
 
 export type SortByDropdownProps = {
-    page: string;
+    page?: string;
     activeSort?: "Latest" | "Top";
 };
 
 export const SortByDropdown = ({
-    page,
+    page = "",
     activeSort = "Latest",
 }: SortByDropdownProps) => {
     return (
@@ -33,7 +33,7 @@ export const SortByDropdown = ({
                 forceMount
             >
                 <Link
-                    href={`${page}}/latest`}
+                    href={`${page}/latest`}
                     className={cn(
                         "w-full text-center rounded-lg",
                         activeSort === "Latest" && "bg-muted underline",
