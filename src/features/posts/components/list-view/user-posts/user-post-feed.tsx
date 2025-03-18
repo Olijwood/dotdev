@@ -1,6 +1,6 @@
 "use server";
 
-import { getPostsByUserId } from "../../../server/db";
+import { getPosts } from "../../../server/db";
 import { EmptyState } from "../empty-state";
 import { PostList } from "../post-list";
 
@@ -10,7 +10,7 @@ export const UserPostFeed = async ({
     authorId,
     username,
 }: UserPostFeedProps) => {
-    const posts = await getPostsByUserId(authorId);
+    const posts = await getPosts({ byUserId: authorId });
 
     if (posts.length === 0) {
         return (

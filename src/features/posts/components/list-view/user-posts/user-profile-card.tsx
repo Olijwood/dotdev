@@ -8,6 +8,7 @@ type Props = {
         username: string;
         name?: string;
         photoURL?: string;
+        currUid?: string;
     };
 };
 export const UserProfileCard = ({ user }: Props) => {
@@ -24,7 +25,9 @@ export const UserProfileCard = ({ user }: Props) => {
                 <i>@{user.username}</i>
             </p>
             <h1 className="text-2xl font-bold">{user.name || user.username}</h1>
-            <FollowButton followingId={user.id} className="w-2/3" />
+            {!user.currUid && (
+                <FollowButton followingId={user.id} className="w-2/3" />
+            )}
         </div>
     );
 };

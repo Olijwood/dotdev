@@ -2,12 +2,12 @@
 
 import { BookmarkIcon } from "lucide-react";
 import { JSX } from "react";
-import { getSavedPosts } from "../../../server/db";
+import { getPosts } from "../../../server/db";
 import { PostList } from "../../list-view";
 import { EmptyState } from "./../empty-state";
 
 export const SavedPostFeed = async (): Promise<JSX.Element> => {
-    const savedPosts = await getSavedPosts();
+    const savedPosts = await getPosts({ isSaved: true });
 
     if (savedPosts.length === 0) {
         return (

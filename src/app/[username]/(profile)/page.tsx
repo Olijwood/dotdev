@@ -7,6 +7,7 @@ import {
     UserPostFeed,
     UserProfileCard,
 } from "@/features/posts/components/list-view";
+import { currentUserId } from "@/server/actions/auth";
 
 const UserPage = async ({
     params,
@@ -21,7 +22,10 @@ const UserPage = async ({
         return notFound();
     }
 
+    const currUid = await currentUserId();
+
     const authorProfileInfoProps = {
+        currUid,
         id: author.id,
         username: author.username,
         name: author.name,

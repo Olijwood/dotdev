@@ -7,28 +7,55 @@ import { PostForCreate } from "../../types";
 import { addTagToPost, getOrCreateTag, updatePostTags } from "./tags";
 
 const postFilterMap = {
-    onlyFollowing: (userId?: string) =>
+    isFollowing: (userId?: string) =>
         userId
-            ? Prisma.sql`AND p."userId" IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${userId}) OR p.id IN (
+            ? Prisma.sql`p."userId" IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${userId}) OR p.id IN (
                         SELECT pt."postId" 
                         FROM "PostTag" pt
                         INNER JOIN "TagFollow" tf ON pt."tagId" = tf."tagId"
                         WHERE tf."userId" = ${userId}
                     )`
             : Prisma.empty,
+    isSaved: (userId?: string) =>
+        userId
+            ? Prisma.sql`EXISTS (
+                SELECT 1 FROM "SavedPost" s
+                WHERE s."postId" = p.id AND s."userId" = ${userId}
+            )`
+            : Prisma.empty,
+    byUserId: (userId?: string) =>
+        userId ? Prisma.sql`p."userId" = ${userId}` : Prisma.empty,
+
+    byTag: (tagName?: string) =>
+        tagName
+            ? Prisma.sql`EXISTS (
+                SELECT 1 FROM "PostTag" pt
+                INNER JOIN "Tag" t ON pt."tagId" = t.id
+                WHERE pt."postId" = p.id AND t.name = ${tagName}
+            )`
+            : Prisma.empty,
 };
 
 type PostFilters = {
-    onlyFollowing: boolean;
+    isFollowing?: boolean;
+    isSaved?: boolean;
+    byUserId?: string;
+    byTag?: string;
 };
 
-export async function getPosts(
-    filters: PostFilters = { onlyFollowing: false },
-) {
+export async function getPosts(filters: PostFilters = {}) {
     const userId = await currentUserId();
 
-    const followingFilter = filters.onlyFollowing
-        ? postFilterMap.onlyFollowing(userId)
+    const conditions: Prisma.Sql[] = [Prisma.sql`p.published = true`];
+
+    if (filters.isFollowing) conditions.push(postFilterMap.isFollowing(userId));
+    if (filters.byUserId)
+        conditions.push(postFilterMap.byUserId(filters.byUserId));
+    if (filters.byTag) conditions.push(postFilterMap.byTag(filters.byTag));
+    if (filters.isSaved) conditions.push(postFilterMap.isSaved(userId));
+
+    const where = conditions.length
+        ? Prisma.sql`WHERE ${Prisma.join(conditions, ` AND `)}`
         : Prisma.empty;
 
     const posts = await db.$queryRaw<
@@ -114,8 +141,8 @@ export async function getPosts(
     LEFT JOIN "PostTag" pt ON pt."postId" = p.id
     LEFT JOIN "Tag" t ON t.id = pt."tagId"
     
-    WHERE p.published = true
-    ${followingFilter}
+        ${where}
+
     
     GROUP BY 
         p.id, p.title, p.slug, p.content, p."createdAt", p."updatedAt", 
@@ -139,12 +166,12 @@ export async function getPosts(
 }
 
 export async function getTopPosts(
-    filters: PostFilters = { onlyFollowing: false },
+    filters: PostFilters = { isFollowing: false },
 ) {
     const userId = await currentUserId();
 
-    const followingFilter = filters.onlyFollowing
-        ? postFilterMap.onlyFollowing(userId)
+    const followingFilter = filters.isFollowing
+        ? postFilterMap.isFollowing(userId)
         : Prisma.empty;
 
     const posts = await db.$queryRaw<
@@ -262,63 +289,6 @@ export async function getTopPosts(
         isSaved: post.isSaved,
         combinedScore: post.combinedScore,
         tags: post.tags || [],
-    }));
-}
-
-export async function getPostsByUserId(userId: string) {
-    const currUserId = await currentUserId();
-
-    const posts = await db.post.findMany({
-        select: {
-            id: true,
-            title: true,
-            slug: true,
-            content: true,
-            createdAt: true,
-            updatedAt: true,
-            published: true,
-            bannerImgUrl: true,
-            user: { select: { username: true, image: true } },
-
-            tags: {
-                select: {
-                    tag: {
-                        select: {
-                            name: true,
-                            id: true,
-                            color: true,
-                            badge: true,
-                            description: true,
-                        },
-                    },
-                },
-            },
-            _count: {
-                select: {
-                    comments: true,
-                    reactions: true,
-                },
-            },
-            savedBy: currUserId
-                ? {
-                      where: { userId: currUserId },
-                      select: { id: true },
-                  }
-                : undefined,
-        },
-        where: { userId, published: true },
-        orderBy: { createdAt: "desc" },
-    });
-
-    return posts.map((post) => ({
-        ...post,
-        username: post.user.username ?? "Guest",
-        userImage: post.user.image ?? "/hacker.png",
-        commentCount: post._count.comments,
-        reactionCount: post._count.reactions,
-        isSaved: currUserId ? post.savedBy.length > 0 : false,
-        savedBy: undefined,
-        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
     }));
 }
 
@@ -584,78 +554,4 @@ export async function deletePostById(id: string) {
         console.error("Error deleting post:", error);
         return { success: false, error: "Failed to delete post" };
     }
-}
-
-export async function getPostsByTagName(tagName: string) {
-    const userId = await currentUserId();
-
-    const posts = await db.post.findMany({
-        where: {
-            published: true,
-            tags: {
-                some: {
-                    tag: {
-                        name: tagName,
-                    },
-                },
-            },
-        },
-        select: {
-            id: true,
-            title: true,
-            slug: true,
-            content: true,
-            createdAt: true,
-            updatedAt: true,
-            published: true,
-            bannerImgUrl: true,
-            user: {
-                select: {
-                    username: true,
-                    image: true,
-                },
-            },
-            tags: {
-                select: {
-                    tag: {
-                        select: {
-                            id: true,
-                            name: true,
-                            description: true,
-                            color: true,
-                            badge: true,
-                        },
-                    },
-                },
-            },
-            _count: {
-                select: {
-                    comments: true,
-                    reactions: true,
-                    savedBy: true,
-                },
-            },
-            savedBy: userId
-                ? {
-                      where: { userId },
-                      select: { id: true },
-                  }
-                : undefined,
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-    });
-
-    return posts.map((post) => ({
-        ...post,
-        username: post.user.username ?? "Guest",
-        userImage: post.user.image ?? "/hacker.png",
-        commentCount: post._count.comments,
-        reactionCount: post._count.reactions,
-        saveCount: post._count.savedBy,
-        isSaved: userId ? post.savedBy.length > 0 : false,
-        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
-        savedBy: undefined,
-    }));
 }

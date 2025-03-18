@@ -2,6 +2,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { UserRole } from "@prisma/client";
 import NextAuth from "next-auth";
 import authConfig from "@/config/auth.config";
+import { generateUniqueUsername } from "@/features/auth/server/db/data";
 import db from "@/lib/db";
 import {
     deleteTwoFactorConfirmationById,
@@ -24,13 +25,33 @@ const { auth, handlers, signIn, signOut } = NextAuth({
                 where: { id: user.id },
                 data: { emailVerified: new Date() },
             });
+
+            if (!user.username && user.email) {
+                const uniqueUsername = await generateUniqueUsername(user.email);
+                await db.user.update({
+                    where: { id: user.id },
+                    data: { username: uniqueUsername },
+                });
+            }
         },
     },
     callbacks: {
         async signIn({ user, account }) {
-            if (account?.provider !== "credentials") return true;
-
             if (!user.id) return false;
+            if (account?.provider !== "credentials") {
+                const existingUser = await getUserById(user.id);
+                if (existingUser && !existingUser.username) {
+                    const uniqueUsername = await generateUniqueUsername(
+                        existingUser.email,
+                    );
+                    await db.user.update({
+                        where: { id: existingUser.id },
+                        data: { username: uniqueUsername },
+                    });
+                }
+                return true;
+            }
+
             const existingUser = await getUserById(user.id);
             if (!existingUser?.emailVerified) return false;
 

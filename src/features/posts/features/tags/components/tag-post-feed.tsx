@@ -1,12 +1,12 @@
 "use server";
 
 import { PostList, EmptyState } from "../../../components/list-view";
-import { getPostsByTagName } from "../../../server/db";
+import { getPosts } from "../../../server/db";
 
 type TagPostFeedProps = { tagName: string };
 
 export const TagPostFeed = async ({ tagName }: TagPostFeedProps) => {
-    const posts = await getPostsByTagName(tagName);
+    const posts = await getPosts({ byTag: tagName });
 
     if (posts.length === 0) {
         return (
