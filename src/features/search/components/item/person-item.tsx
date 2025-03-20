@@ -16,7 +16,6 @@ type PersonItemProps = {
 };
 
 export function PersonItem({ person }: PersonItemProps) {
-    console.log("person,", person);
     const joinedDate = getDateString(new Date(person.joinedAt));
 
     return (

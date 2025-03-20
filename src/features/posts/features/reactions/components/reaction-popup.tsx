@@ -99,7 +99,9 @@ const ReactionPopup = ({
                             <span
                                 className={cn(
                                     "text-muted-foreground font-medium",
-                                    isDetailView ? "text-lg" : "text-sm ",
+                                    isDetailView
+                                        ? "text-lg !text-black"
+                                        : "text-sm ",
                                 )}
                             >
                                 {reactions.length}
@@ -107,8 +109,20 @@ const ReactionPopup = ({
                         </>
                     ) : (
                         <>
-                            <Heart className="ml-0.5 flex bar-i self-center" />
-                            <span className="text-lg font-medium">
+                            <Heart
+                                className={cn(
+                                    "ml-0.5 flex self-center",
+                                    isDetailView ? "bar-i" : "size-4",
+                                )}
+                            />
+                            <span
+                                className={cn(
+                                    "font-medium text-muted-foreground",
+                                    isDetailView
+                                        ? "text-lg !text-black"
+                                        : "text-sm",
+                                )}
+                            >
                                 {reactions.length}
                             </span>
                         </>

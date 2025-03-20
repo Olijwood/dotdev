@@ -50,7 +50,6 @@ export async function PostDetailView({ slug }: { slug: string }) {
         isSaved,
     } = post;
 
-    console.log("post data: ", post);
     const isAuthor = user?.username === author.username;
 
     const reactionCounts = getReactionCounts(reactions);
@@ -81,7 +80,7 @@ export async function PostDetailView({ slug }: { slug: string }) {
                     />
                 </div>
 
-                <div className=" h-fit min-w-0 flex-1 pb-14 sm:mr-2 sm:pb-2 md:mr-0">
+                <div className=" h-fit min-w-0 space-y-2 flex-1 pb-14 sm:mr-2 sm:pb-2 md:mr-0">
                     <PostContent post={contentPostProp} />
                     <AuthorSidebar author={author} className="  md:hidden" />
                     <CommentSection postId={id} />

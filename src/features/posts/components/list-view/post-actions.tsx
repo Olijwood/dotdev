@@ -53,7 +53,6 @@ const PostActions = ({
             setIsSaving(true);
             const result = await toggleSavePostAction(postId);
             if (result.redirectToLogin) {
-                console.log("Redirecting to login page");
                 router.push("/login?warning=NotLoggedInSave");
                 return;
             }
@@ -64,7 +63,22 @@ const PostActions = ({
             setIsSaving(false);
         }
     };
+    const handleCommentClick = () => {
+        router.push(`/post/${slug}`);
 
+        setTimeout(() => {
+            const commentSection = document.getElementById(
+                `comment-section-${postId}`,
+            );
+            if (commentSection) {
+                commentSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+                commentSection.focus();
+            }
+        }, 1000);
+    };
     return (
         <TooltipProvider>
             <div className="flex items-center gap-2 border-t p-2 pl-4">
@@ -76,6 +90,7 @@ const PostActions = ({
                             variant="ghost"
                             size="sm"
                             className="flex items-center gap-2"
+                            onClick={handleCommentClick}
                         >
                             <MessageCircle className="size-4" />
                             <span className="text-sm text-muted-foreground">

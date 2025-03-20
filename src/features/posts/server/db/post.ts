@@ -95,7 +95,7 @@ function buildWhereClause(filters: PostFilters, userId?: string): Prisma.Sql {
 
 export async function getPosts(
     filters: PostFilters = {},
-    sort: PostsSortType = "top",
+    sort: PostsSortType = "latest",
 ) {
     const userId = await currentUserId();
 
@@ -104,9 +104,9 @@ export async function getPosts(
     const isTop = sort === "top";
 
     const combinedScoreSelect = Prisma.sql`
-        COALESCE(count_data."commentCount", 0) + 
-        COALESCE(count_data."reactionCount", 0) + 
-        COALESCE(count_data."saveCount", 0) AS "combinedScore",
+        COALESCE(cd."commentCount", 0) + 
+        COALESCE(cd."reactionCount", 0) + 
+        COALESCE(cd."saveCount", 0) AS "combinedScore",
     `;
 
     const orderBy = isTop
@@ -114,28 +114,6 @@ export async function getPosts(
         : Prisma.sql`ORDER BY p."createdAt" DESC`;
 
     const posts = await db.$queryRaw<Array<AllPostsQuery>>(Prisma.sql`
-     WITH count_data AS (
-        SELECT 
-            c."postId",
-            COUNT(DISTINCT c.id) AS "commentCount",
-            COUNT(r."postId") AS "reactionCount",
-            COUNT(DISTINCT sp.id) AS "saveCount"
-        FROM "Post" p
-        LEFT JOIN (
-            SELECT id, "postId"
-            FROM "Comment"
-        ) AS c ON c."postId" = p.id
-        LEFT JOIN ( 
-            SELECT "postId"
-            FROM "Reaction" 
-        ) AS r ON r."postId" = p.id
-        LEFT JOIN (
-            SELECT id, "postId"
-            FROM "SavedPost"
-        ) AS sp ON sp."postId" = p.id
-        GROUP BY c."postId"
-    )
-
 
     SELECT 
         p.id,
@@ -148,49 +126,43 @@ export async function getPosts(
         p."bannerImgUrl",
         u.username,
         u.image AS "userImage",
-        
-           
-            
-            count_data."commentCount",
-            count_data."reactionCount",
-            count_data."saveCount",
-            ${combinedScoreSelect}
-
+          
+        cd."commentCount",
+        cd."reactionCount",
+        cd."saveCount",
+        ${combinedScoreSelect}
        
         -- Whether the current user has saved the post
-            EXISTS (SELECT 1 FROM "SavedPost" sp WHERE sp."postId" = p.id AND sp."userId" = ${userId}) AS "isSaved",
+        EXISTS (SELECT 1 FROM "SavedPost" sp WHERE sp."postId" = p.id AND sp."userId" = ${userId}) AS "isSaved",
 
         -- Full tag details
-         (SELECT jsonb_agg(
-                DISTINCT jsonb_build_object(
-                    'id', t.id,
-                    'name', t.name,
-                    'description', t.description,
-                    'color', t.color,
-                    'badge', t.badge
-                )
-            ) FILTER (WHERE t.id IS NOT NULL)
-            FROM "PostTag" pt
-            LEFT JOIN "Tag" t ON t.id = pt."tagId"
-            WHERE pt."postId" = p.id) AS "tags"
-        
-        
+        (SELECT jsonb_agg(
+        DISTINCT jsonb_build_object(
+            'id', t.id,
+            'name', t.name,
+            'description', t.description,
+            'color', t.color,
+            'badge', t.badge
+            )) 
+        FILTER (WHERE t.id IS NOT NULL)
+        FROM "PostTag" pt
+        LEFT JOIN "Tag" t ON t.id = pt."tagId"
+        WHERE pt."postId" = p.id) AS "tags"
+          
     FROM "Post" p
     LEFT JOIN "User" u ON u.id = p."userId"
-
-      -- Single subquery for counts
-        LEFT JOIN (
+    LEFT JOIN (
+        WITH count_data AS (
             SELECT 
-                c."postId",
+                p.id as "postId",
                 COUNT(DISTINCT c.id) AS "commentCount",
                 COUNT(r."postId") AS "reactionCount",
                 COUNT(DISTINCT sp.id) AS "saveCount"
-               
             FROM "Post" p
             LEFT JOIN (
                 SELECT id, "postId"
-                From "Comment"
-            ) as c ON c."postId" = p.id
+                FROM "Comment"
+            ) AS c ON c."postId" = p.id
             LEFT JOIN ( 
                 SELECT "postId"
                 FROM "Reaction" 
@@ -199,15 +171,14 @@ export async function getPosts(
                 SELECT id, "postId"
                 FROM "SavedPost"
             ) AS sp ON sp."postId" = p.id
-            GROUP BY c."postId"
-        ) AS count_data ON count_data."postId" = p.id
+            GROUP BY p.id
+        )
+        SELECT * FROM count_data
+    ) AS cd ON cd."postId" = p.id
 
-    
-        ${where}
-
-        ${orderBy}
-        
-`);
+    ${where}
+    ${orderBy}  
+    `);
 
     return posts.map((post) => ({
         ...post,

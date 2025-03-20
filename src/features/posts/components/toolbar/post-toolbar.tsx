@@ -55,11 +55,27 @@ export const PostToolbar = ({
         }
     };
 
+    const handleCommentClick = () => {
+        setTimeout(() => {
+            const commentSection = document.getElementById(
+                `comment-section-${postId}`,
+            );
+            if (commentSection) {
+                commentSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+                commentSection.focus();
+            }
+        }, 200);
+    };
+
     const postToolbarItems: PostToolbarItemProps[] = [
         {
             Icon: MessageCircleIcon,
             text: commentCount.toString(),
             tooltipText: "Comments",
+            handleClick: handleCommentClick,
         },
         {
             Icon: BookmarkIcon,

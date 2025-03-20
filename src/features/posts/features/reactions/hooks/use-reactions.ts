@@ -38,7 +38,6 @@ export const useReactions = (
 
             startTransition(async () => {
                 try {
-                    console.log("userId:", userId);
                     if (!userId) {
                         console.error("User ID required.");
                         redirect("/login");

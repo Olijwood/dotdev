@@ -27,7 +27,6 @@ export type UserButtonProps = {
 
 const UserButton = ({ userDetails }: UserButtonProps) => {
     const { username, name, image } = userDetails;
-    console.log("userDetails", userDetails);
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

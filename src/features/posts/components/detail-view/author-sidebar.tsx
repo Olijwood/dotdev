@@ -27,7 +27,7 @@ export function AuthorSidebar({
     const description =
         "leapcell.io: serverless web hosting / async task / microservices";
     return (
-        <div className={cn("space-y-6 ", className)} {...props}>
+        <div className={cn("md:space-y-6", className)} {...props}>
             <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-2  sm:my-2 sm:rounded-lg md:my-0 ">
                 <CardContent className="p-2 md:p-4">
                     <div className="flex flex-col items-center text-center">

@@ -140,7 +140,6 @@ export async function tagUnfollow(tagId: string, userId: string) {
 export async function tagCheckIsFollowing(tagId: string) {
     const userId = await currentUserId();
     if (!userId) return false;
-    console.log(tagId);
     const existingFollow = await db.tagFollow.findUnique({
         select: {
             id: true,

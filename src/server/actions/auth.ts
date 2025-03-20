@@ -66,7 +66,6 @@ async function updateSession(userId: string) {
             ...session.user,
             ...user,
         };
-        console.log("session updated");
     }
 }
 

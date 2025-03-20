@@ -33,7 +33,7 @@ type PostContentProps = {
 
 export function PostContent({ post }: PostContentProps) {
     const { author, title, content, createdAt, reactions, bannerImgUrl } = post;
-    console.log(post);
+
     const postBanner = bannerImgUrl || "";
     const postedDate = getDateString(createdAt);
     const tags = post.tags || [];
