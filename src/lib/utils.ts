@@ -47,6 +47,7 @@ export const getUsernameFromEmail = (
 };
 
 export const getDateString = (date: Date, full = false) => {
+    if (!date) return "unknown date";
     const now = new Date();
     const postedYear = date.getFullYear();
     const postedMonth = date.toLocaleString("default", { month: "short" });

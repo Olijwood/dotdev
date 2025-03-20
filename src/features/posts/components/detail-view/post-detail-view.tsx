@@ -38,7 +38,7 @@ export async function PostDetailView({ slug }: { slug: string }) {
     if (!post) return notFound();
 
     const {
-        user: author,
+        author,
         title,
         content,
         createdAt,
@@ -50,6 +50,7 @@ export async function PostDetailView({ slug }: { slug: string }) {
         isSaved,
     } = post;
 
+    console.log("post data: ", post);
     const isAuthor = user?.username === author.username;
 
     const reactionCounts = getReactionCounts(reactions);

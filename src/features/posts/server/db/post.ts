@@ -1,6 +1,6 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
+import { Prisma, ReactionType } from "@prisma/client";
 import db from "@/lib/db";
 import { currentUserId } from "@/server/actions/auth";
 import { PostForCreate } from "../../types";
@@ -43,6 +43,30 @@ type PostFilters = {
     byTag?: string;
 };
 
+type AllPostsQuery = {
+    id: string;
+    title: string;
+    slug: string;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+    published: boolean;
+    bannerImgUrl: string | null;
+    username: string;
+    userImage: string | null;
+    commentCount: number;
+    reactionCount: number;
+    saveCount: number;
+    isSaved: boolean;
+    tags: {
+        id: string;
+        name: string;
+        description: string | null;
+        color: string;
+        badge: string | null;
+    }[];
+};
+
 export async function getPosts(filters: PostFilters = {}) {
     const userId = await currentUserId();
 
@@ -58,31 +82,7 @@ export async function getPosts(filters: PostFilters = {}) {
         ? Prisma.sql`WHERE ${Prisma.join(conditions, ` AND `)}`
         : Prisma.empty;
 
-    const posts = await db.$queryRaw<
-        Array<{
-            id: string;
-            title: string;
-            slug: string;
-            content: string;
-            createdAt: Date;
-            updatedAt: Date;
-            published: boolean;
-            bannerImgUrl: string | null;
-            username: string;
-            userImage: string | null;
-            commentCount: number;
-            reactionCount: number;
-            saveCount: number;
-            isSaved: boolean;
-            tags: {
-                id: string;
-                name: string;
-                description: string | null;
-                color: string;
-                badge: string | null;
-            }[];
-        }>
-    >(Prisma.sql`
+    const posts = await db.$queryRaw<Array<AllPostsQuery>>(Prisma.sql`
     SELECT 
         p.id,
         p.title,
@@ -175,30 +175,7 @@ export async function getTopPosts(
         : Prisma.empty;
 
     const posts = await db.$queryRaw<
-        Array<{
-            id: string;
-            title: string;
-            slug: string;
-            content: string;
-            createdAt: Date;
-            updatedAt: Date;
-            published: boolean;
-            bannerImgUrl: string | null;
-            username: string;
-            userImage: string | null;
-            commentCount: number;
-            reactionCount: number;
-            saveCount: number;
-            combinedScore: number;
-            isSaved: boolean;
-            tags: {
-                id: string;
-                name: string;
-                description: string | null;
-                color: string;
-                badge: string | null;
-            }[];
-        }>
+        Array<AllPostsQuery & { combinedScore: number }>
     >(Prisma.sql`
             SELECT 
             p.id,
@@ -292,134 +269,123 @@ export async function getTopPosts(
     }));
 }
 
-export async function getPostById(id: string) {
-    const userId = await currentUserId();
+type PostContentQuery = {
+    id: string;
+    title: string;
+    slug: string;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+    published: boolean;
+    bannerImgUrl: string | null;
+    userId: string;
 
-    const post = await db.post.findUnique({
-        where: { id },
-        select: {
-            id: true,
-            title: true,
-            slug: true,
-            content: true,
-            createdAt: true,
-            updatedAt: true,
-            published: true,
-            bannerImgUrl: true,
-            user: { select: { username: true, image: true, createdAt: true } },
+    commentCount: number;
+    reactionCount: number;
+    saveCount: number;
+    isSaved: boolean;
 
-            tags: {
-                select: {
-                    tag: {
-                        select: {
-                            name: true,
-                            id: true,
-                            color: true,
-                            badge: true,
-                            description: true,
-                        },
-                    },
-                },
-            },
-            _count: {
-                select: {
-                    comments: true,
-                    reactions: true,
-                },
-            },
-            savedBy: userId
-                ? {
-                      where: { userId },
-                      select: { id: true },
-                  }
-                : undefined,
-        },
-    });
+    authorId: string;
+    username: string | null;
+    authorImage: string | null;
+    authorCreatedAt: Date;
 
-    if (!post) {
-        return null;
-    }
+    tags: {
+        id: string;
+        name: string;
+        description: string | null;
+        color: string;
+        badge: string | null;
+    }[];
 
-    return {
-        ...post,
-        username: post.user.username ?? "Guest",
-        userImage: post.user.image ?? "/hacker.png",
-        commentCount: post._count.comments,
-        reactionCount: post._count.reactions,
-        isSaved: userId ? post.savedBy.length > 0 : false,
-        savedBy: undefined,
-        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
-    };
-}
-
+    reactions: {
+        type: ReactionType;
+        userId: string;
+        username: string;
+        userImage: string | null;
+    }[];
+};
 export async function getPostBySlug(slug: string) {
-    const userId = await currentUserId();
+    const cUserId = await currentUserId();
 
-    const post = await db.post.findUnique({
-        where: { slug },
-        select: {
-            id: true,
-            title: true,
-            slug: true,
-            content: true,
-            createdAt: true,
-            updatedAt: true,
-            published: true,
-            bannerImgUrl: true,
-            userId: true,
-            saveCount: true,
-            user: {
-                select: {
-                    id: true,
-                    username: true,
-                    image: true,
-                    createdAt: true,
-                },
-            },
-            tags: {
-                select: {
-                    tag: {
-                        select: {
-                            name: true,
-                            id: true,
-                            color: true,
-                            badge: true,
-                            description: true,
-                        },
-                    },
-                },
-            },
+    const result = await db.$queryRaw<Array<PostContentQuery>>(Prisma.sql`
+        SELECT
+            p.id,
+            p.title,
+            p.slug,
+            p.content,
+            p."createdAt",
+            p."updatedAt",
+            p.published,
+            p."bannerImgUrl",
+            p."userId",
 
-            reactions: {
-                select: {
-                    type: true,
-                    userId: true,
-                    user: { select: { username: true, image: true } },
-                },
-            },
-            _count: {
-                select: {
-                    comments: true,
-                    reactions: true,
-                },
-            },
-            savedBy: userId
-                ? {
-                      where: { userId },
-                      select: { id: true },
-                  }
-                : undefined,
-        },
-    });
-    if (!post) return null;
+            u.id as "authorId",
+            u.username,
+            u.image AS "authorImage",
+            u."createdAt" AS "authorCreatedAt",
+
+            -- Count related data
+            (SELECT COUNT(*) FROM "Comment" c WHERE c."postId" = p.id) AS "commentCount",
+            (SELECT COUNT(*) FROM "Reaction" r WHERE r."postId" = p.id) AS "reactionCount",
+            (SELECT COUNT(*) FROM "SavedPost" sp WHERE sp."postId" = p.id) AS "saveCount",
+
+            -- Whether the current user has saved the post
+            EXISTS (SELECT 1 FROM "SavedPost" sp WHERE sp."postId" = p.id AND sp."userId" = ${cUserId}) AS "isSaved",
+
+            -- Full tag details
+            (SELECT jsonb_agg(
+                DISTINCT jsonb_build_object(
+                    'id', t.id,
+                    'name', t.name,
+                    'description', t.description,
+                    'color', t.color,
+                    'badge', t.badge
+                )
+            ) FILTER (WHERE t.id IS NOT NULL)
+            FROM "PostTag" pt
+            LEFT JOIN "Tag" t ON t.id = pt."tagId"
+            WHERE pt."postId" = p.id) AS "tags",
+
+            -- Reactions list
+            (SELECT jsonb_agg(
+                DISTINCT jsonb_build_object(
+                    'type', r.type,
+                    'userId', ru.id,
+                    'username', ru.username,
+                    'userImage', ru.image
+                )
+            ) FILTER (WHERE r."userId" IS NOT NULL)
+            FROM "Reaction" r
+            LEFT JOIN "User" ru ON ru.id = r."userId"
+            WHERE r."postId" = p.id) AS "reactions"
+
+        FROM "Post" p
+        LEFT JOIN (
+            SELECT "id", "createdAt", "username", "image"
+            FROM "User"
+        ) AS u ON u.id = p."userId"
+        WHERE p.slug = ${slug}
+    `);
+
+    if (!result || result.length === 0) return null;
+
+    const post = result[0];
 
     return {
         ...post,
-        commentCount: post._count.comments,
-        reactionCount: post._count.reactions,
-        isSaved: userId ? post.savedBy.length > 0 : false,
-        tags: post.tags.map((tagWrapper) => tagWrapper.tag),
-        savedBy: undefined,
+        author: {
+            id: post.authorId,
+            username: post.username ?? "Guest",
+            image: post.authorImage ?? "/hacker.png",
+            createdAt: post.authorCreatedAt,
+        },
+        commentCount: post.commentCount ?? 0,
+        reactionCount: post.reactionCount ?? 0,
+        saveCount: post.saveCount ?? 0,
+        isSaved: post.isSaved ?? false,
+        tags: post.tags || [],
+        reactions: post.reactions || [],
     };
 }
 
