@@ -22,3 +22,14 @@ export function FollowButton({ followingId, className }: FollowButtonProps) {
         </Button>
     );
 }
+
+export function FollowButtonSkeleton() {
+    return (
+        <Button
+            disabled
+            className="bg-blue-600 w-full hover:bg-blue-700 cursor-not-allowed"
+        >
+            Follow
+        </Button>
+    );
+}

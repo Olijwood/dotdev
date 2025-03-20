@@ -110,3 +110,53 @@ export function PostContent({ post }: PostContentProps) {
         </>
     );
 }
+
+export function PostContentSkeleton() {
+    return (
+        <>
+            <div className="relative bg-gray-200 flex aspect-[2/1] justify-center overflow-hidden sm:mb-2  sm:rounded-lg"></div>
+            <article className="h-auto border border-gray-300 bg-white p-4  sm:rounded-lg">
+                <div className="mb-4 flex items-center gap-3">
+                    <div className="size-10 rounded-full bg-gray-200"></div>
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-transparent">
+                            username
+                        </span>
+                        <span className="text-xs text-transparent">
+                            Posted on Jan 1
+                        </span>
+                    </div>
+                </div>
+
+                <h1 className="mb-4 text-3xl font-[900] leading-tight tracking-normal md:text-3xl lg:text-5xl">
+                    <span className="text-transparent">Title</span>
+                </h1>
+
+                <div className="mb-4 flex flex-wrap gap-0.5"></div>
+
+                <div>
+                    <div className="bg-gray-200 relative mb-6 flex aspect-[2/1] justify-center overflow-hidden rounded-lg"></div>
+                    <div className="prose prose-slate max-w-none !text-transparent dark:prose-invert">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Commodi consectetur ipsum tempora necessitatibus non
+                        mollitia qui a facere corrupti voluptatum recusandae
+                        aperiam dolores doloremque officia, vero sed. Fugiat,
+                        tempore aliquam. Lorem ipsum dolor sit, amet consectetur
+                        adipisicing elit. Quos beatae nostrum libero assumenda
+                        inventore dolores, placeat ducimus iusto, pariatur magni
+                        itaque quis. Sapiente sequi perferendis similique beatae
+                        quaerat nobis illo. Lorem ipsum dolor sit amet
+                        consectetur, adipisicing elit. Ut velit modi assumenda
+                        earum doloremque quos reiciendis saepe dolor illum minus
+                        facilis sequi harum, ea id aperiam ducimus minima eaque.
+                        Maxime? Lorem ipsum dolor sit amet consectetur
+                        adipisicing elit. Repellat doloribus distinctio hic
+                        minima ea adipisci delectus eaque possimus ipsam
+                        sapiente ratione, magni at, id sed mollitia rem dolor,
+                        beatae quos!
+                    </div>
+                </div>
+            </article>
+        </>
+    );
+}

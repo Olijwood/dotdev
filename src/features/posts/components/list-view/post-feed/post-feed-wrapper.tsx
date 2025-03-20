@@ -4,7 +4,7 @@ import {
     PostFeedFilter,
     PostFilterName,
     PostSortName,
-} from "./post-feed-filters2";
+} from "./post-feed-filters";
 
 export function PostFeedWrapper({
     page = "",

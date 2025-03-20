@@ -107,8 +107,10 @@ const ReactionPopup = ({
                         </>
                     ) : (
                         <>
-                            <Heart className="ml-0.5 flex size-4 self-center" />
-                            <span className="text-sm">{reactions.length}</span>
+                            <Heart className="ml-0.5 flex bar-i self-center" />
+                            <span className="text-lg font-medium">
+                                {reactions.length}
+                            </span>
                         </>
                     )}
                 </button>

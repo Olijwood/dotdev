@@ -1,12 +1,22 @@
 "use client";
 
 import { ReactionType } from "@prisma/client";
-import { MessageCircleIcon, BookmarkIcon, PencilIcon } from "lucide-react";
+import {
+    MessageCircleIcon,
+    BookmarkIcon,
+    PencilIcon,
+    HeartIcon,
+} from "lucide-react";
 import { HTMLAttributes, useState } from "react";
 import { Toolbar } from "@/components/ui/toolbar/toolbar";
 import ReactionPopup from "@/features/posts/features/reactions/components/reaction-popup";
 import { toggleSavePostAction } from "@/features/posts/server/actions";
-import { PostToolbarItem, PostToolbarItemProps } from "./toolbar-item";
+import {
+    PostToolbarItem,
+    PostToolbarItemProps,
+    PostToolbarItemSkeleton,
+    PostToolbarItemSkeletonProps,
+} from "./toolbar-item";
 
 type PostToolbarProps = HTMLAttributes<HTMLDivElement> & {
     postId: string;
@@ -79,6 +89,33 @@ export const PostToolbar = ({
             </div>
             {postToolbarItems.map((item, index) => (
                 <PostToolbarItem key={index} {...item} />
+            ))}
+        </Toolbar>
+    );
+};
+
+export const PostToolbarSkeleton = ({ isMobile }: { isMobile?: boolean }) => {
+    const postToolbarItems: PostToolbarItemSkeletonProps[] = [
+        {
+            Icon: HeartIcon,
+            text: "0",
+        },
+        {
+            Icon: MessageCircleIcon,
+            text: "0",
+        },
+        {
+            Icon: BookmarkIcon,
+            text: "0",
+        },
+    ];
+    return (
+        <Toolbar
+            isMobile={isMobile}
+            className="sm:w-20 sm:border sm:border-gray-300"
+        >
+            {postToolbarItems.map((item, index) => (
+                <PostToolbarItemSkeleton key={index} {...item} />
             ))}
         </Toolbar>
     );

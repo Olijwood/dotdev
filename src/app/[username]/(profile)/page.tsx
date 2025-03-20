@@ -1,10 +1,10 @@
 "use server";
-
 import { notFound } from "next/navigation";
 import { getUserProfileInfoByUsername } from "@/features/auth/server/db/data";
 import {
     PostFeedWrapper,
-    UserPostFeed,
+    EmptyState,
+    PostFeed,
     UserProfileCard,
 } from "@/features/posts/components/list-view";
 import { currentUserId } from "@/server/actions/auth";
@@ -15,6 +15,10 @@ const UserPage = async ({
     params: Promise<{ username: string }>;
 }) => {
     const { username } = await params;
+
+    if (!username) {
+        return notFound();
+    }
 
     const author = await getUserProfileInfoByUsername(username);
 
@@ -31,11 +35,23 @@ const UserPage = async ({
         name: author.name,
     };
 
+    const emptyState = (
+        <EmptyState
+            heading="Nothing to see"
+            paragraph={`Check back later to check if ${username} has written anything!`}
+        />
+    );
+
     return (
-        <PostFeedWrapper hidden showEndMessage={false}>
+        <>
             <UserProfileCard user={authorProfileInfoProps} />
-            <UserPostFeed authorId={author.id} username={author.username} />
-        </PostFeedWrapper>
+            <PostFeedWrapper hidden showEndMessage={false}>
+                <PostFeed
+                    filters={{ byUserId: author.id }}
+                    emptyState={emptyState}
+                />
+            </PostFeedWrapper>
+        </>
     );
 };
 

@@ -82,6 +82,23 @@ export const PostToolbarItem = ({
     );
 };
 
+export type PostToolbarItemSkeletonProps = {
+    Icon: LucideIcon;
+    text?: string;
+};
+
+export const PostToolbarItemSkeleton = ({
+    Icon,
+    text,
+}: PostToolbarItemSkeletonProps) => {
+    return (
+        <Button variant="ghost" className="!mx-0 w-full flex-col bar-b">
+            <Icon className="bar-i" />
+            {text && <span className="text-lg">{text}</span>}
+        </Button>
+    );
+};
+
 type ToolbarButtonContentProps = {
     isEdit?: boolean;
     Icon: LucideIcon;
