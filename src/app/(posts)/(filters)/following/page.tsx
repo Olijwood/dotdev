@@ -8,7 +8,7 @@ export default async function FollowingPostsPage({}) {
     return (
         <Main className="scrollbar-y justify-start ">
             <PostFeedWrapper page="following" isDropdown={false}>
-                <PostFeed filters={{ onlyFollowing: true }} />
+                <PostFeed filters={{ isFollowing: true }} />
             </PostFeedWrapper>
         </Main>
     );

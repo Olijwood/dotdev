@@ -36,7 +36,7 @@ const postFilterMap = {
             : Prisma.empty,
 };
 
-type PostFilters = {
+export type PostFilters = {
     isFollowing?: boolean;
     isSaved?: boolean;
     byUserId?: string;
@@ -56,6 +56,7 @@ type AllPostsQuery = {
     userImage: string | null;
     commentCount: number;
     reactionCount: number;
+    combinedScore: number;
     saveCount: number;
     isSaved: boolean;
     tags: {
@@ -66,8 +67,162 @@ type AllPostsQuery = {
         badge: string | null;
     }[];
 };
+export type PostsSortType = "latest" | "top";
 
-export async function getPosts(filters: PostFilters = {}) {
+/**
+ * Constructs the WHERE condition dynamically based on provided filters.
+ */
+function buildWhereClause(filters: PostFilters, userId?: string): Prisma.Sql {
+    const conditions: Prisma.Sql[] = [Prisma.sql`p.published = true`];
+
+    if (filters.isFollowing) {
+        conditions.push(postFilterMap.isFollowing(userId));
+    }
+    if (filters.byUserId) {
+        conditions.push(postFilterMap.byUserId(filters.byUserId));
+    }
+    if (filters.byTag) {
+        conditions.push(postFilterMap.byTag(filters.byTag));
+    }
+    if (filters.isSaved) {
+        conditions.push(postFilterMap.isSaved(userId));
+    }
+
+    return conditions.length
+        ? Prisma.sql`WHERE ${Prisma.join(conditions, ` AND `)}`
+        : Prisma.empty;
+}
+
+export async function getPosts(
+    filters: PostFilters = {},
+    sort: PostsSortType = "top",
+) {
+    const userId = await currentUserId();
+
+    const where = buildWhereClause(filters, userId);
+
+    const isTop = sort === "top";
+
+    const combinedScoreSelect = Prisma.sql`
+        COALESCE(count_data."commentCount", 0) + 
+        COALESCE(count_data."reactionCount", 0) + 
+        COALESCE(count_data."saveCount", 0) AS "combinedScore",
+    `;
+
+    const orderBy = isTop
+        ? Prisma.sql`ORDER BY "combinedScore" DESC, p."createdAt" DESC`
+        : Prisma.sql`ORDER BY p."createdAt" DESC`;
+
+    const posts = await db.$queryRaw<Array<AllPostsQuery>>(Prisma.sql`
+     WITH count_data AS (
+        SELECT 
+            c."postId",
+            COUNT(DISTINCT c.id) AS "commentCount",
+            COUNT(r."postId") AS "reactionCount",
+            COUNT(DISTINCT sp.id) AS "saveCount"
+        FROM "Post" p
+        LEFT JOIN (
+            SELECT id, "postId"
+            FROM "Comment"
+        ) AS c ON c."postId" = p.id
+        LEFT JOIN ( 
+            SELECT "postId"
+            FROM "Reaction" 
+        ) AS r ON r."postId" = p.id
+        LEFT JOIN (
+            SELECT id, "postId"
+            FROM "SavedPost"
+        ) AS sp ON sp."postId" = p.id
+        GROUP BY c."postId"
+    )
+
+
+    SELECT 
+        p.id,
+        p.title,
+        p.slug,
+        p.content,
+        p."createdAt",
+        p."updatedAt",
+        p.published,
+        p."bannerImgUrl",
+        u.username,
+        u.image AS "userImage",
+        
+           
+            
+            count_data."commentCount",
+            count_data."reactionCount",
+            count_data."saveCount",
+            ${combinedScoreSelect}
+
+       
+        -- Whether the current user has saved the post
+            EXISTS (SELECT 1 FROM "SavedPost" sp WHERE sp."postId" = p.id AND sp."userId" = ${userId}) AS "isSaved",
+
+        -- Full tag details
+         (SELECT jsonb_agg(
+                DISTINCT jsonb_build_object(
+                    'id', t.id,
+                    'name', t.name,
+                    'description', t.description,
+                    'color', t.color,
+                    'badge', t.badge
+                )
+            ) FILTER (WHERE t.id IS NOT NULL)
+            FROM "PostTag" pt
+            LEFT JOIN "Tag" t ON t.id = pt."tagId"
+            WHERE pt."postId" = p.id) AS "tags"
+        
+        
+    FROM "Post" p
+    LEFT JOIN "User" u ON u.id = p."userId"
+
+      -- Single subquery for counts
+        LEFT JOIN (
+            SELECT 
+                c."postId",
+                COUNT(DISTINCT c.id) AS "commentCount",
+                COUNT(r."postId") AS "reactionCount",
+                COUNT(DISTINCT sp.id) AS "saveCount"
+               
+            FROM "Post" p
+            LEFT JOIN (
+                SELECT id, "postId"
+                From "Comment"
+            ) as c ON c."postId" = p.id
+            LEFT JOIN ( 
+                SELECT "postId"
+                FROM "Reaction" 
+            ) AS r ON r."postId" = p.id
+            LEFT JOIN (
+                SELECT id, "postId"
+                FROM "SavedPost"
+            ) AS sp ON sp."postId" = p.id
+            GROUP BY c."postId"
+        ) AS count_data ON count_data."postId" = p.id
+
+    
+        ${where}
+
+        ${orderBy}
+        
+`);
+
+    return posts.map((post) => ({
+        ...post,
+        username: post.username ?? "Guest",
+        userImage: post.userImage ?? "/hacker.png",
+        commentCount: post.commentCount,
+        bannerImgUrl: post.bannerImgUrl ?? "",
+        reactionCount: post.reactionCount,
+        saveCount: post.saveCount,
+        isSaved: post.isSaved,
+        tags: post.tags || [],
+    }));
+}
+
+export async function getPosts2(filters: PostFilters = {}) {
     const userId = await currentUserId();
 
     const conditions: Prisma.Sql[] = [Prisma.sql`p.published = true`];
@@ -165,14 +320,10 @@ export async function getPosts(filters: PostFilters = {}) {
     }));
 }
 
-export async function getTopPosts(
-    filters: PostFilters = { isFollowing: false },
-) {
+export async function getTopPosts(filters: PostFilters = {}) {
     const userId = await currentUserId();
 
-    const followingFilter = filters.isFollowing
-        ? postFilterMap.isFollowing(userId)
-        : Prisma.empty;
+    const where = buildWhereClause(filters, userId);
 
     const posts = await db.$queryRaw<
         Array<AllPostsQuery & { combinedScore: number }>
@@ -242,9 +393,8 @@ export async function getTopPosts(
                     
                     LEFT JOIN "PostTag" pt ON pt."postId" = p.id
                     LEFT JOIN "Tag" t ON t.id = pt."tagId"
-                    
-                    WHERE p.published = true
-                    ${followingFilter}
+                 
+                    ${where}
                     
                     
                     GROUP BY 

@@ -2,20 +2,14 @@
 
 import React, { JSX, Suspense } from "react";
 import type { PostListItem } from "@/features/posts/types";
-// import { delay } from "@/lib/utils";
-import { getPosts, getTopPosts } from "../../../server/db";
+import { getPosts, PostFilters, PostsSortType } from "../../../server/db";
 import { PostList, SkeletonPostList } from "../post-list";
 
 type PostListOrderBy = "latest" | "top";
 type PostFeedProps = {
     emptyState?: JSX.Element;
     orderBy?: PostListOrderBy;
-    filters?: {
-        onlyFollowing?: boolean;
-        byUserId?: string;
-        byTag?: string;
-        isSaved?: boolean;
-    };
+    filters?: PostFilters;
 };
 
 export const PostFeed = async ({
@@ -26,7 +20,7 @@ export const PostFeed = async ({
     const posts =
         orderBy === "latest"
             ? await getPosts(filters)
-            : await getTopPosts(filters);
+            : await getPosts(filters, "top" as PostsSortType);
 
     if (posts.length === 0) {
         if (emptyState) {
@@ -38,8 +32,6 @@ export const PostFeed = async ({
             </p>
         );
     }
-
-    // await delay(3000);
 
     return (
         <Suspense fallback={<SkeletonPostList />}>

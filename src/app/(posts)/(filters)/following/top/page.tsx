@@ -12,7 +12,7 @@ export default function TopFollowingPostsPage() {
                 activeSort="Top"
                 isDropdown={false}
             >
-                <PostFeed orderBy="top" filters={{ onlyFollowing: true }} />
+                <PostFeed orderBy="top" filters={{ isFollowing: true }} />
             </PostFeedWrapper>
         </Main>
     );
