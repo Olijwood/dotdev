@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { Tag } from "@/features/posts/types";
 import db from "@/lib/db";
 
@@ -144,4 +145,37 @@ export async function updatePostTags(
             await removeTagFromPost(postId, tag.id);
         }
     }
+}
+
+type OnboardingTag = {
+    id: string;
+    name: string;
+    description?: string;
+    postCount: number;
+};
+
+export async function getOnboardingAvailableTags() {
+    const result = await db.$queryRaw<Array<OnboardingTag>>(Prisma.sql`
+        SELECT 
+            t.id, 
+            t.name, 
+            t.description,
+
+            (SELECT COUNT(*) FROM "PostTag" pt WHERE pt."tagId" = t.id) AS "postCount"
+        FROM "Tag" t
+        ORDER BY "postCount" DESC, t.name ASC
+        LIMIT 50
+    `);
+    if (!result || result.length === 0) {
+        return [];
+    }
+    const tags = result.map((tag) => {
+        return {
+            id: tag.id,
+            name: tag.name,
+            description: tag.description || "",
+            postCount: tag.postCount || 0,
+        };
+    });
+    return tags;
 }

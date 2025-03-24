@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+import { Person } from "@/components/onboarding/types";
 import db from "@/lib/db";
 import { logError } from "@/lib/logger";
 
@@ -64,6 +66,33 @@ const deleteTwoFactorConfirmationById = async (id: string) => {
     });
 };
 
+export const getOnboardingSuggestedPeople = async (userId: string) => {
+    const result = await db.$queryRaw<Array<Person>>(Prisma.sql`
+        SELECT 
+            id, 
+            username,
+            name, 
+            bio,
+            image
+        FROM "User"
+        WHERE id != ${userId}
+        ORDER BY RANDOM()
+        LIMIT 20
+   `);
+    if (!result || result.length === 0) {
+        return [];
+    }
+    const users = result.map((user) => {
+        return {
+            id: user.id,
+            name: user.name,
+            username: user.username || "",
+            bio: user.bio || "",
+            image: user.image || "",
+        };
+    });
+    return users;
+};
 export {
     getAccountByUserId,
     getUserById,

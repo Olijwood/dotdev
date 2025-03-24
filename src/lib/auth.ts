@@ -12,6 +12,7 @@ import {
 } from "@/server/db/user";
 
 const { auth, handlers, signIn, signOut } = NextAuth({
+    secret: process.env.NEXTAUTH_SECRET,
     adapter: PrismaAdapter(db),
     session: { strategy: "jwt" },
     ...authConfig,
@@ -75,6 +76,8 @@ const { auth, handlers, signIn, signOut } = NextAuth({
 
             const existingAccount = await getAccountByUserId(existingUser.id);
             token.isOAuth = !!existingAccount;
+            token.hasCompletedOnboarding =
+                existingUser.hasCompletedOnboarding as boolean;
 
             token.name = existingUser.name;
             token.username = existingUser.username as string;
@@ -99,6 +102,8 @@ const { auth, handlers, signIn, signOut } = NextAuth({
                 session.user.isTwoFactorEnabled =
                     token.isTwoFactorEnabled as boolean;
                 session.user.email = token.email as string;
+                session.user.hasCompletedOnboarding =
+                    token.hasCompletedOnboarding as boolean;
                 session.user.name = token.name;
                 session.user.isOAuth = token.isOAuth as boolean;
                 session.user.username = token.username as

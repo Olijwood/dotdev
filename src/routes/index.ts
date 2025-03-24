@@ -3,12 +3,9 @@ export const PRIVATE_ROUTES = [
     "/settings",
     "/create-post/:path",
     "/update-post/:path",
+    "/following/:path",
+    "/following",
 ] as const;
-export type PrivateRoute =
-    | "/dashboard"
-    | "/settings"
-    | "/create-post/:path"
-    | "/update-post/:path";
 
 export type AuthRoute =
     | "/login"

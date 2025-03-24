@@ -19,8 +19,10 @@ model User {
     emailVerified           DateTime?
     username                String?                @unique
     image                   String?
+    bio                     String?                @db.VarChar(200)
     password                String?
     role                    UserRole               @default(USER)
+    hasCompletedOnboarding  Boolean                @default(false)
     isTwoFactorEnabled      Boolean                @default(false)
     twoFactorConfirmation   TwoFactorConfirmation?
     twoFactorConfirmationId String?

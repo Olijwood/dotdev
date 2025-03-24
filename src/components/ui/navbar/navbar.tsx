@@ -17,11 +17,12 @@ const Navbar = () => {
     const user = session?.user;
     const { email } = user || {};
 
+    const hideNav = pathname === "/onboarding";
     const hideSearch = pathname === "/search";
     const hideCreate = pathname === "/create-post";
 
     return (
-        <nav className="border-b-2 border-gray-300">
+        <nav className={cn("border-b-2 border-gray-300", hideNav && "!hidden")}>
             <ul className="max-w-7xl mx-auto  flex h-[var(--navbar-height)] items-center justify-between px-2.5 ">
                 <li>
                     <Link href="/">

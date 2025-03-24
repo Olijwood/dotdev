@@ -35,6 +35,28 @@ const checkIfCurrentUser = async (): Promise<boolean> => {
     return !!userId;
 };
 
+export const currentOnboardingProfileDetails = async (userId: string) => {
+    const user = await db.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            username: true,
+            name: true,
+            image: true,
+            bio: true,
+        },
+    });
+    if (!user) return undefined;
+    const userProfileDetails = {
+        id: user.id,
+        displayName: user.name,
+        username: user.username || "",
+        bio: user.bio || "",
+        profileImage: user.image || "",
+    };
+    return userProfileDetails;
+};
+
 /**
  * Retrieves the user role from the session.
  * @returns {Promise<UserRole | undefined>} A promise that resolves to the user's role, or undefined if not available.
