@@ -1,3 +1,5 @@
+"use server";
+
 import { Prisma } from "@prisma/client";
 import { Person } from "@/components/onboarding/types";
 import db from "@/lib/db";
@@ -49,6 +51,18 @@ const getUserByEmail = async (email: string) => {
     }
 };
 
+export const userByUsernameExists = async (username: string) => {
+    try {
+        const user = await db.user.findUnique({
+            select: { id: true },
+            where: { username },
+        });
+        return !!user;
+    } catch (error) {
+        logError("userByUsernameExists", error);
+    }
+};
+
 const getTwoFactorConfirmationByUserId = async (userId: string) => {
     try {
         const twoFactorConfirmation = await db.twoFactorConfirmation.findUnique(
@@ -67,15 +81,24 @@ const deleteTwoFactorConfirmationById = async (id: string) => {
 };
 
 export const getOnboardingSuggestedPeople = async (userId: string) => {
-    const result = await db.$queryRaw<Array<Person>>(Prisma.sql`
+    const isFollowingSelect = Prisma.sql`, (
+        SELECT 1 
+        FROM "Follow" f 
+        WHERE f."followerId" = ${userId} AND f."followingId" = u.id
+    ) IS NOT NULL AS "isFollowing"`;
+
+    const result = await db.$queryRaw<
+        Array<Person & { isFollowing: boolean }>
+    >(Prisma.sql`
         SELECT 
             id, 
             username,
             name, 
             bio,
             image
-        FROM "User"
-        WHERE id != ${userId}
+            ${isFollowingSelect}
+        FROM "User" u
+        WHERE u.id != ${userId}
         ORDER BY RANDOM()
         LIMIT 20
    `);
@@ -89,6 +112,7 @@ export const getOnboardingSuggestedPeople = async (userId: string) => {
             username: user.username || "",
             bio: user.bio || "",
             image: user.image || "",
+            isFollowing: user.isFollowing || false,
         };
     });
     return users;

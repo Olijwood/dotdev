@@ -69,3 +69,14 @@ export const getStatusValues = (status: FormStatus) => {
 // Simulate server delay
 export const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
+
+export function debounce<F extends (...args: unknown[]) => void>(
+    func: F,
+    delay: number,
+) {
+    let timer: NodeJS.Timeout;
+    return (...args: Parameters<F>) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => func(...args), delay);
+    };
+}

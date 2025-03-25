@@ -1,7 +1,9 @@
+"use server";
+
 import { Suspense } from "react";
 import { OnboardingFormSkeleton } from "@/components/onboarding";
 
-export default function OnboardingLayout({
+export default async function OnboardingLayout({
     children,
 }: {
     children: React.ReactNode;

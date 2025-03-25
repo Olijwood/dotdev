@@ -1,33 +1,39 @@
 "use server";
 
+import {
+    OnboardingFormValues,
+    OnboardingSchema,
+} from "@/components/onboarding/schema";
 import db from "@/lib/db";
 import { currentUserId } from "./auth";
 
-export async function completeOnboarding({
-    profile,
-    followedUserIds,
-    selectedTagIds,
-}: {
-    profile: {
-        username: string;
-        bio: string;
-        profileImage: string;
-        displayName: string;
-    };
-    followedUserIds: string[];
-    selectedTagIds: string[];
-}) {
+export async function completeOnboarding(rawData: OnboardingFormValues) {
     const userId = await currentUserId();
     if (!userId) throw new Error("Not authenticated");
+
+    const parsed = OnboardingSchema.safeParse(rawData);
+
+    if (!parsed.success) {
+        console.error("Validation failed", parsed.error.flatten());
+        throw new Error("Invalid onboarding data.");
+    }
+
+    const {
+        username,
+        bio,
+        profileImage,
+        followedUserIds = [],
+        selectedTagIds = [],
+    } = parsed.data;
+
     try {
         await db.$transaction(async (tx) => {
             await tx.user.update({
                 where: { id: userId },
                 data: {
-                    username: profile.username,
-                    bio: profile.bio,
-                    image: profile.profileImage,
-                    name: profile.displayName,
+                    username,
+                    bio,
+                    image: profileImage,
                     hasCompletedOnboarding: true,
                 },
             });

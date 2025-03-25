@@ -3,6 +3,7 @@
 import { Prisma } from "@prisma/client";
 import { Tag } from "@/features/posts/types";
 import db from "@/lib/db";
+import { currentUserId } from "@/server/actions/auth";
 
 export async function getAllTags(): Promise<Tag[]> {
     const tags = await db.tag.findMany({
@@ -152,16 +153,28 @@ type OnboardingTag = {
     name: string;
     description?: string;
     postCount: number;
+    isFollowing: boolean;
 };
 
 export async function getOnboardingAvailableTags() {
+    const userId = await currentUserId();
+
+    const isFollowingSelect = userId
+        ? Prisma.sql`, (
+            SELECT 1 
+            FROM "TagFollow" tf 
+            WHERE tf."userId" = ${userId} AND tf."tagId" = t.id
+        ) AS "isFollowing"`
+        : Prisma.empty;
+
     const result = await db.$queryRaw<Array<OnboardingTag>>(Prisma.sql`
         SELECT 
             t.id, 
             t.name, 
             t.description,
-
             (SELECT COUNT(*) FROM "PostTag" pt WHERE pt."tagId" = t.id) AS "postCount"
+            ${isFollowingSelect}
+            
         FROM "Tag" t
         ORDER BY "postCount" DESC, t.name ASC
         LIMIT 50
@@ -175,6 +188,7 @@ export async function getOnboardingAvailableTags() {
             name: tag.name,
             description: tag.description || "",
             postCount: tag.postCount || 0,
+            isFollowing: tag.isFollowing || false,
         };
     });
     return tags;

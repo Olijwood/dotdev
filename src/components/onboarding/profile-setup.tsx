@@ -1,44 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type ChangeEvent } from "react";
+import { useFormContext } from "react-hook-form";
+import { ValidatedInput } from "../ui/input/validated-input";
+import { ValidatedTextarea } from "../ui/textarea";
+import { useValidateUsername } from "./hooks";
 
+import type { UserProfileDetails } from "./types";
 type ProfileSetupProps = {
-    profile: {
-        username: string;
-        bio: string;
-        profileImage: string;
-        displayName: string;
-    };
-    setProfile: (profile: {
-        username: string;
-        bio: string;
-        profileImage: string;
-        displayName: string;
-    }) => void;
+    profile: Omit<UserProfileDetails, "id">;
 };
 
-export function ProfileSetup({ profile, setProfile }: ProfileSetupProps) {
-    const [charCount, setCharCount] = useState(0);
-    const maxBioLength = 200;
+export function ProfileSetup({ profile }: ProfileSetupProps) {
+    const { watch } = useFormContext();
 
-    const handleBioChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const text = e.target.value;
-        if (text.length <= maxBioLength) {
-            setProfile({ ...profile, bio: text });
-            setCharCount(text.length);
-        }
-    };
+    const username = watch("username");
 
-    const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setProfile({ ...profile, username: e.target.value });
-    };
+    const { isValid, validUsernameMsg } = useValidateUsername(
+        username,
+        profile.username,
+    );
 
-    // In a real app, this would handle file uploads
-    const handleImageEdit = () => {
-        // Placeholder for image upload functionality
-        alert("Image upload would be implemented here");
-    };
+    const handleImageEdit = () => {};
 
     return (
         <div className="p-6 sm:p-12">
@@ -74,6 +57,7 @@ export function ProfileSetup({ profile, setProfile }: ProfileSetupProps) {
                     <button
                         className="py-2 px-3 text-sm bg-[#f5f5f5] hover:bg-[#e5e5e5] rounded-md transition-colors"
                         onClick={handleImageEdit}
+                        type="button"
                     >
                         Edit profile image
                     </button>
@@ -81,41 +65,18 @@ export function ProfileSetup({ profile, setProfile }: ProfileSetupProps) {
             </div>
 
             <div className="space-y-6">
-                <div className="space-y-2">
-                    <label
-                        htmlFor="username"
-                        className="block text-[#090909] font-medium"
-                    >
-                        Username
-                    </label>
-                    <input
-                        id="username"
-                        value={profile.username}
-                        onChange={handleUsernameChange}
-                        className="w-full border border-gray-300 focus:ring-[#3b49df] focus:ring-2 focus:outline-none rounded-md p-2"
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <label
-                        htmlFor="bio"
-                        className="block text-[#090909] font-medium"
-                    >
-                        Bio
-                    </label>
-                    <div className="relative">
-                        <textarea
-                            id="bio"
-                            placeholder="Tell us a little about yourself"
-                            className="w-full min-h-[100px] resize-none border border-gray-300 focus:ring-[#3b49df] focus:ring-2  focus:outline-none rounded-md p-2"
-                            value={profile.bio}
-                            onChange={handleBioChange}
-                        />
-                        <div className="absolute bottom-2 right-2 text-sm text-gray-500">
-                            {charCount}/{maxBioLength}
-                        </div>
-                    </div>
-                </div>
+                <ValidatedInput
+                    name="username"
+                    label="Username"
+                    placeholder="username"
+                    externalError={!isValid ? validUsernameMsg : undefined}
+                />
+                <ValidatedTextarea
+                    name="bio"
+                    label="Bio"
+                    maxLength={200}
+                    placeholder="Tell us a little about yourself"
+                />
             </div>
         </div>
     );
@@ -173,7 +134,7 @@ export function ProfileSetupSkeleton() {
                             className="w-full min-h-[100px] resize-none border border-gray-300 focus:ring-[#3b49df] focus:ring-2  focus:outline-none rounded-md p-2"
                         />
                         <div className="absolute bottom-2 right-2 text-sm text-gray-500">
-                            0/maxBioLength
+                            0/200
                         </div>
                     </div>
                 </div>

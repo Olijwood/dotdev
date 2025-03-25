@@ -1,25 +1,24 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { useFormContext, useWatch } from "react-hook-form";
 import { Tag } from "./types";
 
 type TagSelectionProps = {
     availableTags: Tag[];
-    selectedTags: string[];
-    setSelectedTags: (tags: string[]) => void;
 };
 
-export function TagSelection({
-    availableTags,
-    selectedTags,
-    setSelectedTags,
-}: TagSelectionProps) {
+export function TagSelection({ availableTags }: TagSelectionProps) {
+    const { setValue, control } = useFormContext();
+    const selectedTags: string[] =
+        useWatch({ name: "selectedTagIds", control }) || [];
+
     const toggleTag = (tagId: string) => {
-        if (selectedTags.includes(tagId)) {
-            setSelectedTags(selectedTags.filter((id) => id !== tagId));
-        } else {
-            setSelectedTags([...selectedTags, tagId]);
-        }
+        const updated = selectedTags.includes(tagId)
+            ? selectedTags.filter((id) => id !== tagId)
+            : [...selectedTags, tagId];
+
+        setValue("selectedTagIds", updated);
     };
 
     return (
@@ -69,7 +68,9 @@ export const TagSelect = ({ tag, selectedTags, toggleTag }: TagSelectProps) => {
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
+                e.preventDefault();
                 if (e.key === "Enter") {
+                    e.preventDefault();
                     toggleTag(tag.id);
                 }
             }}

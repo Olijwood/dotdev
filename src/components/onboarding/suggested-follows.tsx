@@ -1,35 +1,38 @@
 "use client";
+import { useFormContext, useWatch } from "react-hook-form";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Person } from "./types";
 
 type SuggestedFollowsProps = {
     suggestedPeople: Person[];
-    followedUsers: string[];
-    setFollowedUsers: (users: string[]) => void;
 };
 
-export function SuggestedFollows({
-    suggestedPeople,
-    followedUsers,
-    setFollowedUsers,
-}: SuggestedFollowsProps) {
-    // Mock data for suggested follows
+export function SuggestedFollows({ suggestedPeople }: SuggestedFollowsProps) {
+    const { setValue, control } = useFormContext();
+    const followedUsers: string[] =
+        useWatch({ name: "followedUserIds", control }) || [];
 
     const toggleFollow = (userId: string) => {
-        if (followedUsers.includes(userId)) {
-            setFollowedUsers(followedUsers.filter((id) => id !== userId));
-        } else {
-            setFollowedUsers([...followedUsers, userId]);
-        }
+        const updated = followedUsers.includes(userId)
+            ? followedUsers.filter((id) => id !== userId)
+            : [...followedUsers, userId];
+
+        setValue("followedUserIds", updated);
     };
 
     const selectAll = () => {
-        setFollowedUsers(suggestedPeople.map((person) => person.id));
+        setValue(
+            "followedUserIds",
+            suggestedPeople.map((p) => p.id),
+        );
     };
 
     const deselectAll = () => {
-        setFollowedUsers([]);
+        setValue("followedUserIds", []);
     };
+
+    const nFollowedUsers = followedUsers.length;
+    const isFollowedUsers = nFollowedUsers > 0;
 
     return (
         <div className="p-6 sm:p-12">
@@ -43,18 +46,17 @@ export function SuggestedFollows({
                 <div className="text-sm text-gray-600 flex items-center gap-2">
                     <span>
                         You&apos;re{" "}
-                        {followedUsers.length > 0
-                            ? "following"
-                            : "not following anyone"}{" "}
-                        {followedUsers.length > 0
-                            ? `${followedUsers.length} ${followedUsers.length === 1 ? "person" : "people"}`
+                        {isFollowedUsers ? "following" : "not following anyone"}{" "}
+                        {isFollowedUsers
+                            ? `${nFollowedUsers} ${nFollowedUsers === 1 ? "person" : "people"}`
                             : ""}
                     </span>
                     <span>-</span>
-                    {followedUsers.length === 0 ? (
+                    {!isFollowedUsers ? (
                         <button
                             onClick={selectAll}
                             className="text-[#3b49df] hover:underline"
+                            type="button"
                         >
                             Select all {suggestedPeople.length}
                         </button>
@@ -62,6 +64,7 @@ export function SuggestedFollows({
                         <button
                             onClick={deselectAll}
                             className="text-[#3b49df] hover:underline"
+                            type="button"
                         >
                             Deselect all
                         </button>
@@ -103,6 +106,7 @@ export function SuggestedFollows({
                                         : "bg-[#3b49df] hover:bg-[#2f3ab2] text-white py-2 px-4 rounded-md"
                                 }
                                 onClick={() => toggleFollow(person.id)}
+                                type="button"
                             >
                                 {followedUsers.includes(person.id)
                                     ? "Following"

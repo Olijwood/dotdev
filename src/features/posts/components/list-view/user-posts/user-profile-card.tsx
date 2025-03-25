@@ -12,6 +12,7 @@ type Props = {
     };
 };
 export const UserProfileCard = ({ user }: Props) => {
+    const isAuthor = user.currUid === user.id;
     return (
         <div className="flex w-full flex-col items-center gap-1 self-center rounded-lg py-3 text-center align-middle md:w-2/3 lg:w-full">
             <img
@@ -25,7 +26,7 @@ export const UserProfileCard = ({ user }: Props) => {
                 <i>@{user.username}</i>
             </p>
             <h1 className="text-2xl font-bold">{user.name || user.username}</h1>
-            {!user.currUid && (
+            {!isAuthor && (
                 <FollowButton followingId={user.id} className="w-2/3" />
             )}
         </div>

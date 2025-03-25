@@ -1,3 +1,4 @@
+"use client";
 type StepIndicatorProps = {
     currentStep: number;
     totalSteps: number;
