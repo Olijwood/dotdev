@@ -8,7 +8,10 @@ import {
 } from "@/features/posts/components/detail-view";
 import { PostToolbar } from "@/features/posts/components/toolbar";
 import { CommentSection } from "@/features/posts/features/comments/components/comment-section";
-import { getPostBySlug } from "@/features/posts/server/db";
+import {
+    getPostBySlug,
+    getUpToXPostLinksByAuthorId,
+} from "@/features/posts/server/db";
 import { Tag } from "@/features/posts/types";
 import { currentUser } from "@/server/actions/auth";
 
@@ -50,7 +53,13 @@ export async function PostDetailView({ slug }: { slug: string }) {
         isSaved,
     } = post;
 
+    const moreFromAuthor = await getUpToXPostLinksByAuthorId(
+        author.id,
+        3,
+        slug,
+    );
     const isAuthor = user?.username === author.username;
+    const authorSidebarAuthor = { ...author, isAuthor, moreFromAuthor };
 
     const reactionCounts = getReactionCounts(reactions);
 
@@ -82,12 +91,15 @@ export async function PostDetailView({ slug }: { slug: string }) {
 
                 <div className=" h-fit min-w-0 space-y-2 flex-1 pb-14 sm:mr-2 sm:pb-2 md:mr-0">
                     <PostContent post={contentPostProp} />
-                    <AuthorSidebar author={author} className="  md:hidden" />
+                    <AuthorSidebar
+                        author={authorSidebarAuthor}
+                        className="  md:hidden"
+                    />
                     <CommentSection postId={id} />
                 </div>
 
                 <div className="mr-2 hidden w-48 md:block lg:w-64">
-                    <AuthorSidebar author={author} />
+                    <AuthorSidebar author={authorSidebarAuthor} />
                 </div>
             </div>
 

@@ -10,7 +10,7 @@ import { currentUserId } from "./auth";
 export async function completeOnboarding(rawData: OnboardingFormValues) {
     const userId = await currentUserId();
     if (!userId) throw new Error("Not authenticated");
-
+    console.log("rawData", rawData);
     const parsed = OnboardingSchema.safeParse(rawData);
 
     if (!parsed.success) {

@@ -213,6 +213,7 @@ type PostContentQuery = {
     username: string | null;
     authorImage: string | null;
     authorCreatedAt: Date;
+    authorBio: string | null;
 
     tags: {
         id: string;
@@ -246,6 +247,7 @@ export async function getPostBySlug(slug: string) {
 
             u.id as "authorId",
             u.username,
+            u.bio as "authorBio",
             u.image AS "authorImage",
             u."createdAt" AS "authorCreatedAt",
 
@@ -286,7 +288,7 @@ export async function getPostBySlug(slug: string) {
 
         FROM "Post" p
         LEFT JOIN (
-            SELECT "id", "createdAt", "username", "image"
+            SELECT "id", "createdAt", "username", "image", "bio"
             FROM "User"
         ) AS u ON u.id = p."userId"
         WHERE p.slug = ${slug}
@@ -303,6 +305,7 @@ export async function getPostBySlug(slug: string) {
             username: post.username ?? "Guest",
             image: post.authorImage ?? "/hacker.png",
             createdAt: post.authorCreatedAt,
+            bio: post.authorBio ?? "",
         },
         commentCount: post.commentCount ?? 0,
         reactionCount: post.reactionCount ?? 0,
@@ -313,6 +316,32 @@ export async function getPostBySlug(slug: string) {
     };
 }
 
+export async function getUpToXPostLinksByAuthorId(
+    authorId: string,
+    limit: number = 3,
+    notPostSlug?: string,
+) {
+    const notPostWhere = notPostSlug
+        ? Prisma.sql`AND slug != ${notPostSlug}`
+        : Prisma.empty;
+    const result = await db.$queryRaw<
+        Array<{
+            title: string;
+            slug: string;
+        }>
+    >(Prisma.sql`
+        SELECT title, slug
+        FROM "Post"
+        WHERE "userId" = ${authorId} ${notPostWhere}
+        ORDER BY RANDOM()
+        LIMIT ${limit}
+    `);
+    if (!result || result.length === 0) return [];
+
+    console.log("result", result);
+
+    return result;
+}
 export async function postBySlugExists(slug: string) {
     return (
         (await db.post.findUnique({

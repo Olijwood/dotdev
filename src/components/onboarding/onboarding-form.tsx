@@ -53,11 +53,17 @@ export function OnboardingForm({
 
     const handleSubmitWithValidation = handleSubmit(
         async (data) => {
-            if (step !== totalSteps) return;
-
-            await completeOnboarding(data);
-            toast.success("Welcome!");
-            window.location.href = "/";
+            if (step !== totalSteps) {
+                return;
+            }
+            try {
+                console.log("data", data);
+                await completeOnboarding(data);
+                toast.success("Welcome!");
+                window.location.href = "/";
+            } catch (error) {
+                console.error("something went wrong", error);
+            }
         },
         (errors) => {
             if (errors.username || errors.bio) {
@@ -66,6 +72,10 @@ export function OnboardingForm({
             }
         },
     );
+
+    const handleProfileImageSuccess = (imageUrl: string) => {
+        form.setValue("profileImage", imageUrl);
+    };
 
     const skipForNow = step === 2 && tagIds.length === 0;
 
@@ -76,7 +86,12 @@ export function OnboardingForm({
                 className="bg-white w-full max-w-3xl flex flex-col h-[calc(100vh-2rem)] max-h-[800px] relative overflow-hidden sm:rounded-lg sm:shadow-lg "
             >
                 <div className="flex-grow overflow-auto scrollbar-thin">
-                    {step === 1 && <ProfileSetup profile={userProfile} />}
+                    {step === 1 && (
+                        <ProfileSetup
+                            profile={userProfile}
+                            onUploadSuccess={handleProfileImageSuccess}
+                        />
+                    )}
                     {step === 2 && (
                         <TagSelection availableTags={availableTags} />
                     )}

@@ -2,6 +2,7 @@
 
 import fs from "fs";
 import path from "path";
+import { currentUserId } from "./auth";
 
 const baseDir =
     process.env.STATIC_ENV === "development"
@@ -64,5 +65,33 @@ export async function deleteImage(imageUrl: string) {
     } catch (error) {
         console.error("Error deleting image:", error);
         return { error: "Failed to delete image. Please try again." };
+    }
+}
+
+export async function uploadProfileImage(formData: FormData) {
+    "use server";
+    const file = formData.get("file") as File | null;
+    const userId = await currentUserId();
+
+    if (!file || !userId) {
+        return { error: "Invalid upload request." };
+    }
+    try {
+        const uploadDir = path.join(baseDir, userId);
+
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const fileName = `profile-pic.png`;
+        const filePath = path.join(uploadDir, fileName);
+        const fileBuffer = Buffer.from(await file.arrayBuffer());
+        fs.writeFileSync(filePath, fileBuffer);
+
+        const fileUrl = `/uploads/${userId}/${fileName}`;
+        return { imageUrl: fileUrl };
+    } catch (error) {
+        console.error("Upload failed:", error);
+        return { error: "Upload failed. Please try again." };
     }
 }

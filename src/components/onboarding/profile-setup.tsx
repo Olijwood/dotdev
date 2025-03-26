@@ -1,27 +1,35 @@
 "use client";
 
-import Image from "next/image";
+import { XCircle } from "lucide-react";
 import { useFormContext } from "react-hook-form";
+import { useProfileImageUpload } from "@/hooks";
 import { ValidatedInput } from "../ui/input/validated-input";
 import { ValidatedTextarea } from "../ui/textarea";
 import { useValidateUsername } from "./hooks";
 
 import type { UserProfileDetails } from "./types";
+
 type ProfileSetupProps = {
-    profile: Omit<UserProfileDetails, "id">;
+    profile: UserProfileDetails;
+    onUploadSuccess: (url: string) => void;
 };
 
-export function ProfileSetup({ profile }: ProfileSetupProps) {
+export function ProfileSetup({ profile, onUploadSuccess }: ProfileSetupProps) {
+    const { imageUrl, fileInputRef, handleUpload, handleRemove } =
+        useProfileImageUpload();
     const { watch } = useFormContext();
-
     const username = watch("username");
+    const profilePic = watch("profileImage");
 
     const { isValid, validUsernameMsg } = useValidateUsername(
         username,
         profile.username,
     );
 
-    const handleImageEdit = () => {};
+    const handleProfileImageUpload = async () => {
+        const url = await handleUpload();
+        if (url) onUploadSuccess(url);
+    };
 
     return (
         <div className="p-6 sm:p-12">
@@ -38,14 +46,29 @@ export function ProfileSetup({ profile }: ProfileSetupProps) {
 
             <div className="flex items-center gap-4 mb-8">
                 <div className="w-24 h-24 rounded-full bg-[#3b49df] flex items-center justify-center text-white text-4xl overflow-hidden">
-                    {profile.profileImage ? (
-                        <Image
-                            src={profile.profileImage || "/placeholder.svg"}
-                            alt="Profile"
-                            width={96}
-                            height={96}
-                            className="w-full h-full object-cover"
-                        />
+                    {profilePic ? (
+                        <div className="relative">
+                            <img
+                                src={
+                                    imageUrl ||
+                                    profilePic ||
+                                    `/uploads/${profile.id}/profile-pic.png` ||
+                                    ""
+                                }
+                                alt="Profile Pic"
+                                width={96}
+                                height={96}
+                                className="w-full h-full object-cover"
+                            />
+
+                            <button
+                                type="button"
+                                className="absolute -right-2 -top-2 rounded-full bg-white p-1 shadow-md"
+                                onClick={handleRemove}
+                            >
+                                <XCircle className="size-4 text-red-500" />
+                            </button>
+                        </div>
                     ) : (
                         <span>
                             {profile.displayName.charAt(0).toUpperCase()}
@@ -54,9 +77,16 @@ export function ProfileSetup({ profile }: ProfileSetupProps) {
                 </div>
                 <div>
                     <p className="text-xl mb-2">{profile.displayName}</p>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleProfileImageUpload}
+                        accept="image/png, image/jpeg, image/gif"
+                    />
                     <button
                         className="py-2 px-3 text-sm bg-[#f5f5f5] hover:bg-[#e5e5e5] rounded-md transition-colors"
-                        onClick={handleImageEdit}
+                        onClick={() => fileInputRef.current?.click()}
                         type="button"
                     >
                         Edit profile image

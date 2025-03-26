@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { Person } from "@/components/onboarding/types";
 import db from "@/lib/db";
 import { logError } from "@/lib/logger";
+import { currentUserId } from "../actions/auth";
 
 const getAccountByUserId = async (userId: string) => {
     try {
@@ -117,6 +118,21 @@ export const getOnboardingSuggestedPeople = async (userId: string) => {
     });
     return users;
 };
+
+export const updateUserProfilePic = async (fileUrl: string) => {
+    const id = await currentUserId();
+    try {
+        await db.user.update({
+            where: { id },
+            data: { image: fileUrl },
+        });
+        return { error: false };
+    } catch (error) {
+        logError("updateUserProfilePic", error);
+        return { error: true, message: "Failed to update profile pic" };
+    }
+};
+
 export {
     getAccountByUserId,
     getUserById,

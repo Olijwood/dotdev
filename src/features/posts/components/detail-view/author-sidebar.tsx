@@ -7,14 +7,21 @@ import { CardContent } from "@/components/ui/card";
 import { cn, getDateString } from "@/lib/utils";
 import { FollowButton, FollowButtonSkeleton } from "./follow-button";
 
+type MoreFromAuthor = {
+    slug: string;
+    title: string;
+}[];
+
 type AuthorSidebarProps = React.ComponentPropsWithoutRef<"div"> & {
     author: {
         id: string;
         username: string | null;
+        bio: string | null;
         image: string | null;
         createdAt: Date;
+        isAuthor: boolean;
+        moreFromAuthor: MoreFromAuthor;
     };
-    following?: boolean;
 };
 
 export function AuthorSidebar({
@@ -22,10 +29,17 @@ export function AuthorSidebar({
     className,
     ...props
 }: AuthorSidebarProps) {
-    const { id: authorId, username, image, createdAt } = author;
+    const {
+        id: authorId,
+        bio,
+        username,
+        image,
+        createdAt,
+        isAuthor,
+        moreFromAuthor,
+    } = author;
     const joinedDate = getDateString(createdAt, true);
-    const description =
-        "leapcell.io: serverless web hosting / async task / microservices";
+
     return (
         <div className={cn("md:space-y-6", className)} {...props}>
             <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-2  sm:my-2 sm:rounded-lg md:my-0 ">
@@ -43,12 +57,13 @@ export function AuthorSidebar({
                                 {username}
                             </h2>
                         </Link>
-                        {description && (
+                        {bio && (
                             <p className="mb-4 justify-stretch text-start text-xs font-normal text-muted-foreground">
-                                {description}
+                                {bio}
                             </p>
                         )}
-                        <FollowButton followingId={authorId} />
+
+                        {!isAuthor && <FollowButton followingId={authorId} />}
                     </div>
 
                     <div className="mt-4 space-y-3 text-xs font-semibold">
@@ -68,26 +83,26 @@ export function AuthorSidebar({
                 </CardContent>
             </div>
 
-            <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-2  sm:my-2 sm:rounded-lg">
-                <CardContent className="p-2 md:p-4">
-                    <h3 className="mb-4 font-semibold">More from {username}</h3>
-                    <div className="space-y-4">
-                        {[
-                            "Understanding Network Interfaces: Loopback, Local IPs, and Public IPs",
-                            "What Happens When Redis Runs Out of Memory?",
-                            "Which Authentication to Use? A Comparison of 4 Popular Approaches",
-                        ].map((title) => (
-                            <Link
-                                key={title}
-                                href={`/${username}/title`}
-                                className="block text-xs transition-colors hover:text-blue-600"
-                            >
-                                {title}
-                            </Link>
-                        ))}
-                    </div>
-                </CardContent>
-            </div>
+            {moreFromAuthor.length > 0 && (
+                <div className="mt-0 h-auto rounded-none border border-t-0 sm:border-t border-gray-300 bg-white p-2  sm:my-2 sm:rounded-lg">
+                    <CardContent className="p-2 md:p-4">
+                        <h3 className="mb-4 font-semibold">
+                            More from {username}
+                        </h3>
+                        <div className="space-y-4">
+                            {moreFromAuthor.map((post) => (
+                                <Link
+                                    key={post.slug}
+                                    href={`/${username}/${post.slug}`}
+                                    className="block text-xs underline transition-colors hover:text-blue-600"
+                                >
+                                    {post.title}
+                                </Link>
+                            ))}
+                        </div>
+                    </CardContent>
+                </div>
+            )}
         </div>
     );
 }

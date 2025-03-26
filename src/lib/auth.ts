@@ -82,7 +82,7 @@ const { auth, handlers, signIn, signOut } = NextAuth({
             token.name = existingUser.name;
             token.username = existingUser.username as string;
             token.email = existingUser.email as string;
-            token.image = existingUser.image;
+            token.image = existingUser.image as string;
             token.role = existingUser.role;
             token.isTwoFactorEnabled =
                 existingUser.isTwoFactorEnabled as boolean;
@@ -102,6 +102,7 @@ const { auth, handlers, signIn, signOut } = NextAuth({
                 session.user.isTwoFactorEnabled =
                     token.isTwoFactorEnabled as boolean;
                 session.user.email = token.email as string;
+                session.user.image = token.image as string;
                 session.user.hasCompletedOnboarding =
                     token.hasCompletedOnboarding as boolean;
                 session.user.name = token.name;
