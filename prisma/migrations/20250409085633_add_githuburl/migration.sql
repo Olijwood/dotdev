@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "githubUrl" VARCHAR(100) DEFAULT '',
+ALTER COLUMN "brandColour" SET DEFAULT '#000000';

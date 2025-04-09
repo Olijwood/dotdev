@@ -10,12 +10,14 @@ type PostFeedProps = {
     emptyState?: JSX.Element;
     orderBy?: PostListOrderBy;
     filters?: PostFilters;
+    className?: string;
 };
 
 export const PostFeed = async ({
     emptyState,
     orderBy = "latest",
     filters,
+    className,
 }: PostFeedProps = {}) => {
     const posts =
         orderBy === "latest"
@@ -35,7 +37,7 @@ export const PostFeed = async ({
 
     return (
         <Suspense fallback={<SkeletonPostList />}>
-            <PostList posts={posts as PostListItem[]} />
+            <PostList posts={posts as PostListItem[]} className={className} />
         </Suspense>
     );
 };

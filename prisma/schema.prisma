@@ -26,6 +26,18 @@ model User {
     isTwoFactorEnabled      Boolean                @default(false)
     twoFactorConfirmation   TwoFactorConfirmation?
     twoFactorConfirmationId String?
+    displayEmailOnProfile   Boolean                @default(false)
+    website                 String?                @default("") @db.VarChar(100)
+    githubUrl               String?                @default("") @db.VarChar(100)
+    location                String?                @default("") @db.VarChar(100)
+    work                    String?                @default("") @db.VarChar(100)
+    education               String?                @default("") @db.VarChar(100)
+    brandColour             String?                @default("#000000") @db.VarChar(7)
+    pronouns                String?                @default("") @db.VarChar(200)
+    currentlyLearning       String?                @default("") @db.VarChar(200)
+    currentlyHackingOn      String?                @default("") @db.VarChar(200)
+    availableFor            String?                @default("") @db.VarChar(200)
+    skillsLanguages         String?                @default("") @db.VarChar(200)
     createdAt               DateTime               @default(now())
     updatedAt               DateTime               @updatedAt
     accounts                Account[]

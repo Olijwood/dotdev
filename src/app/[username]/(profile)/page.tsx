@@ -1,38 +1,76 @@
 "use server";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import {
+    ProfileHeader,
+    ProfileHeaderSkeleton,
+} from "@/features/auth/components/profile-header";
+import {
+    ProfileInfo,
+    ProfileInfoSkelton,
+} from "@/features/auth/components/profile-info";
 import { getUserProfileInfoByUsername } from "@/features/auth/server/db/data";
 import {
     PostFeedWrapper,
     EmptyState,
     PostFeed,
-    UserProfileCard,
+    SkeletonPostList,
 } from "@/features/posts/components/list-view";
 import { currentUserId } from "@/server/actions/auth";
 
-const UserPage = async ({
+export default async function UserPage({
     params,
 }: {
     params: Promise<{ username: string }>;
-}) => {
+}) {
     const { username } = await params;
 
     if (!username) {
         return notFound();
     }
 
-    const author = await getUserProfileInfoByUsername(username);
+    return (
+        <Suspense fallback={<UserPageSkeleton />}>
+            <UserPageComponent username={username} />
+        </Suspense>
+    );
+}
 
-    if (!author || !author.id || !author.username) {
+const UserPageComponent = async ({ username }: { username: string }) => {
+    const user = await getUserProfileInfoByUsername(username);
+
+    if (!user || !user.id || !user.username) {
         return notFound();
     }
 
     const currUid = await currentUserId();
 
-    const authorProfileInfoProps = {
+    const profileHeaderUserProps = {
         currUid,
-        id: author.id,
-        username: author.username,
-        name: author.name,
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        profileImage: user.image,
+        bio: user.bio,
+        location: user.location,
+        joinedAt: user.createdAt,
+        email: user.email,
+        displayEmailOnProfile: user.displayEmailOnProfile,
+        website: user.website,
+        githubUrl: user.githubUrl,
+        work: user.work,
+        brandColour: user.brandColour,
+    };
+
+    const profileInfoUserProps = {
+        username,
+        skillsLanguages: user.skillsLanguages,
+        currentlyLearning: user.currentlyLearning,
+        currentlyHackingOn: user.currentlyHackingOn,
+        availableFor: user.availableFor,
+        postCount: user.postCount,
+        tagFollowCount: user.tagFollowCount,
+        commentCount: user.commentCount,
     };
 
     const emptyState = (
@@ -44,15 +82,47 @@ const UserPage = async ({
 
     return (
         <>
-            <UserProfileCard user={authorProfileInfoProps} />
-            <PostFeedWrapper hidden showEndMessage={false}>
-                <PostFeed
-                    filters={{ byUserId: author.id }}
-                    emptyState={emptyState}
-                />
-            </PostFeedWrapper>
+            <ProfileHeader user={profileHeaderUserProps} />
+            <div className="max-w-7xl mx-auto md:px-4">
+                <div className="md:grid md:grid-cols-[300px_1fr] md:gap-2">
+                    <ProfileInfo user={profileInfoUserProps} />
+                    <PostFeedWrapper
+                        hidden
+                        showEndMessage={false}
+                        className="!px-0 sm:!px-1"
+                    >
+                        <PostFeed
+                            filters={{ byUserId: user.id }}
+                            emptyState={emptyState}
+                            orderBy="latest"
+                            className="max-w-full mx-0"
+                        />
+                        <p className="text-center text-gray-600">
+                            You have reached the end!
+                        </p>
+                    </PostFeedWrapper>
+                </div>
+            </div>
         </>
     );
 };
 
-export default UserPage;
+const UserPageSkeleton = () => {
+    return (
+        <>
+            <ProfileHeaderSkeleton />
+            <div className="max-w-7xl mx-auto md:px-4">
+                <div className="md:grid md:grid-cols-[300px_1fr] md:gap-2">
+                    <ProfileInfoSkelton />
+                    <PostFeedWrapper
+                        hidden
+                        showEndMessage={false}
+                        className="!px-0 sm:!px-1"
+                    >
+                        <SkeletonPostList />
+                    </PostFeedWrapper>
+                </div>
+            </div>
+        </>
+    );
+};

@@ -175,6 +175,14 @@ body {
     @apply text-gray-700;
 }
 
+.settings-input {
+    @apply w-full rounded-md p-2 focus:!ring-2 focus:!ring-blue-700;
+}
+
+.settings-textarea {
+    @apply w-full border rounded-md p-2 min-h-[100px] focus:!ring-2 focus:!ring-blue-700 focus:outline-none;
+}
+
 .title-input {
     outline: none;
     border: none;

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import db from "@/lib/db";
 import { logError } from "@/lib/logger";
 
@@ -76,10 +77,92 @@ const getUserByUsername = async (username: string) => {
     }
 };
 
-const getUserProfileInfoByUsername = async (username: string) => {
+type UserProfileQuery = {
+    id: string;
+    username: string | null;
+    name: string;
+    image: string | null;
+    bio: string | null;
+    email: string;
+    displayEmailOnProfile: boolean;
+    createdAt: Date;
+    brandColour: string | null;
+    location: string | null;
+    website: string | null;
+    githubUrl: string | null;
+    work: string | null;
+    skillsLanguages: string | null;
+    currentlyLearning: string | null;
+    currentlyHackingOn: string | null;
+    availableFor: string | null;
+
+    postCount: number;
+    tagFollowCount: number;
+    commentCount: number;
+};
+
+export async function getUserProfileInfoByUsername(username: string) {
+    const result = await db.$queryRaw<Array<UserProfileQuery>>(Prisma.sql`
+        SELECT
+            u.id,
+            u.username,
+            u.name,
+            u.image,
+            u.bio,
+            u.email,
+            u."displayEmailOnProfile",
+            u."createdAt",
+            u."brandColour",
+            u."location",
+            u."website",
+            u."githubUrl",
+            u."work",
+            u."skillsLanguages",
+            u."currentlyLearning",
+            u."currentlyHackingOn",
+            u."availableFor",
+
+            -- Count of published posts
+            (SELECT COUNT(*) FROM "Post" p WHERE p."userId" = u.id AND p.published = true) AS "postCount",
+
+            -- Count of tags followed
+            (SELECT COUNT(*) FROM "TagFollow" tf WHERE tf."userId" = u.id) AS "tagFollowCount",
+
+            -- Count of comments made
+            (SELECT COUNT(*) FROM "Comment" c WHERE c."userId" = u.id) AS "commentCount"
+
+        FROM "User" u
+        WHERE u.username = ${username}
+        LIMIT 1;
+    `);
+
+    if (!result || result.length === 0) return null;
+
+    return result[0];
+}
+
+export const oldGetUserProfileInfoByUsername = async (username: string) => {
     try {
         const user = await db.user.findUnique({
-            select: { id: true, username: true, name: true },
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                image: true,
+                bio: true,
+                email: true,
+                displayEmailOnProfile: true,
+                createdAt: true,
+                brandColour: true,
+                location: true,
+                website: true,
+                githubUrl: true,
+                work: true,
+                skillsLanguages: true,
+                currentlyLearning: true,
+                currentlyHackingOn: true,
+                availableFor: true,
+            },
             where: { username },
         });
         return user;
@@ -112,5 +195,4 @@ export {
     createUser,
     generateUniqueUsername,
     getUserByUsername,
-    getUserProfileInfoByUsername,
 };
